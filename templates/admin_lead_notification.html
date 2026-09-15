@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>New Lead Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #152e4d; padding: 25px; text-align: center; border-bottom: 5px solid #ea6d24;">
+        <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: bold;">Learnify Solutions</h1>
+        <p style="margin: 5px 0 0 0; color: #cbd5e1; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Website Lead Notification</p>
+      </td>
+    </tr>
+    <!-- Body -->
+    <tr>
+      <td style="padding: 30px;">
+        <p style="margin: 0 0 20px 0; font-size: 14px; color: #152e4d;">
+          <span style="background-color: #ea6d24; color: #ffffff; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; text-transform: uppercase;">{{inquiryType}}</span>
+        </p>
+        
+        <p style="font-size: 16px; color: #475569; margin-bottom: 25px;">A new lead has been captured from the website. Please review the details below.</p>
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="12" style="border: 1px solid #e2e8f0; border-radius: 6px;">
+          <tr>
+            <td width="35%" style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc; color: #152e4d; font-weight: bold; font-size: 13px; text-transform: uppercase;">Full Name</td>
+            <td style="border-bottom: 1px solid #e2e8f0; color: #334155; font-size: 15px;">{{fullName}}</td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc; color: #152e4d; font-weight: bold; font-size: 13px; text-transform: uppercase;">Email</td>
+            <td style="border-bottom: 1px solid #e2e8f0; font-size: 15px;"><a href="mailto:{{email}}" style="color: #ea6d24; text-decoration: none; font-weight: bold;">{{email}}</a></td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc; color: #152e4d; font-weight: bold; font-size: 13px; text-transform: uppercase;">Phone</td>
+            <td style="border-bottom: 1px solid #e2e8f0; color: #334155; font-size: 15px;">{{phone}}</td>
+          </tr>
+          <tr>
+            <td style="border-bottom: 1px solid #e2e8f0; background-color: #f8fafc; color: #152e4d; font-weight: bold; font-size: 13px; text-transform: uppercase;">Company</td>
+            <td style="border-bottom: 1px solid #e2e8f0; color: #334155; font-size: 15px;">{{company}}</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; color: #152e4d; font-weight: bold; font-size: 13px; text-transform: uppercase;">Interest</td>
+            <td style="color: #334155; font-size: 15px; font-weight: bold;">{{selectedDomain}}</td>
+          </tr>
+        </table>
+
+        <div style="background-color: #f8fafc; border-left: 4px solid #152e4d; padding: 20px; margin-top: 30px;">
+          <p style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #152e4d; font-weight: bold;">User Message / Notes</p>
+          <p style="margin: 0; font-size: 15px; color: #334155; line-height: 1.6; white-space: pre-wrap;">{{message}}</p>
+        </div>
+      </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+        <p style="margin: 0; font-size: 12px; color: #94a3b8;">Automated message from Learnify Solutions Backend.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
