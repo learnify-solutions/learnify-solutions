@@ -64,36 +64,79 @@ let leadsStore: LeadSubmission[] = [
 
 let coursesStore: Course[] = JSON.parse(JSON.stringify(sampleCourses));
 
-// Email Transporter Helper (Dynamically instantiated per request with fallback HTML)
-function getEmailTransporter() {
+// Enhanced SMTP Transporter Helper with dual-port fallback (465 SSL <-> 587 STARTTLS)
+function createTransporterInstance(customPort?: number, customSecure?: boolean) {
   const user = process.env.EMAIL_USER || 'info@learnify-solutions.com';
   const pass = process.env.EMAIL_PASSWORD || 'Pa$$w0rd@123';
   if (!pass) return null;
 
+  const host = process.env.SMTP_HOST || 'smtpout.secureserver.net';
+  const defaultPort = Number(process.env.SMTP_PORT) || 465;
+  const port = customPort !== undefined ? customPort : defaultPort;
+  const isSecure = customSecure !== undefined ? customSecure : (port === 465);
+
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtpout.secureserver.net',
-    port: Number(process.env.SMTP_PORT) || 465,
-    secure: Number(process.env.SMTP_PORT || 465) === 465,
+    host,
+    port,
+    secure: isSecure,
     auth: { user, pass },
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
+    connectionTimeout: 12000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 }
 
-async function sendLeadEmails(lead: LeadSubmission) {
+// Resilient mail sender with automatic port fallback (e.g. if cloud host blocks port 465, fallback to 587)
+async function sendEmailWithFallback(mailOptions: nodemailer.SendMailOptions): Promise<{ success: boolean; messageId?: string; error?: string; portUsed?: number }> {
   const emailPassword = process.env.EMAIL_PASSWORD || 'Pa$$w0rd@123';
   if (!emailPassword) {
-    console.log('[Email Notice] EMAIL_PASSWORD is not set in environment variables. Automated emails skipped.');
-    return;
+    const msg = 'EMAIL_PASSWORD is not configured in environment variables.';
+    console.warn(`[Email Notice] ${msg}`);
+    return { success: false, error: msg };
   }
 
-  const transporterInstance = getEmailTransporter();
-  if (!transporterInstance) {
-    console.warn('[Email Notice] Could not initialize SMTP transporter.');
-    return;
+  const primaryPort = Number(process.env.SMTP_PORT) || 465;
+  const primarySecure = primaryPort === 465;
+  const primaryTransporter = createTransporterInstance(primaryPort, primarySecure);
+
+  if (!primaryTransporter) {
+    return { success: false, error: 'Could not initialize primary SMTP transporter.' };
   }
 
+  try {
+    console.log(`[Email] Attempting email delivery via ${process.env.SMTP_HOST || 'smtpout.secureserver.net'}:${primaryPort} (secure=${primarySecure}) to ${mailOptions.to}...`);
+    const info = await primaryTransporter.sendMail(mailOptions);
+    console.log(`[Email Success] Delivered to ${mailOptions.to} (MessageId: ${info.messageId}) on port ${primaryPort}`);
+    return { success: true, messageId: info.messageId, portUsed: primaryPort };
+  } catch (primaryErr: any) {
+    console.warn(`[Email Notice] Primary SMTP attempt on port ${primaryPort} failed: ${primaryErr.message}`);
+    
+    // Determine alternative port (switch between 465 SSL and 587 STARTTLS)
+    const fallbackPort = primaryPort === 465 ? 587 : 465;
+    const fallbackSecure = fallbackPort === 465;
+    
+    console.log(`[Email Fallback] Retrying delivery via fallback port ${fallbackPort} (secure=${fallbackSecure})...`);
+    const fallbackTransporter = createTransporterInstance(fallbackPort, fallbackSecure);
+    
+    if (fallbackTransporter) {
+      try {
+        const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
+        console.log(`[Email Success (Fallback)] Delivered to ${mailOptions.to} on port ${fallbackPort} (MessageId: ${fallbackInfo.messageId})`);
+        return { success: true, messageId: fallbackInfo.messageId, portUsed: fallbackPort };
+      } catch (fallbackErr: any) {
+        console.error(`[Email Error] Fallback attempt on port ${fallbackPort} also failed: ${fallbackErr.message}`);
+        return { success: false, error: `Primary (port ${primaryPort}): ${primaryErr.message} | Fallback (port ${fallbackPort}): ${fallbackErr.message}` };
+      }
+    }
+
+    return { success: false, error: primaryErr.message };
+  }
+}
+
+async function sendLeadEmails(lead: LeadSubmission) {
   const adminEmail = process.env.ADMIN_EMAIL || 'info@learnify-solutions.com';
   const senderEmail = process.env.EMAIL_USER || 'info@learnify-solutions.com';
 
@@ -151,16 +194,15 @@ async function sendLeadEmails(lead: LeadSubmission) {
       message: lead.message || 'No message provided.'
     });
 
-    await transporterInstance.sendMail({
+    await sendEmailWithFallback({
       from: `"Learnify Solutions Lead Alert" <${senderEmail}>`,
       to: adminEmail,
       replyTo: lead.email,
       subject: `[New Lead Alert] ${lead.inquiryType.toUpperCase()} - ${lead.fullName} (${lead.company || 'Individual'})`,
       html: adminHtml,
     });
-    console.log(`[Email] Admin notification successfully sent to ${adminEmail}`);
   } catch (adminErr: any) {
-    console.error('[Email Error] Failed to send admin alert email:', adminErr.message);
+    console.error('[Email Error] Exception while preparing admin email:', adminErr.message);
   }
 
   // 2. Send Acknowledgment Email to User
@@ -179,15 +221,14 @@ async function sendLeadEmails(lead: LeadSubmission) {
       inquiryTypeSummary: inquiryTypeSummary
     });
 
-    await transporterInstance.sendMail({
+    await sendEmailWithFallback({
       from: `"Learnify Solutions" <${senderEmail}>`,
       to: lead.email,
       subject: 'Thank you for contacting Learnify Solutions',
       html: userHtml,
     });
-    console.log(`[Email] User acknowledgment successfully sent to ${lead.email}`);
   } catch (userErr: any) {
-    console.error(`[Email Error] Failed to send acknowledgment email to ${lead.email}:`, userErr.message);
+    console.error(`[Email Error] Exception while preparing user acknowledgment for ${lead.email}:`, userErr.message);
   }
 }
 
@@ -725,6 +766,101 @@ Sitemap: https://learnify-solutions.com/sitemap.xml
       res.status(400).json({ success: false, error: 'No syllabus PDF URL or Base64 data provided' });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 5.5 Email System Diagnostics & Live SMTP Test
+  app.get('/api/email/diagnostics', async (req, res) => {
+    const user = process.env.EMAIL_USER || 'info@learnify-solutions.com';
+    const host = process.env.SMTP_HOST || 'smtpout.secureserver.net';
+    const primaryPort = Number(process.env.SMTP_PORT) || 465;
+    const adminEmail = process.env.ADMIN_EMAIL || 'info@learnify-solutions.com';
+    const hasPassword = Boolean(process.env.EMAIL_PASSWORD);
+
+    let verifyPrimary = { success: false, message: 'Not tested' };
+    let verifyFallback = { success: false, message: 'Not tested' };
+
+    if (hasPassword) {
+      // Test primary port
+      try {
+        const primaryTransporter = createTransporterInstance(primaryPort, primaryPort === 465);
+        if (primaryTransporter) {
+          await primaryTransporter.verify();
+          verifyPrimary = { success: true, message: `Connected & authenticated on port ${primaryPort}` };
+        }
+      } catch (err: any) {
+        verifyPrimary = { success: false, message: err.message };
+      }
+
+      // Test alternate fallback port
+      const altPort = primaryPort === 465 ? 587 : 465;
+      try {
+        const altTransporter = createTransporterInstance(altPort, altPort === 465);
+        if (altTransporter) {
+          await altTransporter.verify();
+          verifyFallback = { success: true, message: `Connected & authenticated on fallback port ${altPort}` };
+        }
+      } catch (err: any) {
+        verifyFallback = { success: false, message: err.message };
+      }
+    }
+
+    res.json({
+      success: true,
+      configured: hasPassword,
+      config: {
+        host,
+        primaryPort,
+        fallbackPort: primaryPort === 465 ? 587 : 465,
+        user,
+        adminEmail,
+        passwordMasked: hasPassword ? '********' : 'NOT SET',
+      },
+      verification: {
+        primary: verifyPrimary,
+        fallback: verifyFallback,
+      }
+    });
+  });
+
+  app.post('/api/email/send-test', async (req, res) => {
+    const { targetEmail } = req.body;
+    const to = targetEmail || process.env.ADMIN_EMAIL || 'info@learnify-solutions.com';
+    const senderEmail = process.env.EMAIL_USER || 'info@learnify-solutions.com';
+
+    const testHtml = `
+      <div style="font-family: Arial, sans-serif; padding: 24px; color: #152e4d; border: 2px solid #ea6d24; border-radius: 10px; max-width: 600px;">
+        <h2 style="color: #ea6d24; margin-top: 0;">🚀 Learnify Solutions SMTP Test Email</h2>
+        <p>This is an automated test confirming that the Learnify Solutions transactional email engine is functioning properly in production!</p>
+        <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; font-size: 13px; color: #334155;">
+          <p><strong>SMTP Host:</strong> ${process.env.SMTP_HOST || 'smtpout.secureserver.net'}</p>
+          <p><strong>Sender Account:</strong> ${senderEmail}</p>
+          <p><strong>Recipient:</strong> ${to}</p>
+          <p><strong>Server Timestamp:</strong> ${new Date().toISOString()}</p>
+        </div>
+        <p style="margin-top: 16px; font-size: 12px; color: #64748b;">If you received this message, lead notification and client acknowledgment emails will dispatch automatically.</p>
+      </div>
+    `;
+
+    const result = await sendEmailWithFallback({
+      from: `"Learnify Solutions System Check" <${senderEmail}>`,
+      to,
+      subject: `[SMTP Diagnostic Test] Learnify Solutions - ${new Date().toLocaleTimeString()}`,
+      html: testHtml,
+    });
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: `Test email successfully sent to ${to} via port ${result.portUsed}!`,
+        messageId: result.messageId,
+        portUsed: result.portUsed,
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Failed to dispatch test email',
+      });
     }
   });
 

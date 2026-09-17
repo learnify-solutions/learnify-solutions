@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Save,
@@ -22,6 +22,11 @@ import {
   Download,
   FileCheck,
   LogOut,
+  Mail,
+  Send,
+  AlertTriangle,
+  Server,
+  ShieldCheck,
 } from 'lucide-react';
 import { CmsData, LeadSubmission, Course } from '../types';
 import {
@@ -61,13 +66,74 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   supabaseStatus,
   onRefreshLeads,
 }) => {
-  const [activeTab, setActiveTab] = useState<'visual' | 'courses' | 'json' | 'supabase' | 'leads'>('visual');
+  const [activeTab, setActiveTab] = useState<'visual' | 'courses' | 'json' | 'supabase' | 'leads' | 'email'>('visual');
   const [formData, setFormData] = useState<CmsData>(JSON.parse(JSON.stringify(cmsData)));
   const [jsonText, setJsonText] = useState(JSON.stringify(cmsData, null, 2));
   const [jsonError, setJsonError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveNotification, setSaveNotification] = useState('');
   const [copiedSchema, setCopiedSchema] = useState(false);
+
+  // Email diagnostics & test state
+  const [testEmailAddress, setTestEmailAddress] = useState('');
+  const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
+  const [testEmailResult, setTestEmailResult] = useState<{ success: boolean; message: string; messageId?: string; portUsed?: number } | null>(null);
+  const [emailDiagnostics, setEmailDiagnostics] = useState<any>(null);
+  const [isLoadingDiagnostics, setIsLoadingDiagnostics] = useState(false);
+
+  const fetchEmailDiagnostics = async () => {
+    setIsLoadingDiagnostics(true);
+    try {
+      const res = await fetch('/api/email/diagnostics');
+      const data = await res.json();
+      setEmailDiagnostics(data);
+    } catch (err: any) {
+      setEmailDiagnostics({ success: false, error: err.message });
+    } finally {
+      setIsLoadingDiagnostics(false);
+    }
+  };
+
+  const handleSendTestEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!testEmailAddress) return;
+    setIsSendingTestEmail(true);
+    setTestEmailResult(null);
+    try {
+      const res = await fetch('/api/email/send-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetEmail: testEmailAddress }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setTestEmailResult({
+          success: true,
+          message: data.message,
+          messageId: data.messageId,
+          portUsed: data.portUsed,
+        });
+      } else {
+        setTestEmailResult({
+          success: false,
+          message: data.error || 'Failed to send test email.',
+        });
+      }
+    } catch (err: any) {
+      setTestEmailResult({
+        success: false,
+        message: err.message || 'Network exception while contacting SMTP server.',
+      });
+    } finally {
+      setIsSendingTestEmail(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'email') {
+      fetchEmailDiagnostics();
+    }
+  }, [activeTab]);
 
   // Courses form state
   const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
@@ -457,6 +523,21 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
           >
             <Users className="w-3.5 h-3.5" />
             <span>Inquiries ({leads.length})</span>
+          </button>
+
+          <button
+            onClick={() => {
+              fetchEmailDiagnostics();
+              setActiveTab('email');
+            }}
+            className={`py-3 px-4 flex items-center gap-1.5 border-b-2 cursor-pointer transition-colors shrink-0 ${
+              activeTab === 'email'
+                ? 'border-[#ea6d24] text-[#ea6d24]'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Email & SMTP</span>
           </button>
         </div>
 
@@ -1819,6 +1900,179 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {activeTab === 'email' && (
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#ea6d24]" />
+                    Email System & SMTP Diagnostics
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Verify automated student acknowledgment and admin lead alert delivery in production.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchEmailDiagnostics}
+                  disabled={isLoadingDiagnostics}
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isLoadingDiagnostics ? 'animate-spin' : ''}`} />
+                  <span>Refresh Test</span>
+                </button>
+              </div>
+
+              {/* Live SMTP Diagnostics Card */}
+              <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-slate-600" />
+                    <span className="font-bold text-xs text-slate-800">Production SMTP Configuration</span>
+                  </div>
+                  {emailDiagnostics?.configured ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Credentials Set
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" /> EMAIL_PASSWORD Missing
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">SMTP Host</span>
+                    <span className="font-semibold text-slate-800">
+                      {emailDiagnostics?.config?.host || 'smtpout.secureserver.net'}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Ports (Primary / Fallback)</span>
+                    <span className="font-semibold text-slate-800">
+                      Port {emailDiagnostics?.config?.primaryPort || 465} (SSL) ⇄ Port {emailDiagnostics?.config?.fallbackPort || 587} (TLS)
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Sender Email (EMAIL_USER)</span>
+                    <span className="font-semibold text-slate-800">
+                      {emailDiagnostics?.config?.user || 'info@learnify-solutions.com'}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-semibold">Admin Recipient (ADMIN_EMAIL)</span>
+                    <span className="font-semibold text-slate-800">
+                      {emailDiagnostics?.config?.adminEmail || 'info@learnify-solutions.com'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Port Verification Results */}
+                {emailDiagnostics?.verification && (
+                  <div className="mt-2 pt-2.5 border-t border-slate-100 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600">Port {emailDiagnostics.config.primaryPort} Handshake:</span>
+                      <span className={`font-semibold flex items-center gap-1 ${emailDiagnostics.verification.primary.success ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {emailDiagnostics.verification.primary.success ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                        {emailDiagnostics.verification.primary.message}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600">Port {emailDiagnostics.config.fallbackPort} Fallback Handshake:</span>
+                      <span className={`font-semibold flex items-center gap-1 ${emailDiagnostics.verification.fallback.success ? 'text-emerald-600' : 'text-slate-500'}`}>
+                        {emailDiagnostics.verification.fallback.success ? <CheckCircle2 className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                        {emailDiagnostics.verification.fallback.message}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Live Test Email Dispatcher */}
+              <div className="p-4 rounded-xl border border-orange-200 bg-orange-50/40 shadow-xs space-y-3">
+                <div className="flex items-center gap-2 text-slate-800 font-bold text-xs">
+                  <Send className="w-4 h-4 text-[#ea6d24]" />
+                  <span>Send Real-Time Test Email</span>
+                </div>
+                <p className="text-xs text-slate-600">
+                  Send a live diagnostic email to verify that your production server can connect and dispatch emails through your SMTP server right now.
+                </p>
+
+                <form onSubmit={handleSendTestEmail} className="flex gap-2">
+                  <input
+                    type="email"
+                    required
+                    placeholder="Enter your email (e.g. shivankpandey91@gmail.com)"
+                    value={testEmailAddress}
+                    onChange={(e) => setTestEmailAddress(e.target.value)}
+                    className="flex-1 px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#ea6d24]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSendingTestEmail || !testEmailAddress}
+                    className="px-4 py-2 bg-[#ea6d24] text-white text-xs font-bold rounded-lg hover:bg-[#d85810] disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    {isSendingTestEmail ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Dispatching...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Send Test Email</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {testEmailResult && (
+                  <div
+                    className={`p-3 rounded-lg text-xs font-semibold flex items-start gap-2 ${
+                      testEmailResult.success
+                        ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                        : 'bg-red-50 border border-red-200 text-red-800'
+                    }`}
+                  >
+                    {testEmailResult.success ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                    )}
+                    <div className="space-y-1">
+                      <p>{testEmailResult.message}</p>
+                      {testEmailResult.messageId && (
+                        <p className="text-[10px] text-emerald-600 font-mono">
+                          Message ID: {testEmailResult.messageId} (Delivered via Port {testEmailResult.portUsed})
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Hosting Environment Variables Guide */}
+              <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2.5 text-xs text-slate-700">
+                <h5 className="font-bold text-slate-800 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-slate-600" />
+                  Production Hosting Environment Variables
+                </h5>
+                <p className="text-slate-600 text-[11px] leading-relaxed">
+                  If deployed on platforms like Render, Vercel, AWS, or Railway, ensure you have added these environment variables in your hosting dashboard:
+                </p>
+                <div className="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-[11px] space-y-1 overflow-x-auto">
+                  <p><span className="text-orange-400">EMAIL_USER</span>=info@learnify-solutions.com</p>
+                  <p><span className="text-orange-400">EMAIL_PASSWORD</span>=your_actual_email_password</p>
+                  <p><span className="text-orange-400">ADMIN_EMAIL</span>=info@learnify-solutions.com</p>
+                  <p><span className="text-orange-400">SMTP_HOST</span>=smtpout.secureserver.net (or smtp.office365.com / smtp.gmail.com)</p>
+                  <p><span className="text-orange-400">SMTP_PORT</span>=465 (or 587)</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
