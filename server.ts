@@ -82,38 +82,50 @@ async function sendViaResend(mailOptions: { from?: string; to: string | string[]
   const apiKey = (process.env.RESEND_API_KEY || '').trim();
   if (!apiKey) return null;
 
-  try {
-    const sender = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'info@learnify-solutions.com';
-    const formattedFrom = sender.includes('<') ? sender : `"Learnify Solutions" <${sender}>`;
-    
-    console.log(`[Email] Sending via Resend HTTPS API (Port 443) to ${mailOptions.to}...`);
-    const response = await fetch('https://api.resend.com/emails', {
+  const trySend = async (fromAddress: string) => {
+    return await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: formattedFrom,
+        from: fromAddress,
         to: Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to],
         reply_to: mailOptions.replyTo ? String(mailOptions.replyTo) : undefined,
         subject: mailOptions.subject,
         html: mailOptions.html,
       }),
     });
+  };
 
-    const data: any = await response.json();
+  try {
+    const configuredSender = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'info@learnify-solutions.com';
+    const primaryFrom = configuredSender.includes('<') ? configuredSender : `"Learnify Solutions" <${configuredSender}>`;
+    
+    console.log(`[Email] Attempting Resend HTTPS API with sender: ${primaryFrom} to ${mailOptions.to}...`);
+    let response = await trySend(primaryFrom);
+    let data: any = await response.json();
+
+    // If custom domain is not verified yet in Resend, auto-fallback to Resend's default test sender onboarding@resend.dev
+    if (!response.ok && (data?.message?.includes('domain') || data?.message?.includes('verify') || data?.message?.includes('not verified') || response.status === 403)) {
+      console.warn(`[Resend Notice] Custom domain not verified yet (${data?.message}). Retrying with onboarding@resend.dev...`);
+      const fallbackFrom = `"Learnify Solutions" <onboarding@resend.dev>`;
+      response = await trySend(fallbackFrom);
+      data = await response.json();
+    }
+
     if (response.ok && data?.id) {
       console.log(`[Email Success (Resend)] Delivered via Resend HTTPS API (ID: ${data.id})`);
       return { success: true, messageId: data.id, method: 'Resend HTTPS API (Port 443)' };
     } else {
-      const errMsg = data?.message || data?.error || response.statusText;
+      const errMsg = data?.message || data?.error || response.statusText || 'Resend delivery failed';
       console.warn(`[Email Notice] Resend API rejected: ${errMsg}`);
-      return { success: false, error: `Resend API Error: ${errMsg}`, method: 'Resend HTTPS API' };
+      return { success: false, error: `Resend: ${errMsg}`, method: 'Resend HTTPS API' };
     }
   } catch (err: any) {
     console.warn(`[Email Notice] Resend API exception: ${err.message}`);
-    return { success: false, error: `Resend API Exception: ${err.message}`, method: 'Resend HTTPS API' };
+    return { success: false, error: `Resend exception: ${err.message}`, method: 'Resend HTTPS API' };
   }
 }
 
@@ -194,7 +206,7 @@ async function sendEmailWithFallback(mailOptions: nodemailer.SendMailOptions): P
       subject: String(mailOptions.subject || ''),
       html: String(mailOptions.html || ''),
     });
-    if (resendResult && resendResult.success) {
+    if (resendResult) {
       return resendResult;
     }
   }
@@ -208,7 +220,7 @@ async function sendEmailWithFallback(mailOptions: nodemailer.SendMailOptions): P
       subject: String(mailOptions.subject || ''),
       html: String(mailOptions.html || ''),
     });
-    if (brevoResult && brevoResult.success) {
+    if (brevoResult) {
       return brevoResult;
     }
   }
