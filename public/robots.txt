@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin
+
+# Host
+Host: https://learnify-solutions.com
+
+# Sitemaps
+Sitemap: https://learnify-solutions.com/sitemap.xml
