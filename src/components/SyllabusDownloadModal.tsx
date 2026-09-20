@@ -17,6 +17,7 @@ import {
 import { Course } from '../types';
 import { submitLead } from '../services/cmsService';
 import { downloadCourseSyllabus } from '../utils/syllabusPdf';
+import { trackLeadSubmission } from '../utils/analytics';
 
 interface SyllabusDownloadModalProps {
   isOpen: boolean;
@@ -80,6 +81,7 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
       // 2. Trigger the PDF download
       await downloadCourseSyllabus(course);
 
+      trackLeadSubmission('syllabus_download', course.title);
       setIsDownloaded(true);
       if (onSuccess) onSuccess();
     } catch (err: any) {

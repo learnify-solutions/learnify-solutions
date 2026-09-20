@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, CheckCircle, Send, Building2, User, Mail, Phone, MessageSquare } from 'lucide-react';
 import { submitLead } from '../services/cmsService';
 import { LeadSubmission } from '../types';
+import { trackLeadSubmission } from '../utils/analytics';
 
 interface AdvisorModalProps {
   isOpen: boolean;
@@ -49,6 +50,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
       });
 
       setIsSuccess(true);
+      trackLeadSubmission(inquiryType, selectedDomain);
       if (onLeadSubmitted) onLeadSubmitted();
     } catch (err: any) {
       setErrorMessage(err.message || 'An error occurred. Please try again.');

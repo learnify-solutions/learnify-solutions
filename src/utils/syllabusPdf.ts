@@ -1,5 +1,6 @@
 import { Course } from '../types';
 import { sampleCourses } from '../data/defaultCmsData';
+import { trackSyllabusDownload } from './analytics';
 
 /**
  * Normalizes and sanitizes text for standard jsPDF Type 1 (Helvetica) fonts.
@@ -619,6 +620,9 @@ export async function generateSyllabusPdf(courseInput: Course): Promise<void> {
  */
 export async function downloadCourseSyllabus(courseInput: Course): Promise<void> {
   const course = resolveFullCourseData(courseInput);
+
+  // Send GA4 event
+  trackSyllabusDownload(course.title, course.domain || course.certificationVendor);
 
   if (course.syllabusUrl) {
     if (course.syllabusUrl.startsWith('data:') || course.syllabusUrl.startsWith('blob:')) {
