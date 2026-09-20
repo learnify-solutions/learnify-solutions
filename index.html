@@ -11,8 +11,13 @@
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo300.png" />
+    <!-- Favicons & App Touch Icons (Crisp Retina & High-DPI) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="faAEE1yYgvEeG8h7VG_WaZ7uyDoG76ASZaroDnMpFns" />
@@ -70,7 +75,13 @@
             "@id": "https://learnify-solutions.com/#organization",
             "name": "Learnify Solutions",
             "url": "https://learnify-solutions.com",
-            "logo": "https://learnify-solutions.com/logo300.png",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://learnify-solutions.com/icon-512.png",
+              "width": 512,
+              "height": 512
+            },
+            "image": "https://learnify-solutions.com/icon-512.png",
             "description": "Premier global enterprise IT workforce upskilling and certification partner offering live virtual instructor-led training, dedicated corporate bootcamps, and official curriculum across USA, UK, UAE, Africa, and India.",
             "telephone": "+91-881-025-5422",
             "email": "info@learnify-solutions.com",
