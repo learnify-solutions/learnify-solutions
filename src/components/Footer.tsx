@@ -167,10 +167,10 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Legal, Copyright & Back to Top */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-300">
           <div className="text-center sm:text-left space-y-1">
-            <p className="font-medium text-slate-300">{copyright}</p>
-            <p className="text-[11px] text-slate-400">All brand logos and certification trademarks belong to their respective owners (AWS, Microsoft, Cisco, CompTIA, Axelos).</p>
+            <p className="font-medium text-slate-200">{copyright}</p>
+            <p className="text-[11px] text-slate-300/90">All brand logos and certification trademarks belong to their respective owners (AWS, Microsoft, Cisco, CompTIA, Axelos).</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -192,6 +192,7 @@ export const Footer: React.FC<FooterProps> = ({
               onClick={scrollToTop}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#1a4163] hover:bg-[#255883] text-slate-200 transition-colors cursor-pointer min-h-[36px]"
               title="Back to Top"
+              aria-label="Back to Top"
             >
               <ArrowUp className="w-3.5 h-3.5 text-orange-400" />
               <span>Top</span>

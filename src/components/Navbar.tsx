@@ -31,7 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="w-full bg-white border-b border-slate-200" aria-label="Main Navigation Bar">
+    <header className="w-full bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-4">
           {/* Brand Logo */}
@@ -39,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a
               href="#home"
               id="brand-logo-btn"
+              aria-label="Learnify Solutions - Global Enterprise IT Training Homepage"
               className="flex items-center group cursor-pointer text-left py-1"
               onClick={(e) => {
                 e.preventDefault();
@@ -73,13 +74,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               );
             })}
 
-            {/* Inline Search Bar (Matches Screenshot) */}
+            {/* Inline Search Bar */}
             <div
               onClick={onSearchClick}
               className="relative flex items-center cursor-pointer group"
             >
               <input
                 type="text"
+                id="navbar-search-input"
+                aria-label="Search courses and IT certifications"
                 readOnly
                 placeholder="What do you want to learn"
                 className="w-44 xl:w-52 pl-3 pr-8 py-1.5 text-xs rounded-md border border-slate-300 bg-slate-50/70 text-slate-700 placeholder-slate-400 group-hover:border-[#ea6d24] group-hover:bg-white transition-all cursor-pointer select-none"
@@ -133,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
-          <div className="flex flex-col space-y-2">
+          <nav aria-label="Mobile Navigation" className="flex flex-col space-y-2">
             {links.map((link) => {
               const isActive = activeNavId === link.id || (link.id === 'nav-about' && activeNavId === 'about');
               return (
@@ -153,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               );
             })}
-          </div>
+          </nav>
 
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
             {isAdminAuthenticated && (
@@ -180,6 +183,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 };

@@ -64,8 +64,8 @@ export const CoursesModal: React.FC<CoursesModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
-            aria-label="Close modal"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Close courses catalog modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -77,6 +77,8 @@ export const CoursesModal: React.FC<CoursesModalProps> = ({
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
             <input
               type="text"
+              id="courses-modal-search"
+              aria-label="Search by course title, certification or domain"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by course title, certification (e.g. AWS, CISSP, Docker)..."

@@ -48,7 +48,7 @@ export const PathwaySection: React.FC<PathwaySectionProps> = ({
                   </div>
 
                   {/* Step Marker Label */}
-                  <span className="text-[11px] font-extrabold tracking-wider uppercase text-[#ea6d24]">
+                  <span className="text-[11px] font-extrabold tracking-wider uppercase text-[#c24e0d]">
                     STEP {step.stepNumber}
                   </span>
 

@@ -124,12 +124,13 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label htmlFor="advisor-full-name" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Full Name *
                 </label>
                 <div className="relative">
                   <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
+                    id="advisor-full-name"
                     type="text"
                     required
                     value={fullName}
@@ -141,12 +142,13 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label htmlFor="advisor-email" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Work Email *
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
+                    id="advisor-email"
                     type="email"
                     required
                     value={email}
@@ -159,12 +161,13 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  <label htmlFor="advisor-company" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                     Company / Organization
                   </label>
                   <div className="relative">
                     <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
+                      id="advisor-company"
                       type="text"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
@@ -175,12 +178,13 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  <label htmlFor="advisor-phone" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                     Phone Number
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
+                      id="advisor-phone"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -192,10 +196,11 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label htmlFor="advisor-domain" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Primary Technology Domain
                 </label>
                 <select
+                  id="advisor-domain"
                   value={selectedDomain}
                   onChange={(e) => setSelectedDomain(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-md border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#ea6d24] focus:border-transparent"

@@ -2,71 +2,622 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  <!-- Homepage -->
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
   <url>
     <loc>https://learnify-solutions.com/</loc>
-    <lastmod>2026-08-28</lastmod>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- Courses Catalog -->
   <url>
-    <loc>https://learnify-solutions.com/#courses</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/courses</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.98</priority>
   </url>
-
-  <!-- Corporate Training & Enterprise Solutions -->
   <url>
-    <loc>https://learnify-solutions.com/#corporate</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/corporate-training</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
   </url>
-
-  <!-- About Us -->
   <url>
-    <loc>https://learnify-solutions.com/#about</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/cisco-training</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/about</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
-
-  <!-- Contact Us -->
   <url>
-    <loc>https://learnify-solutions.com/#contact</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/contact</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/privacy</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
   </url>
 
-  <!-- Top Certification Domain URLs -->
+  <!-- Individual Course Pages for All Vendors (Cisco, CompTIA, Microsoft, AWS, Kubernetes) -->
   <url>
-    <loc>https://learnify-solutions.com/#cloud-computing-training</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/course/course-cisco-ccna</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Administering Cisco Solutions (CCNA 200-301) (200-301 CCNA) Certification Training</image:title>
+      <image:caption>The industry benchmark for networking careers. Master IP routing, VLAN switching, wireless, security ACLs, and software-defined network automation.</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://learnify-solutions.com/#cybersecurity-certifications</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/course/course-cisco-cyberops</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/comptia_security_soc_1787771516564.webp</image:loc>
+      <image:title>Understanding Cisco Cybersecurity Operations Fundamentals (CBROPS 200-201) (200-201 CBROPS) Certification Training</image:title>
+      <image:caption>Launch your cybersecurity analyst career with Cisco CyberOps Associate. Master SOC operations, security monitoring, host and network analysis, incident handling, and forensics.</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://learnify-solutions.com/#ai-machine-learning-training</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/course/course-cisco-devasc</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Automating Networks Using Cisco Platforms (DevNet Associate DEVASC 200-901) (200-901 DEVASC) Certification Training</image:title>
+      <image:caption>Master network automation, Python scripting, REST APIs, Cisco DNA Center, Meraki, Webex, and modern DevOps CI/CD pipelines on Cisco platforms.</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://learnify-solutions.com/#devops-kubernetes-training</loc>
-    <lastmod>2026-08-28</lastmod>
+    <loc>https://learnify-solutions.com/course/course-cisco-ccnp-encor</loc>
+    <lastmod>2026-09-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Enterprise Network Core Technologies (ENCOR 350-401) (350-401 ENCOR) Certification Training</image:title>
+      <image:caption>The flagship core exam for CCNP Enterprise and CCIE Enterprise. Master dual-stack architecture, virtualization (VRF, LISP, VXLAN), advanced routing (OSPF, BGP), SD-Access, SD-WAN, and Python automation.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-ccnp-enarsi</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Enterprise Advanced Routing &amp; Services (ENARSI 300-410) (300-410 ENARSI) Certification Training</image:title>
+      <image:caption>Gain deep expertise in configuring, securing, and troubleshooting advanced enterprise routing protocols (BGP, EIGRP, OSPF), MPLS Layer 3 VPNs, DMVPN, and network telemetry.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-sdwan</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco SD-WAN Solutions (ENSDWI 300-415) (300-415 ENSDWI) Certification Training</image:title>
+      <image:caption>Design, deploy, and manage Cisco SD-WAN overlays with vManage, vSmart, vBond controllers, OMP routing, application-aware routing, and Direct Internet Access (DIA) policies.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-ensld</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Designing Cisco Enterprise Networks (ENSLD 300-420) (300-420 ENSLD) Certification Training</image:title>
+      <image:caption>Master enterprise network design, campus LAN architecture, WAN connectivity, SD-Access fabrics, QoS design, and IPv6 migration strategies.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-enauto</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Automating Cisco Enterprise Solutions (ENAUTO 300-435) (300-435 ENAUTO) Certification Training</image:title>
+      <image:caption>Master enterprise network automation using Python, RESTCONF, NETCONF, Cisco DNA Center APIs, Cisco SD-WAN vManage APIs, and Meraki Dashboard APIs.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-scor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Security Core Technologies (SCOR 350-701) (350-701 SCOR) Certification Training</image:title>
+      <image:caption>The core exam for CCNP Security and CCIE Security. Master cybersecurity infrastructure, Cisco Firepower NGFW, Cisco ISE, Umbrella, Stealthwatch, and Cloud Security.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-sncf</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Securing Networks with Cisco Firepower Next-Generation IPS (SNCF 300-710) (300-710 SNCF) Certification Training</image:title>
+      <image:caption>Master Cisco Firepower Threat Defense (FTD) and Firepower Management Center (FMC). Configure access control policies, SSL/TLS decryption, Snort IPS rules, and VPNs.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-sise</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Implementing and Configuring Cisco Identity Services Engine (SISE 300-715) (300-715 SISE) Certification Training</image:title>
+      <image:caption>Comprehensive deep dive into Cisco ISE deployment, 802.1X wired and wireless authentication, MAB, guest portal management, BYOD onboarding, and posture compliance.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-svpn</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Implementing Secure Solutions with Virtual Private Networks (SVPN 300-730) (300-730 SVPN) Certification Training</image:title>
+      <image:caption>Master site-to-site and remote access VPNs, IPsec IKEv2, DMVPN, FlexVPN, Cisco AnyConnect SSL VPNs, and high-availability cryptographic architectures.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-sauto</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Automating and Programming Cisco Security Solutions (SAUTO 300-735) (300-735 SAUTO) Certification Training</image:title>
+      <image:caption>Automate security operations with Python, REST APIs for Cisco Firepower FMC, Cisco ISE REST APIs, Cisco Umbrella, and Cisco Threat Response (XDR).</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-spcor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Service Provider Network Core Technologies (SPCOR 350-501) (350-501 SPCOR) Certification Training</image:title>
+      <image:caption>Core exam for CCNP Service Provider. Master Cisco IOS XR, Segment Routing (SR-MPLS, SRv6), IS-IS, BGP, MPLS L3VPN, Carrier Ethernet, and QoS in carrier networks.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-spri</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Service Provider Advanced Routing Solutions (SPRI 300-510) (300-510 SPRI) Certification Training</image:title>
+      <image:caption>Master advanced BGP scalability, Segment Routing Path Computation Element (SR-PCE), multi-area IS-IS, and multicast routing in carrier backbones.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-spvi</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Service Provider VPN Services (SPVI 300-515) (300-515 SPVI) Certification Training</image:title>
+      <image:caption>Master Carrier Ethernet, EVPN, MPLS Layer 3 VPN Inter-AS (Option A/B/C), and Cisco IOS XR VPN deployments for enterprise business clients.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-wireless-core</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Enterprise Wireless Core (ENCOR 350-401 Wireless) (350-401 ENCOR) Certification Training</image:title>
+      <image:caption>Master enterprise wireless infrastructure, Cisco Catalyst 9800 WLCs, Wi-Fi 6/6E RF design, roaming architectures, and Cisco DNA Spaces.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-enwlsd</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Designing Cisco Enterprise Wireless Networks (ENWLSD 300-425) (300-425 ENWLSD) Certification Training</image:title>
+      <image:caption>Conduct wireless site surveys, predictive RF modeling (Ekahau), high-density Wi-Fi design, voice/video QoS over wireless, and real-time location services (RTLS).</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-enwlsi</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Enterprise Wireless Networks (ENWLSI 300-430) (300-430 ENWLSI) Certification Training</image:title>
+      <image:caption>Implement and troubleshoot FlexConnect, Cisco CMX / DNA Spaces, TrustSec over wireless, multicast video streams, and client roaming issues.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-devcor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Developing Applications and Automating Workflows using Cisco Core Platforms (DevNet DEVCOR 350-901) (350-901 DEVCOR) Certification Training</image:title>
+      <image:caption>Core exam for DevNet Professional. Master software design, Python network automation, REST APIs, Cisco DNA Center, Meraki, ACI, and container deployment.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-dev-dcauto</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Automating and Programming Cisco Data Center Solutions (DCAUTO 300-635) (300-635 DCAUTO) Certification Training</image:title>
+      <image:caption>Automate data center infrastructure using Cisco NX-OS APIs, Cisco ACI Cobra SDK, Intersight REST APIs, Ansible, and Terraform.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-dev-iot</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Developing Solutions Using Cisco IoT and Edge Platforms (DEVIOT 300-915) (300-915 DEVIOT) Certification Training</image:title>
+      <image:caption>Build edge computing applications on Cisco IOx, manage Industrial IoT routers (IR1101), Cisco Cyber Vision APIs, and edge data processing.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-clcor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Collaboration Core Technologies (CLCOR 350-801) (350-801 CLCOR) Certification Training</image:title>
+      <image:caption>Master enterprise voice and video communications with Cisco Unified Communications Manager (CUCM), Cisco Expressway, SIP protocols, Webex, and QoS.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-clica</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Collaboration Applications (CLICA 300-810) (300-810 CLICA) Certification Training</image:title>
+      <image:caption>Master Single Sign-On (SSO), Cisco Unity Connection voicemail clustering, Cisco Unified IM and Presence (IM&amp;P), and Cisco Jabber client configurations.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-claccm</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Advanced Call Control and Mobility Services (CLACCM 300-815) (300-815 CLACCM) Certification Training</image:title>
+      <image:caption>Master Cisco Unified Border Element (CUBE), SIP normalization scripts, Session Recording, Globalization/Localization dial plans, and SRST survivability.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-cbrcor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Performing CyberOps Using Cisco Security Technologies (CBRCOR 350-201) (350-201 CBRCOR) Certification Training</image:title>
+      <image:caption>Core exam for Cisco Certified CyberOps Professional. Master advanced threat detection, cloud SOC telemetry, incident response, SIEM/SOAR playbooks, and threat hunting.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-cbrfir</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cyber_soc_shield_1788294406797.webp</image:loc>
+      <image:title>Conducting Forensics and Incident Analysis Using Cisco CyberOps Technologies (CBRFIR 300-215) (300-215 CBRFIR) Certification Training</image:title>
+      <image:caption>Master digital forensics, chain of custody, reverse engineering malware samples, investigating compromised endpoints, and post-incident reporting.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-dccor</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing and Operating Cisco Data Center Core Technologies (DCCOR 350-601) (350-601 DCCOR) Certification Training</image:title>
+      <image:caption>Core exam for CCNP Data Center. Master Cisco Nexus 9000 switches, Cisco ACI fabric, Storage Area Networks (MDS Fibre Channel), UCS computing, and Intersight.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-dcid</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Designing Cisco Data Center Infrastructure (DCID 300-610) (300-610 DCID) Certification Training</image:title>
+      <image:caption>Design modern data center routing and switching fabrics (VXLAN EVPN), Cisco ACI Multi-Pod/Multi-Site, SAN storage networks, and compute virtualization.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-cisco-dcacio</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>Implementing Cisco Application Centric Infrastructure (DCACIO 300-620) (300-620 DCACIO) Certification Training</image:title>
+      <image:caption>Comprehensive hands-on implementation of Cisco ACI. Configure APIC controllers, Spine-Leaf fabrics, Tenants, VRFs, Bridge Domains, EPGs, Contracts, and L4-L7 service graphs.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-a-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/pc_hardware_workbench_1788294359055.webp</image:loc>
+      <image:title>CompTIA A+ (Core 1: 220-1101 &amp; Core 2: 220-1102)  Certification Training</image:title>
+      <image:caption>The industry baseline credential for IT careers, validating foundational hardware, mobile devices, networking, operating systems, security, and operational troubleshooting.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-network-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cisco_network_map_1787771488810.webp</image:loc>
+      <image:title>CompTIA Network+ (N10-008 / N10-009)  Certification Training</image:title>
+      <image:caption>Master vendor-neutral networking concepts including network architecture, IP subnets, routing protocols, wireless standards, network operations, and security.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-security-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/comptia_security_soc_1787771516564.webp</image:loc>
+      <image:title>CompTIA Security+ (SY0-701)  Certification Training</image:title>
+      <image:caption>The world’s leading baseline cybersecurity certification, establishing core knowledge in threat vectors, zero trust architecture, risk management, and incident response.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-cloud-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/comptia_cloud_multicloud_1788294616227.webp</image:loc>
+      <image:title>CompTIA Cloud+ (CV0-004)  Certification Training</image:title>
+      <image:caption>Deploy, secure, automate, and optimize enterprise cloud infrastructure across AWS, Azure, and Google Cloud environments.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-cloud-essentials</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/cloud_essentials_business_1788294640468.webp</image:loc>
+      <image:title>CompTIA Cloud Essentials+ (CLO-002)  Certification Training</image:title>
+      <image:caption>Empower technical and business leaders to make informed cloud computing decisions, evaluate cloud financial ROI, manage vendor SLAs, and ensure compliance.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-server-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/linux_datacenter_admin_1788294344630.webp</image:loc>
+      <image:title>CompTIA Server+ (SK0-005)  Certification Training</image:title>
+      <image:caption>Master enterprise server administration, hardware installation, virtualization, RAID storage architecture, disaster recovery, and data center operations.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-pentest-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/ethical_hacking_pentest_1788294329039.webp</image:loc>
+      <image:title>CompTIA PenTest+ (PT0-002)  Certification Training</image:title>
+      <image:caption>Conduct end-to-end vulnerability assessments and penetration tests across network, web, cloud, and active directory environments with hands-on ethical hacking tools.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-linux-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/linux_datacenter_admin_1788294344630.webp</image:loc>
+      <image:title>CompTIA Linux+ (XK0-005)  Certification Training</image:title>
+      <image:caption>Master enterprise Linux systems administration, kernel tuning, storage management, security hardening, automated Bash scripting, and container deployment.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-comptia-itf-plus</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/pc_hardware_workbench_1788294359055.webp</image:loc>
+      <image:title>CompTIA ITF+ (IT Fundamentals FC0-U61)  Certification Training</image:title>
+      <image:caption>The ideal introduction to technology, covering core computing devices, infrastructure, software development basics, database concepts, and fundamental cybersecurity.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-azure-104</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/azure_cloud_infra_1787771504293.webp</image:loc>
+      <image:title>Microsoft Azure Administrator (AZ-104)  Certification Training</image:title>
+      <image:caption>Implement, manage, and monitor identity, governance, storage, compute, and virtual networks in an enterprise Microsoft Azure cloud environment.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-ai-102</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/copilot_genai_workspace_1788294313357.webp</image:loc>
+      <image:title>Designing and Implementing a Microsoft Azure AI Solution (AI-102)  Certification Training</image:title>
+      <image:caption>Build production-ready generative AI, computer vision, natural language processing, knowledge mining, and conversational AI bots using Azure OpenAI &amp; AI Search.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-dp-100</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/powerbi_data_analytics_1788294280157.webp</image:loc>
+      <image:title>Designing and Implementing a Data Science Solution on Azure (DP-100)  Certification Training</image:title>
+      <image:caption>Train, evaluate, deploy, and monitor scalable machine learning models using Azure Machine Learning Studio, MLflow, Automated ML, and Kubernetes endpoints.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-sc-900</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/comptia_security_soc_1787771516564.webp</image:loc>
+      <image:title>Microsoft Security, Compliance, and Identity Fundamentals (SC-900)  Certification Training</image:title>
+      <image:caption>Understand Microsoft security solutions, Zero Trust principles, Entra ID identity governance, Microsoft Defender XDR, and Microsoft Purview compliance.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-900</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/copilot_genai_workspace_1788294313357.webp</image:loc>
+      <image:title>Microsoft 365 Fundamentals (MS-900)  Certification Training</image:title>
+      <image:caption>Master Microsoft 365 cloud productivity solutions, collaboration apps (Teams, SharePoint, Exchange), endpoint management (Intune), and licensing models.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-pl-300</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/powerbi_data_analytics_1788294280157.webp</image:loc>
+      <image:title>Microsoft Power BI Data Analyst (PL-300)  Certification Training</image:title>
+      <image:caption>Transform raw data into actionable enterprise insights by mastering Power Query data ingestion, DAX calculations, interactive report design, and workspace governance.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-pl-900</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/powerbi_data_analytics_1788294280157.webp</image:loc>
+      <image:title>Microsoft Power Platform Fundamentals (PL-900)  Certification Training</image:title>
+      <image:caption>Build low-code custom business apps with Power Apps, automate workflows with Power Automate, create portals with Power Pages, and deploy bots with Microsoft Copilot Studio.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-ai-900</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/copilot_genai_workspace_1788294313357.webp</image:loc>
+      <image:title>Microsoft Azure AI Fundamentals (AI-900)  Certification Training</image:title>
+      <image:caption>Get started with artificial intelligence concepts, machine learning principles, computer vision, natural language processing, and generative AI workloads on Microsoft Azure.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-dp-900</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/powerbi_data_analytics_1788294280157.webp</image:loc>
+      <image:title>Microsoft Azure Data Fundamentals (DP-900)  Certification Training</image:title>
+      <image:caption>Master foundational data concepts, relational database offerings (Azure SQL Database), non-relational storage (Azure Cosmos DB), and modern analytics architectures (Azure Synapse).</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-ms-4018-copilot</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/copilot_genai_workspace_1788294313357.webp</image:loc>
+      <image:title>Draft, Analyze and Present with Microsoft 365 Copilot (MS-4018)  Certification Training</image:title>
+      <image:caption>Accelerate enterprise workplace productivity by mastering Microsoft 365 Copilot prompt engineering across Word, Excel, PowerPoint, Outlook, and Microsoft Teams.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-aws-solutions</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/aws_architecture_diagram_1787771528914.webp</image:loc>
+      <image:title>AWS Certified Solutions Architect (SAA-C03)  Certification Training</image:title>
+      <image:caption>Design resilient, high-performing, secure, and cost-optimized architectures on Amazon Web Services for large scale corporate deployments.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-aws-security</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/aws_architecture_diagram_1787771528914.webp</image:loc>
+      <image:title>AWS Certified Security - Specialty (SCS-C02)  Certification Training</image:title>
+      <image:caption>Validate your expertise in creating and implementing advanced security solutions in the AWS Cloud with GuardDuty, Security Hub, KMS, and IAM governance.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://learnify-solutions.com/course/course-kubernetes-cka</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://learnify-solutions.com/images/kubernetes_devops_cluster_1788294296039.webp</image:loc>
+      <image:title>Kubernetes &amp; Cloud-Native Platform Engineering (CKA &amp; CKS Prep)  Certification Training</image:title>
+      <image:caption>Deploy, configure, secure, and troubleshoot production Kubernetes clusters from scratch. Master pods, services, ingress, storage, RBAC, and Helm deployments.</image:caption>
+    </image:image>
   </url>
 </urlset>

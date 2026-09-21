@@ -27,8 +27,17 @@ export const LearningOptionsSection: React.FC<LearningOptionsSectionProps> = ({
           {cards.map((card) => (
             <div
               key={card.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Select ${card.title} learning format`}
               onClick={() => onSelectOption && onSelectOption(card)}
-              className="bg-white rounded-xl p-7 sm:p-8 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col text-center space-y-4 cursor-pointer hover:border-orange-300"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (onSelectOption) onSelectOption(card);
+                }
+              }}
+              className="bg-white rounded-xl p-7 sm:p-8 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col text-center space-y-4 cursor-pointer hover:border-orange-300 focus:outline-none focus:ring-2 focus:ring-[#ea6d24] focus:ring-offset-2"
             >
               <h3 className="text-lg sm:text-xl font-bold text-[#1b5a88] leading-snug">
                 {card.title}

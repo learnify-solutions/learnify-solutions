@@ -40,7 +40,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ stats }) => {
                 <div className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight">
                   {stat.value}
                 </div>
-                <div className="text-[11px] font-semibold text-sky-100/80 tracking-wider uppercase">
+                <div className="text-[11px] font-semibold text-sky-100 tracking-wider uppercase">
                   {stat.label}
                 </div>
               </div>

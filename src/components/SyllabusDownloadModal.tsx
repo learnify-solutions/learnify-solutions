@@ -172,12 +172,13 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                  <label htmlFor="syllabus-full-name" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Full Name *
                   </label>
                   <div className="relative">
                     <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <input
+                      id="syllabus-full-name"
                       type="text"
                       required
                       placeholder="e.g. Rahul Sharma"
@@ -190,12 +191,13 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
 
                 {/* Email Address */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                  <label htmlFor="syllabus-email" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Email Address *
                   </label>
                   <div className="relative">
                     <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <input
+                      id="syllabus-email"
                       type="email"
                       required
                       placeholder="name@company.com"
@@ -210,12 +212,13 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 {/* Phone Number */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                  <label htmlFor="syllabus-phone" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Phone / WhatsApp *
                   </label>
                   <div className="relative">
                     <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <input
+                      id="syllabus-phone"
                       type="tel"
                       required
                       placeholder="+91 98765 43210"
@@ -228,12 +231,13 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
 
                 {/* Company / College */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                  <label htmlFor="syllabus-company" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Organization / Company
                   </label>
                   <div className="relative">
                     <Building className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <input
+                      id="syllabus-company"
                       type="text"
                       placeholder="e.g. Infosys, TCS, or Self"
                       value={formData.company}
@@ -247,12 +251,13 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 {/* Role / Experience */}
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                  <label htmlFor="syllabus-role" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Current Job Role / Profile
                   </label>
                   <div className="relative">
                     <Briefcase className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <select
+                      id="syllabus-role"
                       value={formData.jobRole}
                       onChange={(e) => setFormData({ ...formData, jobRole: e.target.value })}
                       className="w-full pl-8 pr-2.5 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-orange-200 bg-white cursor-pointer h-9"

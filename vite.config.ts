@@ -19,10 +19,24 @@ export default defineConfig(() => {
       chunkSizeWarningLimit: 600,
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-icons': ['lucide-react'],
-            'vendor-supabase': ['@supabase/supabase-js'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('scheduler')) {
+                return 'vendor-react';
+              }
+              if (id.includes('@supabase')) {
+                return 'vendor-supabase';
+              }
+            }
+            if (id.includes('coursesData') || id.includes('ciscoCoursesData')) {
+              return 'courses-catalog';
+            }
+            if (id.includes('defaultCmsData')) {
+              return 'cms-defaults';
+            }
           },
         },
       },

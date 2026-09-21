@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Course } from '../types';
-import { sampleCourses } from '../data/defaultCmsData';
+import { sampleCourses } from '../data/coursesData';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
 import { 
   Check, 

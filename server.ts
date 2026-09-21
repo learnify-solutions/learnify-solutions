@@ -9,7 +9,8 @@ import crypto from 'crypto';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { createServer as createViteServer } from 'vite';
-import { initialCmsData, sampleCourses } from './src/data/defaultCmsData';
+import { initialCmsData } from './src/data/defaultCmsData';
+import { sampleCourses } from './src/data/coursesData';
 import { CmsData, LeadSubmission, Course } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -436,39 +437,80 @@ async function startServer() {
   
   app.use('/api/', apiLimiter);
 
-  // Dynamic SEO Sitemap Generation with all courses
+  // Dynamic SEO Sitemap Generation with all courses and Google image tags
   app.get('/sitemap.xml', (req, res) => {
     const baseUrl = 'https://learnify-solutions.com';
+    const today = new Date().toISOString().split('T')[0];
+
     const staticRoutes = [
-      { loc: '/', priority: '1.0', changefreq: 'daily' },
-      { loc: '/#courses', priority: '0.9', changefreq: 'daily' },
-      { loc: '/#corporate', priority: '0.8', changefreq: 'weekly' },
-      { loc: '/#about', priority: '0.7', changefreq: 'monthly' },
-      { loc: '/#contact', priority: '0.8', changefreq: 'monthly' },
+      { loc: '', priority: '1.0', changefreq: 'daily' },
+      { loc: '/courses', priority: '0.98', changefreq: 'daily' },
+      { loc: '/corporate-training', priority: '0.95', changefreq: 'weekly' },
+      { loc: '/cisco-training', priority: '0.95', changefreq: 'weekly' },
+      { loc: '/about', priority: '0.85', changefreq: 'monthly' },
+      { loc: '/contact', priority: '0.90', changefreq: 'monthly' },
+      { loc: '/privacy', priority: '0.50', changefreq: 'monthly' },
     ];
 
-    const courseRoutes = coursesStore.map((c) => ({
-      loc: `/#course-${c.id}`,
-      priority: '0.85',
-      changefreq: 'weekly',
-    }));
+    const flagshipIds = [
+      'course-cisco-ccna',
+      'course-comptia-security-plus',
+      'course-azure-104',
+      'course-aws-solutions',
+      'course-kubernetes-cka',
+      'course-comptia-a-plus',
+      'course-cisco-ccnp-encor',
+      'course-ceh-v12',
+      'course-comptia-network-plus',
+    ];
 
-    const allRoutes = [...staticRoutes, ...courseRoutes];
+    const courseRoutes = coursesStore.map((c) => {
+      const isFlagship = flagshipIds.includes(c.id);
+      const priority = isFlagship ? '0.95' : '0.90';
+      const cleanImg = c.imageUrl?.startsWith('http')
+        ? c.imageUrl
+        : `${baseUrl}${c.imageUrl || '/hero.webp'}`;
+      const escapedTitle = (c.title || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const escapedSummary = (c.summary || c.overview || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      return `  <url>
+    <loc>${baseUrl}/course/${c.id}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+    <image:image>
+      <image:loc>${cleanImg}</image:loc>
+      <image:title>${escapedTitle} Certification Training</image:title>
+      <image:caption>${escapedSummary}</image:caption>
+    </image:image>
+  </url>`;
+    });
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allRoutes
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+${staticRoutes
   .map(
     (r) => `  <url>
     <loc>${baseUrl}${r.loc}</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <lastmod>${today}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
     <priority>${r.priority}</priority>
   </url>`
   )
   .join('\n')}
+${courseRoutes.join('\n')}
 </urlset>`;
 
-    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(xml);
   });
@@ -477,9 +519,14 @@ ${allRoutes
   app.get('/robots.txt', (req, res) => {
     const robots = `User-agent: *
 Allow: /
+Disallow: /admin-secure-portal
+Disallow: /admin-secure-portal/
+Disallow: /api/admin/
+
+# Sitemap location
 Sitemap: https://learnify-solutions.com/sitemap.xml
 `;
-    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.send(robots);
   });
@@ -1324,6 +1371,27 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       })
     );
 
+    // Explicit sitemap and robots routes with optimal caching headers
+    app.get('/sitemap.xml', (req, res) => {
+      const sitemapPath = path.join(process.cwd(), 'public/sitemap.xml');
+      if (fs.existsSync(sitemapPath)) {
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.sendFile(sitemapPath);
+      }
+      res.status(404).end();
+    });
+
+    app.get('/robots.txt', (req, res) => {
+      const robotsPath = path.join(process.cwd(), 'public/robots.txt');
+      if (fs.existsSync(robotsPath)) {
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.sendFile(robotsPath);
+      }
+      res.status(404).end();
+    });
+
     app.get('*', (req, res) => {
       const url = req.originalUrl || req.url;
       const indexPath = path.join(distPath, 'index.html');
@@ -1331,34 +1399,190 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       try {
         let html = fs.readFileSync(indexPath, 'utf-8');
 
-        // Dynamic SSR OpenGraph / Meta Tag Injection for Courses & Pages
+        // Dynamic SSR Meta Tag & Structured Data Injection for Courses & Pages
         if (url.startsWith('/course/') || url.includes('course=')) {
           const courseIdMatch = url.match(/\/course\/([a-zA-Z0-9_-]+)/) || url.match(/course=([a-zA-Z0-9_-]+)/);
           const courseId = courseIdMatch ? courseIdMatch[1] : null;
           const course = courseId ? coursesStore.find(c => c.id === courseId) : null;
 
           if (course) {
-            const courseTitle = `${course.title} Certification Training | Learnify Solutions`;
-            const courseDesc = `${course.summary} Learn with live labs and expert mentors.`;
+            const courseTitle = `${course.title} ${course.examCode ? '(' + course.examCode + ') ' : ''}Certification Training & Bootcamp | Learnify Solutions`;
+            const courseDesc = `${course.summary || course.overview || 'Master ' + course.title + ' with official vendor curriculum, 1-on-1 mentor guidance, and 24/7 hands-on cloud labs.'} Official ${course.certificationVendor} training with guaranteed batches across USA, UK, UAE (Dubai), Africa & India. 98.4% pass rate.`;
+            const canonicalUrl = `https://learnify-solutions.com/course/${course.id}`;
+            const courseKeywords = `${course.title}, ${course.examCode || ''}, ${course.certificationVendor} training, ${course.certificationVendor} certification course, ${course.certificationVendor} authorized training partner, ${course.domain} bootcamps, online 1-on-1 ${course.certificationVendor} training, IT training Dubai, IT certifications London UK, corporate tech upskilling, Learnify Solutions`;
+            const courseImg = course.imageUrl?.startsWith('http')
+              ? course.imageUrl
+              : `https://learnify-solutions.com${course.imageUrl || '/hero.webp'}`;
+
+            // Specific Course & Breadcrumb Schema
+            const dynamicCourseSchema = `
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Course",
+          "@id": "${canonicalUrl}#course",
+          "name": ${JSON.stringify(course.title)},
+          "courseCode": ${JSON.stringify(course.examCode || course.id)},
+          "description": ${JSON.stringify(course.summary || course.overview || '')},
+          "provider": {
+            "@id": "https://learnify-solutions.com/#organization"
+          },
+          "educationalLevel": ${JSON.stringify(course.skillLevel || 'Intermediate')},
+          "educationalCredentialAwarded": ${JSON.stringify(course.title + ' Official Certification')},
+          "courseMode": ["online", "blended", "onsite"],
+          "teaches": ${JSON.stringify(course.learningObjectives || [course.title])},
+          "hasCourseInstance": {
+            "@type": "CourseInstance",
+            "courseMode": "online",
+            "courseWorkload": ${JSON.stringify('PT' + (parseInt(course.duration, 10) || 40) + 'H')}
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "${course.rating || '4.9'}",
+            "reviewCount": "${course.enrolled || '350'}",
+            "bestRating": "5"
+          },
+          "offers": {
+            "@type": "Offer",
+            "category": "Paid",
+            "priceCurrency": "USD",
+            "price": "999",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "${canonicalUrl}#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://learnify-solutions.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Courses",
+              "item": "https://learnify-solutions.com/courses"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": ${JSON.stringify(course.title)},
+              "item": "${canonicalUrl}"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+    </head>`;
+
             html = html
               .replace(/<title>.*?<\/title>/, `<title>${courseTitle}</title>`)
               .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${courseTitle}" />`)
               .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${courseDesc}" />`)
+              .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${courseKeywords}" />`)
+              .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
               .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${courseTitle}" />`)
-              .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${courseDesc}" />`);
+              .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${courseDesc}" />`)
+              .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+              .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${courseImg}" />`)
+              .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${courseTitle}" />`)
+              .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${courseDesc}" />`)
+              .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${courseImg}" />`)
+              .replace(/<\/head>/, dynamicCourseSchema);
           }
         } else if (url.startsWith('/about')) {
+          const canonicalUrl = 'https://learnify-solutions.com/about';
+          const title = 'About Us | Learnify Solutions - Global Enterprise IT Training';
+          const desc = 'Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces across USA, UK, UAE, Africa & India.';
+          const keywords = 'about Learnify Solutions, enterprise IT training organization, tech upskilling leadership, corporate training partner, global IT academy, authorized training partner';
           html = html
-            .replace(/<title>.*?<\/title>/, `<title>About Us | Learnify Solutions - Enterprise IT Training Ecosystem</title>`)
-            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces." />`);
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${keywords}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
         } else if (url.startsWith('/courses')) {
+          const canonicalUrl = 'https://learnify-solutions.com/courses';
+          const title = 'IT & Cloud Certification Courses Catalog (Microsoft, Cisco, CompTIA, AWS) | Learnify Solutions';
+          const desc = 'Browse 50+ official certification courses in Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS Cloud, CEH v12, and Kubernetes CKA. 1-on-1 & corporate batches across USA, UK, UAE & India.';
+          const keywords = 'Microsoft certification training, Azure AZ-104, Cisco CCNA 200-301 training, Cisco CCNP ENCOR, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, CEH v12, CKA Kubernetes, IT training partner, 1-on-1 tech bootcamps Dubai, London, USA';
           html = html
-            .replace(/<title>.*?<\/title>/, `<title>IT & Cloud Certification Courses Catalog | Learnify Solutions</title>`)
-            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="Browse official certification courses in AWS, Microsoft Azure, Google Cloud, Cisco, DevOps, Kubernetes, and Cybersecurity." />`);
-        } else if (url.startsWith('/corporate')) {
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${keywords}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+        } else if (url.startsWith('/corporate-training') || url.startsWith('/corporate')) {
+          const canonicalUrl = 'https://learnify-solutions.com/corporate-training';
+          const title = 'Corporate IT Training & Workforce Upskilling Solutions | Learnify Solutions';
+          const desc = 'Scalable enterprise IT learning solutions for engineering teams worldwide. Custom syllabus, private cloud sandboxes, 98.4% first-time certification rate.';
+          const keywords = 'corporate IT training, enterprise tech upskilling, Microsoft corporate training, Cisco enterprise training, CompTIA corporate cohorts, B2B IT training, workforce digital transformation';
           html = html
-            .replace(/<title>.*?<\/title>/, `<title>Corporate IT Training & Team Upskilling Solutions | Learnify Solutions</title>`)
-            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="Scalable enterprise learning solutions designed for enterprise engineering teams. Custom syllabus, private cloud sandboxes, 98% completion rate." />`);
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${keywords}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+        } else if (url.startsWith('/cisco-training') || url.startsWith('/cisco')) {
+          const canonicalUrl = 'https://learnify-solutions.com/cisco-training';
+          const title = 'Cisco Authorized Certification Training (CCNA, CCNP, DevNet, Security) | Learnify Solutions';
+          const desc = 'Authorized Cisco training partner covering CCNA 200-301, CCNP Enterprise ENCOR, Security SCOR, SD-WAN, and DevNet. Real hardware topologies & virtual labs.';
+          const keywords = 'Cisco training partner, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN course, CCNP Security SCOR 350-701, DevNet DEVASC, Cisco bootcamps Dubai, Cisco certified instructors';
+          html = html
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${keywords}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+        } else if (url.startsWith('/contact')) {
+          const canonicalUrl = 'https://learnify-solutions.com/contact';
+          const title = 'Contact Admissions & Corporate Sales | Learnify Solutions';
+          const desc = 'Connect with Learnify Solutions educational advisors for 1-on-1 batch schedules, course fees, corporate discount quotes, and custom syllabus planning.';
+          const keywords = 'contact Learnify Solutions, corporate training quote, educational advisor, IT training inquiry, batch schedule, course fee inquiry';
+          html = html
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${keywords}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+        } else if (url.startsWith('/privacy')) {
+          const canonicalUrl = 'https://learnify-solutions.com/privacy';
+          const title = 'Privacy Policy & Compliance | Learnify Solutions';
+          html = html
+            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
         } else if (url.startsWith('/admin')) {
           html = html
             .replace(/<title>.*?<\/title>/, `<title>Learnify Portal Administration</title>`)

@@ -1,5 +1,5 @@
 import { Course } from '../types';
-import { sampleCourses } from '../data/defaultCmsData';
+import { sampleCourses } from '../data/coursesData';
 import { trackSyllabusDownload } from './analytics';
 
 /**

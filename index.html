@@ -1,15 +1,25 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X74RZNZBN3"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-X74RZNZBN3');
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Performance, Preload & Preconnection Hints for Core Web Vitals (LCP/FCP) -->
-    <link rel="preload" as="image" href="/hero.webp" type="image/webp" fetchpriority="high" />
-    <link rel="prefetch" as="image" href="/images/delivered_traning_1.webp" type="image/webp" />
-    <link rel="prefetch" as="image" href="/images/delivered_traning_2.webp" type="image/webp" />
-    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <link rel="preload" as="image" href="/logo-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/hero-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/hero.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     
     <!-- Favicons & App Touch Icons (Crisp Retina & High-DPI) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -22,42 +32,60 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="faAEE1yYgvEeG8h7VG_WaZ7uyDoG76ASZaroDnMpFns" />
 
-    <!-- Google tag (gtag.js) - Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X74RNZNBN3"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-X74RNZNBN3', {
-        send_page_view: true
-      });
-    </script>
-
     <!-- Primary SEO Meta Tags -->
-    <title>Learnify Solutions | Global Enterprise IT Training, AI, Cloud & Cybersecurity (USA, UK, UAE, Africa & India)</title>
-    <meta name="title" content="Learnify Solutions | Global Enterprise IT Training, AI, Cloud & Cybersecurity" />
-    <meta name="description" content="Global enterprise IT training & certification provider across USA, UK, UAE, Africa & India. Expert instructor-led bootcamps in Cisco CCNA, AWS Cloud, CompTIA Security+, Azure, AI, DevOps & Cyber Security." />
-    <meta name="keywords" content="IT training UAE, Cisco CCNA training Dubai, IT corporate training UK, AWS certification course London, IT certifications Africa, CompTIA Security+ Nigeria, cybersecurity training Kenya, enterprise IT training South Africa, IT training USA, Microsoft Azure certification, DevOps Kubernetes bootcamp, CISSP certification, Learnify Solutions" />
+    <title>Learnify Solutions | Authorized Global IT Training Partner (Microsoft, Cisco, CompTIA, AWS, CEH &amp; Kubernetes)</title>
+    <meta name="title" content="Learnify Solutions | Authorized Global IT Training Partner (Microsoft, Cisco, CompTIA, AWS, CEH &amp; Kubernetes)" />
+    <meta name="description" content="Global authorized IT training partner for Microsoft, Cisco, CompTIA, AWS, EC-Council &amp; Kubernetes. Live 1-on-1 instructor bootcamps, official exams &amp; 24/7 cloud labs across USA, UK, UAE (Dubai), Africa &amp; India." />
+    <meta name="keywords" content="IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Koenig Solutions alternative, enterprise IT workforce upskilling, Learnify Solutions" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="author" content="Learnify Solutions" />
     <link rel="canonical" href="https://learnify-solutions.com/" />
     
+    <!-- International Hreflang Multi-Regional SEO Tags -->
+    <link rel="alternate" hreflang="x-default" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-US" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-GB" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-AE" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-IN" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-ZA" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-SA" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-CA" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-AU" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-NG" href="https://learnify-solutions.com/" />
+    <link rel="alternate" hreflang="en-KE" href="https://learnify-solutions.com/" />
+
+    <!-- Geo-Targeting & Regional Search Discovery -->
+    <meta name="geo.region" content="US;GB;AE;IN;ZA;SA;CA;AU" />
+    <meta name="geo.placename" content="Global Enterprise IT Training (USA, UK, UAE, Africa, India)" />
+    <meta name="rating" content="General" />
+    <meta name="distribution" content="Global" />
+    <meta name="coverage" content="Worldwide" />
+    <meta name="revisit-after" content="2 days" />
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://learnify-solutions.com/" />
-    <meta property="og:title" content="Learnify Solutions | Global Enterprise IT Training, AI, Cloud & Cybersecurity" />
-    <meta property="og:description" content="Empowering global enterprises & IT professionals across USA, UK, UAE, Africa & India with certified training in Cisco, AWS, Azure, CompTIA & Cyber Security." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80" />
+    <meta property="og:title" content="Learnify Solutions | Authorized Global IT Training & Certification Bootcamps" />
+    <meta property="og:description" content="Official vendor-authorized IT training across USA, UK, UAE, Africa & India. 1-on-1 & corporate bootcamps in AWS, Azure, Cisco, CompTIA, CEH & AI." />
+    <meta property="og:image" content="https://learnify-solutions.com/hero.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Learnify Solutions Global IT Training and Certification" />
     <meta property="og:site_name" content="Learnify Solutions" />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="en_GB" />
+    <meta property="og:locale:alternate" content="en_AE" />
+    <meta property="og:locale:alternate" content="en_IN" />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@LearnifyGlobal" />
+    <meta name="twitter:creator" content="@LearnifyGlobal" />
     <meta name="twitter:url" content="https://learnify-solutions.com/" />
-    <meta name="twitter:title" content="Learnify Solutions | Global Enterprise IT Training & Certifications" />
-    <meta name="twitter:description" content="Live instructor-led IT certification bootcamps across USA, UK, UAE, Africa, and India in Cloud, Networking, Cyber Security & AI." />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80" />
+    <meta name="twitter:title" content="Learnify Solutions | Authorized Global IT Training & Certifications" />
+    <meta name="twitter:description" content="Official vendor-certified training in Cloud (AWS, Azure), Networking (Cisco), Cybersecurity (CompTIA, CEH), and AI across USA, UK, UAE & Africa." />
+    <meta name="twitter:image" content="https://learnify-solutions.com/hero.webp" />
 
     <!-- Theme Color & Mobile App Capable -->
     <meta name="theme-color" content="#ea6d24" />
@@ -65,7 +93,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Structured Data / JSON-LD for International Search Engine Rich Snippets & Course Ranking -->
+    <!-- Structured Data / JSON-LD for Global Search Engine Rich Snippets & Course Ranking -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -74,6 +102,7 @@
             "@type": "EducationalOrganization",
             "@id": "https://learnify-solutions.com/#organization",
             "name": "Learnify Solutions",
+            "alternateName": ["Learnify IT Training", "Learnify Global Solutions", "Learnify Enterprise Upskilling"],
             "url": "https://learnify-solutions.com",
             "logo": {
               "@type": "ImageObject",
@@ -81,26 +110,45 @@
               "width": 512,
               "height": 512
             },
-            "image": "https://learnify-solutions.com/icon-512.png",
-            "description": "Premier global enterprise IT workforce upskilling and certification partner offering live virtual instructor-led training, dedicated corporate bootcamps, and official curriculum across USA, UK, UAE, Africa, and India.",
+            "image": "https://learnify-solutions.com/hero.webp",
+            "description": "Authorized global enterprise IT training and workforce upskilling partner delivering live virtual instructor-led training, 1-on-1 personalized bootcamps, and corporate cohort programs across USA, UK, UAE, Africa, and India.",
             "telephone": "+91-881-025-5422",
             "email": "info@learnify-solutions.com",
+            "knowsAbout": [
+              "Microsoft Azure Certifications (AZ-104, AZ-305, AZ-900, AI-102, DP-100, SC-900, PL-300, MS-4018)",
+              "Cisco Networking & Security (CCNA 200-301, CCNP ENCOR 350-401, ENARSI 300-410, SCOR 350-701, SD-WAN, DevNet)",
+              "CompTIA Certifications (Security+ SY0-701, A+ 220-1101/1102, Network+ N10-008/009, Cloud+, PenTest+, Linux+)",
+              "AWS Cloud Certifications (Solutions Architect SAA-C03, Security Specialty SCS-C02)",
+              "Cloud Native & DevOps (Certified Kubernetes Administrator CKA, CKS, Docker)",
+              "Cybersecurity & Ethical Hacking (CEH v12, CISSP, CySA+, Zero Trust Architecture)",
+              "1-on-1 Personalized Live Mentorship & Corporate Workforce Upskilling",
+              "24/7 Cloud Sandbox Hands-on Virtual Topologies"
+            ],
             "address": {
               "@type": "PostalAddress",
+              "streetAddress": "Sector 21",
               "addressLocality": "Faridabad",
               "addressRegion": "Haryana",
+              "postalCode": "121001",
               "addressCountry": "India"
             },
             "contactPoint": [
               {
                 "@type": "ContactPoint",
                 "telephone": "+91-881-025-5422",
-                "contactType": "sales & admissions",
+                "contactType": "sales & corporate admissions",
                 "email": "info@learnify-solutions.com",
                 "availableLanguage": ["English", "Hindi"],
                 "areaServed": [
                   "US", "GB", "AE", "SA", "ZA", "NG", "KE", "EG", "GH", "CA", "AU", "SG", "DE", "IN"
                 ]
+              },
+              {
+                "@type": "ContactPoint",
+                "telephone": "+91-881-025-5422",
+                "contactType": "technical support & student advisory",
+                "email": "info@learnify-solutions.com",
+                "availableLanguage": ["English", "Hindi"]
               }
             ],
             "areaServed": [
@@ -110,8 +158,6 @@
               { "@type": "Country", "name": "South Africa" },
               { "@type": "Country", "name": "Nigeria" },
               { "@type": "Country", "name": "Kenya" },
-              { "@type": "Country", "name": "Ghana" },
-              { "@type": "Country", "name": "Egypt" },
               { "@type": "Country", "name": "Saudi Arabia" },
               { "@type": "Country", "name": "Canada" },
               { "@type": "Country", "name": "Australia" },
@@ -122,57 +168,371 @@
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "4.9",
-              "reviewCount": "540",
+              "reviewCount": "1280",
               "bestRating": "5",
               "worstRating": "1"
             },
             "sameAs": [
-              "https://linkedin.com/company/learnify-solutions"
+              "https://www.linkedin.com/company/learnify-solutions",
+              "https://twitter.com/LearnifyGlobal"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://learnify-solutions.com/#website",
+            "url": "https://learnify-solutions.com",
+            "name": "Learnify Solutions",
+            "description": "Authorized Global IT Training & Certification Bootcamps",
+            "publisher": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://learnify-solutions.com/courses?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://learnify-solutions.com/#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://learnify-solutions.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "IT Certification Courses",
+                "item": "https://learnify-solutions.com/courses"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Corporate IT Training",
+                "item": "https://learnify-solutions.com/corporate-training"
+              }
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "@id": "https://learnify-solutions.com/#featured-courses",
+            "name": "Global IT Certification Training Programs (Microsoft, Cisco, CompTIA, AWS)",
+            "description": "Authorized vendor certification tracks in Microsoft, Cisco, CompTIA, AWS, EC-Council, and Kubernetes",
+            "itemListOrder": "https://schema.org/ItemListOrderDescending",
+            "numberOfItems": 10,
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "Course",
+                  "name": "Microsoft Certified: Azure Administrator Associate (AZ-104)",
+                  "url": "https://learnify-solutions.com/course/course-azure-104",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "AZ-104",
+                  "educationalCredentialAwarded": "Microsoft Certified: Azure Administrator Associate"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "Course",
+                  "name": "Implementing and Administering Cisco Solutions (CCNA 200-301)",
+                  "url": "https://learnify-solutions.com/course/course-cisco-ccna",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "200-301 CCNA",
+                  "educationalCredentialAwarded": "Cisco Certified Network Associate (CCNA)"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "Course",
+                  "name": "CompTIA Security+ Certification (SY0-701)",
+                  "url": "https://learnify-solutions.com/course/course-comptia-security-plus",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "SY0-701",
+                  "educationalCredentialAwarded": "CompTIA Security+ Certification"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                  "@type": "Course",
+                  "name": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+                  "url": "https://learnify-solutions.com/course/course-aws-solutions",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "SAA-C03",
+                  "educationalCredentialAwarded": "AWS Certified Solutions Architect Associate"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 5,
+                "item": {
+                  "@type": "Course",
+                  "name": "CompTIA A+ Core 1 & Core 2 (220-1101 & 220-1102)",
+                  "url": "https://learnify-solutions.com/course/course-comptia-a-plus",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "220-1101 / 220-1102",
+                  "educationalCredentialAwarded": "CompTIA A+ Certification"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 6,
+                "item": {
+                  "@type": "Course",
+                  "name": "Implementing Cisco Enterprise Network Core Technologies (ENCOR 350-401)",
+                  "url": "https://learnify-solutions.com/course/course-cisco-ccnp-encor",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "350-401 ENCOR",
+                  "educationalCredentialAwarded": "Cisco Certified Network Professional (CCNP Enterprise)"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 7,
+                "item": {
+                  "@type": "Course",
+                  "name": "Designing and Implementing a Microsoft Azure AI Solution (AI-102)",
+                  "url": "https://learnify-solutions.com/course/course-azure-ai-102",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "AI-102",
+                  "educationalCredentialAwarded": "Microsoft Certified: Azure AI Engineer Associate"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 8,
+                "item": {
+                  "@type": "Course",
+                  "name": "Certified Kubernetes Administrator (CKA)",
+                  "url": "https://learnify-solutions.com/course/course-kubernetes-cka",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "CKA",
+                  "educationalCredentialAwarded": "Linux Foundation Certified Kubernetes Administrator"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 9,
+                "item": {
+                  "@type": "Course",
+                  "name": "CompTIA Network+ (N10-008 & N10-009)",
+                  "url": "https://learnify-solutions.com/course/course-comptia-network-plus",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "N10-008 / N10-009",
+                  "educationalCredentialAwarded": "CompTIA Network+ Certification"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 10,
+                "item": {
+                  "@type": "Course",
+                  "name": "Certified Ethical Hacker (CEH v12)",
+                  "url": "https://learnify-solutions.com/course/course-ceh-v12",
+                  "provider": { "@id": "https://learnify-solutions.com/#organization" },
+                  "courseCode": "312-50",
+                  "educationalCredentialAwarded": "EC-Council Certified Ethical Hacker v12"
+                }
+              }
             ]
           },
           {
             "@type": "Course",
             "@id": "https://learnify-solutions.com/#course-cisco-ccna",
-            "name": "Cisco Certified Network Associate (CCNA 200-301)",
+            "name": "Implementing and Administering Cisco Solutions (CCNA 200-301)",
+            "courseCode": "200-301 CCNA",
             "description": "Comprehensive Cisco CCNA enterprise networking certification training with live virtual labs, routing & switching, IP services, and network security.",
             "provider": {
               "@id": "https://learnify-solutions.com/#organization"
             },
             "educationalCredentialAwarded": "Cisco CCNA 200-301 Certification",
-            "courseMode": ["online", "blended"],
+            "courseMode": ["online", "blended", "onsite"],
             "hasCourseInstance": {
               "@type": "CourseInstance",
               "courseMode": "online",
-              "courseWorkload": "PT60H"
+              "courseWorkload": "PT40H"
+            },
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
             }
           },
           {
             "@type": "Course",
-            "@id": "https://learnify-solutions.com/#course-aws-saa",
-            "name": "AWS Certified Solutions Architect – Associate (SAA-C03)",
-            "description": "Official AWS Cloud Solutions Architect training covering high availability architectures, IAM security, VPC networking, serverless compute, and cost optimization.",
+            "@id": "https://learnify-solutions.com/#course-cisco-ccnp-encor",
+            "name": "Implementing Cisco Enterprise Network Core Technologies (ENCOR 350-401)",
+            "courseCode": "350-401 ENCOR",
+            "description": "Official Cisco CCNP Enterprise Core training covering dual-stack IPv4/IPv6 architecture, virtualization, infrastructure, network assurance, security, and automation.",
             "provider": {
               "@id": "https://learnify-solutions.com/#organization"
             },
-            "educationalCredentialAwarded": "AWS Certified Solutions Architect Associate",
+            "educationalCredentialAwarded": "Cisco Certified Specialist - Enterprise Core",
+            "courseMode": ["online", "blended", "onsite"],
+            "hasCourseInstance": {
+              "@type": "CourseInstance",
+              "courseMode": "online",
+              "courseWorkload": "PT40H"
+            }
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-cisco-scor",
+            "name": "Implementing and Operating Cisco Security Core Technologies (SCOR 350-701)",
+            "courseCode": "350-701 SCOR",
+            "description": "Master network security, cloud security, content security, endpoint protection, secure network access, visibility, and enforcement on Cisco technologies.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Cisco Certified Specialist - Security Core",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-cisco-devasc",
+            "name": "Developing Applications and Automating Workflows using Cisco Platforms (DEVASC 200-901)",
+            "courseCode": "200-901 DEVASC",
+            "description": "Learn software development, APIs, Cisco platforms, application deployment, and security with infrastructure automation.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Cisco Certified DevNet Associate",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-azure-104",
+            "name": "Microsoft Certified: Azure Administrator Associate (AZ-104)",
+            "courseCode": "AZ-104",
+            "description": "Enterprise Microsoft Azure cloud administration training covering virtual networks, Azure Active Directory, governance, compute, and hybrid storage management.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Microsoft Certified: Azure Administrator Associate",
+            "courseMode": ["online", "blended", "onsite"],
+            "hasCourseInstance": {
+              "@type": "CourseInstance",
+              "courseMode": "online",
+              "courseWorkload": "PT32H"
+            }
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-azure-ai-102",
+            "name": "Designing and Implementing a Microsoft Azure AI Solution (AI-102)",
+            "courseCode": "AI-102",
+            "description": "Build, manage, and deploy AI solutions leveraging Azure AI Services, Azure OpenAI, computer vision, natural language processing, and conversational AI bots.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Microsoft Certified: Azure AI Engineer Associate",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-azure-dp-100",
+            "name": "Designing and Implementing a Data Science Solution on Azure (DP-100)",
+            "courseCode": "DP-100",
+            "description": "Train and deploy machine learning models using Azure Machine Learning, MLOps automation, and cloud compute clusters.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Microsoft Certified: Azure Data Scientist Associate",
             "courseMode": ["online", "blended"]
           },
           {
             "@type": "Course",
             "@id": "https://learnify-solutions.com/#course-comptia-secplus",
             "name": "CompTIA Security+ (SY0-701) Certification Training",
-            "description": "Foundational cybersecurity bootcamp covering threat intelligence, vulnerability management, cryptography, zero-trust architecture, and compliance.",
+            "courseCode": "SY0-701",
+            "description": "Foundational cybersecurity bootcamp covering threat intelligence, vulnerability management, cryptography, zero-trust architecture, and governance.",
             "provider": {
               "@id": "https://learnify-solutions.com/#organization"
             },
             "educationalCredentialAwarded": "CompTIA Security+ SY0-701",
+            "courseMode": ["online", "blended", "onsite"],
+            "hasCourseInstance": {
+              "@type": "CourseInstance",
+              "courseMode": "online",
+              "courseWorkload": "PT40H"
+            }
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-comptia-aplus",
+            "name": "CompTIA A+ (Core 1: 220-1101 & Core 2: 220-1102)",
+            "courseCode": "220-1101 / 220-1102",
+            "description": "Industry-standard IT hardware, operating systems, networking, cloud virtualization, and security troubleshooting certification training.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "CompTIA A+ Certification",
             "courseMode": ["online", "blended"]
           },
           {
             "@type": "Course",
-            "@id": "https://learnify-solutions.com/#course-ceh",
+            "@id": "https://learnify-solutions.com/#course-comptia-netplus",
+            "name": "CompTIA Network+ (N10-008 & N10-009)",
+            "courseCode": "N10-008 / N10-009",
+            "description": "Comprehensive network architecture, routing protocols, Ethernet cabling, IP addressing, wireless standards, and network troubleshooting.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "CompTIA Network+ Certification",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-comptia-cloudplus",
+            "name": "CompTIA Cloud+ (CV0-004)",
+            "courseCode": "CV0-004",
+            "description": "Vendor-neutral multi-cloud architecture, security, deployment, operations, and troubleshooting across AWS, Azure, and Google Cloud.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "CompTIA Cloud+ Certification",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-aws-saa",
+            "name": "AWS Certified Solutions Architect – Associate (SAA-C03)",
+            "courseCode": "SAA-C03",
+            "description": "Official AWS Cloud Solutions Architect training covering high availability architectures, IAM security, VPC networking, serverless compute, and cost optimization.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "AWS Certified Solutions Architect Associate",
+            "courseMode": ["online", "blended", "onsite"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-kubernetes-cka",
+            "name": "Certified Kubernetes Administrator (CKA & CKS Prep)",
+            "courseCode": "CKA",
+            "description": "Production-grade Kubernetes container orchestration, cluster architecture, networking, security, and troubleshooting hands-on bootcamp.",
+            "provider": {
+              "@id": "https://learnify-solutions.com/#organization"
+            },
+            "educationalCredentialAwarded": "Certified Kubernetes Administrator (CKA)",
+            "courseMode": ["online", "blended"]
+          },
+          {
+            "@type": "Course",
+            "@id": "https://learnify-solutions.com/#course-ceh-v12",
             "name": "Certified Ethical Hacker (CEH v12)",
-            "description": "Hands-on penetration testing and ethical hacking course with live capture-the-flag labs, vulnerability assessment, and malware analysis.",
+            "courseCode": "312-50",
+            "description": "Master ethical hacking methodologies, network reconnaissance, web application attacks, wireless penetration testing, malware analysis, and cloud security testing.",
             "provider": {
               "@id": "https://learnify-solutions.com/#organization"
             },
@@ -180,40 +540,55 @@
             "courseMode": ["online", "blended"]
           },
           {
-            "@type": "Course",
-            "@id": "https://learnify-solutions.com/#course-azure-admin",
-            "name": "Microsoft Certified: Azure Administrator Associate (AZ-104)",
-            "description": "Enterprise Microsoft Azure cloud administration training covering virtual networks, Azure Active Directory, governance, and hybrid cloud management.",
-            "provider": {
-              "@id": "https://learnify-solutions.com/#organization"
-            },
-            "educationalCredentialAwarded": "Microsoft Certified: Azure Administrator Associate",
-            "courseMode": ["online", "blended"]
-          },
-          {
-            "@type": "WebSite",
-            "@id": "https://learnify-solutions.com/#website",
-            "url": "https://learnify-solutions.com",
-            "name": "Learnify Solutions",
-            "publisher": {
-              "@id": "https://learnify-solutions.com/#organization"
-            },
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://learnify-solutions.com/?search={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
-          },
-          {
             "@type": "FAQPage",
             "@id": "https://learnify-solutions.com/#faq",
             "mainEntity": [
               {
                 "@type": "Question",
+                "name": "What Microsoft certification training courses are available at Learnify Solutions?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Learnify Solutions offers official curriculum training for Microsoft Azure Administrator (AZ-104), Azure Solutions Architect (AZ-305), Azure AI Engineer (AI-102), Azure Data Scientist (DP-100), Azure Fundamentals (AZ-900), Microsoft Security (SC-900), Power BI Data Analyst (PL-300), and Microsoft 365 Copilot (MS-4018) with live virtual labs and 1-on-1 mentorship."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What Cisco certification training bootcamps are offered by Learnify Solutions?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "We provide authorized Cisco training for CCNA 200-301, CCNP Enterprise (ENCOR 350-401, ENARSI 300-410, SD-WAN 300-415), CCNP Security (SCOR 350-701, SISE 300-715, SNCF 300-710), Cisco DevNet (DEVASC 200-901, DEVCOR 350-901), and Cisco CyberOps with real equipment topologies and 24/7 virtual lab pods."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What CompTIA certification courses does Learnify Solutions provide?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "We offer comprehensive bootcamps for CompTIA Security+ (SY0-701), CompTIA A+ (220-1101 & 220-1102), CompTIA Network+ (N10-008 & N10-009), CompTIA Cloud+ (CV0-004), CompTIA PenTest+ (PT0-002), CompTIA Linux+ (XK0-005), and CompTIA Server+ with official practice exam drills and exam vouchers."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does Learnify Solutions compare to other global IT training providers like Koenig Solutions?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Learnify Solutions delivers vendor-authorized IT certification bootcamps with 1-on-1 personalized mentoring, guaranteed-to-run batch schedules with zero cancellations, and dedicated 24/7 cloud sandbox lab access. Our enterprise programs feature competitive pricing, customized corporate syllabi, and an exceptional 98.4% first-time exam pass rate."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does Learnify Solutions offer 1-on-1 personalized IT training?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Learners can choose dedicated 1-on-1 live instructor-led training with certified subject matter experts, allowing flexible scheduling, tailored pacing, and focused exam preparation aligned with their exact career objectives."
+                }
+              },
+              {
+                "@type": "Question",
                 "name": "Does Learnify Solutions deliver training across UAE, UK, Africa, and USA?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. Learnify Solutions serves enterprise teams and professionals across the UAE (Dubai, Abu Dhabi), UK, Africa (Nigeria, Kenya, South Africa), USA, Europe, and India with flexible batch timings scheduled across GST, GMT/BST, WAT/CAT, and IST time zones."
+                  "text": "Yes. Learnify Solutions serves enterprise teams and professionals across the UAE (Dubai, Abu Dhabi), UK (London, Manchester), Africa (Nigeria, Kenya, South Africa, Egypt, Ghana), USA, Europe, and India with flexible batch timings scheduled across GST, GMT/BST, WAT/CAT, and IST time zones."
                 }
               },
               {
@@ -221,7 +596,7 @@
                 "name": "What corporate IT training programs does Learnify Solutions provide?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Learnify Solutions provides customized enterprise training pathways in Cloud Computing (AWS, Microsoft Azure, Google Cloud), Cybersecurity (CISSP, CEH, CompTIA), Artificial Intelligence & Machine Learning, DevOps & Kubernetes, and Cisco Enterprise Networking."
+                  "text": "Learnify Solutions provides customized enterprise training pathways in Cloud Computing (AWS, Microsoft Azure, Google Cloud), Cybersecurity (CISSP, CEH, CompTIA), Artificial Intelligence & Machine Learning (Copilot, Azure AI), DevOps & Kubernetes (CKA), and Cisco Enterprise Networking."
                 }
               },
               {
@@ -229,7 +604,15 @@
                 "name": "Are Learnify Solutions certifications globally recognized?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes, our training paths prepare learners and corporate teams for official vendor certifications from AWS, Microsoft, Cisco, CompTIA, ISC2, and Linux Foundation."
+                  "text": "Yes, our training paths prepare learners and corporate teams for official vendor certifications from AWS, Microsoft, Cisco, CompTIA, ISC2, EC-Council, and Linux Foundation."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are hands-on virtual labs and sandbox environments included?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! Every learner receives dedicated access to pre-configured, browser-based cloud labs and real equipment topologies available 24/7 for practical, real-world skill mastery."
                 }
               },
               {
@@ -237,7 +620,15 @@
                 "name": "What learning formats are available for international corporate teams?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "We offer Live Virtual Instructor-Led Training (VILT), dedicated Onsite Bootcamps at your corporate campus, Self-Paced Hands-On Cloud Labs, and Blended Hybrid Learning Pathways."
+                  "text": "We offer Live Virtual Instructor-Led Training (VILT), dedicated Onsite Bootcamps at your corporate campus, 1-on-1 Intensive Mentorship, and Blended Hybrid Learning Pathways."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can enterprises pay using corporate purchase orders and invoices?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, we accept corporate purchase orders (POs), multi-seat enterprise invoicing with credit terms, bank wire transfers (USD, GBP, AED, EUR, INR), and corporate credit cards."
                 }
               }
             ]

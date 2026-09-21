@@ -62,6 +62,7 @@ export const TopBanner: React.FC<TopBannerProps> = ({
               href={`https://wa.me/${sanitizedPhone}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Chat with Learnify admissions advisors on WhatsApp at ${phoneNumber}`}
               title="Chat with our enterprise learning advisors on WhatsApp"
               className="inline-flex items-center gap-1.5 hover:text-orange-100 transition-colors focus:outline-hidden focus:ring-1 focus:ring-white rounded-xs px-1"
             >
@@ -87,6 +88,7 @@ export const TopBanner: React.FC<TopBannerProps> = ({
             <a
               id="top-bar-email-link"
               href={`mailto:${email}`}
+              aria-label={`Send inquiry email to Learnify Solutions at ${email}`}
               title="Send inquiry email to Learnify Solutions"
               className="inline-flex items-center gap-1.5 hover:text-orange-100 transition-colors focus:outline-hidden focus:ring-1 focus:ring-white rounded-xs px-1"
             >

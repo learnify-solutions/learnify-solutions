@@ -53,6 +53,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           <Search className="w-5 h-5 text-slate-400 shrink-0" />
           <input
             type="text"
+            id="modal-search-input"
+            aria-label="Search courses, certifications and domains"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={
@@ -64,7 +66,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
           />
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+            aria-label="Close search modal"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

@@ -1,10 +1,36 @@
+# Learnify Solutions Enterprise Search Engine Directives
+# https://learnify-solutions.com
+
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin
+Disallow: /admin/
+Disallow: /admin-secure-portal
+Disallow: /admin-secure-portal/
 
-# Host
+# Specific Search Engine Optimization
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin-secure-portal
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /hero.webp
+Allow: /hero-mobile.webp
+Allow: /logo.webp
+Allow: /icon-512.png
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin-secure-portal
+
+# Host Definition
 Host: https://learnify-solutions.com
 
-# Sitemaps
+# XML Sitemaps
 Sitemap: https://learnify-solutions.com/sitemap.xml

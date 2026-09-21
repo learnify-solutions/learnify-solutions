@@ -1,6 +1,6 @@
 /**
  * Google Analytics 4 (GA4) Custom Event Tracking Helper
- * Measurement ID: G-X74RNZNBN3
+ * Measurement ID: G-X74RZNZBN3
  */
 
 declare global {

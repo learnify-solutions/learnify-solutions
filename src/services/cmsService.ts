@@ -1,26 +1,29 @@
 import { CmsData, LeadSubmission, Course } from '../types';
-import { initialCmsData, sampleCourses } from '../data/defaultCmsData';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { initialCmsData } from '../data/defaultCmsData';
+import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export async function fetchCmsData(): Promise<CmsData> {
   // If Supabase is configured on client side, try reading from Supabase table
-  if (isSupabaseConfigured && supabase) {
+  if (isSupabaseConfigured) {
     try {
-      // Check singleton (primary) or main (legacy)
-      const { data, error } = await supabase
-        .from('learnify_cms')
-        .select('*')
-        .or('id.eq.singleton,id.eq.main')
-        .limit(1)
-        .maybeSingle();
+      const supabase = await getSupabase();
+      if (supabase) {
+        // Check singleton (primary) or main (legacy)
+        const { data, error } = await supabase
+          .from('learnify_cms')
+          .select('*')
+          .or('id.eq.singleton,id.eq.main')
+          .limit(1)
+          .maybeSingle();
 
-      if (!error && data) {
-        const payload = data.data || data.section_data;
-        if (payload && typeof payload === 'object') {
-          return {
-            ...initialCmsData,
-            ...payload,
-          } as CmsData;
+        if (!error && data) {
+          const payload = data.data || data.section_data;
+          if (payload && typeof payload === 'object') {
+            return {
+              ...initialCmsData,
+              ...payload,
+            } as CmsData;
+          }
         }
       }
     } catch (err) {
@@ -48,16 +51,19 @@ export async function fetchCmsData(): Promise<CmsData> {
 
 export async function updateCmsData(updates: Partial<CmsData>): Promise<CmsData> {
   // If Supabase is configured on client side
-  if (isSupabaseConfigured && supabase) {
+  if (isSupabaseConfigured) {
     try {
-      const { error } = await supabase
-        .from('learnify_cms')
-        .upsert({
-          id: 'singleton',
-          data: updates,
-          updated_at: new Date().toISOString()
-        });
-      if (error) console.warn('Supabase direct update notice:', error.message);
+      const supabase = await getSupabase();
+      if (supabase) {
+        const { error } = await supabase
+          .from('learnify_cms')
+          .upsert({
+            id: 'singleton',
+            data: updates,
+            updated_at: new Date().toISOString()
+          });
+        if (error) console.warn('Supabase direct update notice:', error.message);
+      }
     } catch (err) {
       console.warn('Supabase update failed:', err);
     }
@@ -97,19 +103,22 @@ export async function resetCmsData(): Promise<CmsData> {
 
 export async function submitLead(lead: Omit<LeadSubmission, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> {
   // If Supabase is configured, also insert to Supabase
-  if (isSupabaseConfigured && supabase) {
+  if (isSupabaseConfigured) {
     try {
-      await supabase.from('learnify_leads').insert([
-        {
-          full_name: lead.fullName,
-          email: lead.email,
-          company: lead.company,
-          phone: lead.phone,
-          inquiry_type: lead.inquiryType,
-          selected_domain: lead.selectedDomain,
-          message: lead.message,
-        },
-      ]);
+      const supabase = await getSupabase();
+      if (supabase) {
+        await supabase.from('learnify_leads').insert([
+          {
+            full_name: lead.fullName,
+            email: lead.email,
+            company: lead.company,
+            phone: lead.phone,
+            inquiry_type: lead.inquiryType,
+            selected_domain: lead.selectedDomain,
+            message: lead.message,
+          },
+        ]);
+      }
     } catch (err) {
       console.warn('Supabase lead insert notice:', err);
     }
@@ -158,10 +167,19 @@ export async function fetchCourses(domain?: string, search?: string, isCiscoAuth
     const res = await fetch(`/api/courses?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to fetch courses');
     const json = await res.json();
-    return json.courses || sampleCourses;
+    if (json.courses && json.courses.length > 0) {
+      return json.courses;
+    }
   } catch (err) {
-    console.warn(err);
-    return sampleCourses;
+    console.warn('Courses API notice:', err);
+  }
+
+  // Fallback to local courses data loaded asynchronously
+  try {
+    const mod = await import('../data/coursesData');
+    return mod.sampleCourses;
+  } catch {
+    return [];
   }
 }
 

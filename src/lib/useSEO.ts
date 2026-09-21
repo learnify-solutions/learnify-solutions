@@ -9,6 +9,7 @@ interface SeoConfig {
   ogImage?: string;
   ogUrl?: string;
   canonicalUrl?: string;
+  jsonLd?: Record<string, any> | Array<Record<string, any>>;
 }
 
 export function useSEO({
@@ -20,6 +21,7 @@ export function useSEO({
   ogImage,
   ogUrl,
   canonicalUrl,
+  jsonLd,
 }: SeoConfig) {
   useEffect(() => {
     // 1. Update Title
@@ -79,5 +81,20 @@ export function useSEO({
     const twitterDesc = document.querySelector('meta[name="twitter:description"]');
     if (twitterDesc) twitterDesc.setAttribute('content', ogDescription || description);
 
-  }, [title, description, keywords, ogTitle, ogDescription, ogImage, ogUrl, canonicalUrl]);
+    // 7. Dynamic JSON-LD Structured Data
+    const scriptId = 'learnify-dynamic-jsonld';
+    let dynamicJsonLdScript = document.getElementById(scriptId) as HTMLScriptElement | null;
+
+    if (jsonLd) {
+      if (!dynamicJsonLdScript) {
+        dynamicJsonLdScript = document.createElement('script');
+        dynamicJsonLdScript.id = scriptId;
+        dynamicJsonLdScript.type = 'application/ld+json';
+        document.head.appendChild(dynamicJsonLdScript);
+      }
+      dynamicJsonLdScript.text = JSON.stringify(jsonLd);
+    } else if (dynamicJsonLdScript) {
+      dynamicJsonLdScript.remove();
+    }
+  }, [title, description, keywords, ogTitle, ogDescription, ogImage, ogUrl, canonicalUrl, jsonLd]);
 }

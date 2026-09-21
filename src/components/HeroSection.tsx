@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles, CheckCircle2, TrendingUp, Award, ShieldCheck } from 'lucide-react';
 import { normalizeImageUrl } from '../utils/imageHelper';
-import defaultHeroImg from '../assets/images/learnify_hero_workstation_1787768560565.webp';
 
+const DEFAULT_HERO_IMAGE = '/hero.webp';
 const FALLBACK_HERO_IMAGE = '/hero.webp';
 
 interface HeroSectionProps {
@@ -26,10 +26,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   imageUrl,
   imageAlt = 'Modern enterprise technology workstation',
 }) => {
-  const [imgSrc, setImgSrc] = useState<string>(() => normalizeImageUrl(imageUrl, 'hero') || defaultHeroImg);
+  const [imgSrc, setImgSrc] = useState<string>(() => normalizeImageUrl(imageUrl, 'hero') || DEFAULT_HERO_IMAGE);
 
   useEffect(() => {
-    setImgSrc(normalizeImageUrl(imageUrl, 'hero') || defaultHeroImg);
+    setImgSrc(normalizeImageUrl(imageUrl, 'hero') || DEFAULT_HERO_IMAGE);
   }, [imageUrl]);
 
   // Format headline with high-contrast accent highlight
@@ -109,18 +109,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
             <div className="relative w-full max-w-lg lg:max-w-none">
               <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[450px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group bg-slate-100">
-                <img
-                  src={imgSrc}
-                  alt={imageAlt}
-                  width="600"
-                  height="450"
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                  onError={() => setImgSrc(FALLBACK_HERO_IMAGE)}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                />
+                <picture className="w-full h-full block">
+                  <source media="(max-width: 640px)" srcSet="/hero-mobile.webp" type="image/webp" width="480" height="360" />
+                  <source media="(min-width: 641px)" srcSet={imgSrc} type="image/webp" width="800" height="597" />
+                  <img
+                    src="/hero-mobile.webp"
+                    alt={imageAlt}
+                    width="480"
+                    height="360"
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                    onError={() => setImgSrc(FALLBACK_HERO_IMAGE)}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  />
+                </picture>
                 <div className="absolute inset-0 bg-linear-to-t from-[#152e4d]/40 via-transparent to-transparent" />
 
                 {/* Floating Glassmorphic Trust Card */}
@@ -129,7 +133,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <CheckCircle2 className="w-5 h-5 text-[#ea6d24]" />
                   </div>
                   <div>
-                    <div className="text-[11px] text-slate-500 font-semibold">Live Sandbox Labs</div>
+                    <div className="text-[11px] text-slate-600 font-semibold">Live Sandbox Labs</div>
                     <div className="text-xs sm:text-sm font-bold text-slate-800">100% Practical IT Training</div>
                   </div>
                   <div className="ml-auto px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wider shrink-0">

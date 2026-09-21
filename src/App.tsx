@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { initialCmsData, sampleCourses } from './data/defaultCmsData';
+import { initialCmsData } from './data/defaultCmsData';
+import { sampleCourses } from './data/coursesData';
 import { CmsData, Course, TechDomain, LeadSubmission } from './types';
 import {
   fetchCmsData,
@@ -13,18 +14,34 @@ import { TopBanner } from './components/TopBanner';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { StatsBar } from './components/StatsBar';
-import { PerformanceSection } from './components/PerformanceSection';
-import { WhoWeAreSection } from './components/WhoWeAreSection';
-import { LearningOptionsSection } from './components/LearningOptionsSection';
-import { WhyChooseSection } from './components/WhyChooseSection';
-import { TechDomainsSection } from './components/TechDomainsSection';
-import { PathwaySection } from './components/PathwaySection';
-import { FinalCtaSection } from './components/FinalCtaSection';
-import { Footer } from './components/Footer';
 import { LoadingFallback } from './components/LoadingFallback';
 import { Settings, Database } from 'lucide-react';
 
 // Code Splitting / Lazy Loading for optimum bundle size and performance
+const PerformanceSection = lazy(() =>
+  import('./components/PerformanceSection').then((m) => ({ default: m.PerformanceSection }))
+);
+const WhoWeAreSection = lazy(() =>
+  import('./components/WhoWeAreSection').then((m) => ({ default: m.WhoWeAreSection }))
+);
+const LearningOptionsSection = lazy(() =>
+  import('./components/LearningOptionsSection').then((m) => ({ default: m.LearningOptionsSection }))
+);
+const WhyChooseSection = lazy(() =>
+  import('./components/WhyChooseSection').then((m) => ({ default: m.WhyChooseSection }))
+);
+const TechDomainsSection = lazy(() =>
+  import('./components/TechDomainsSection').then((m) => ({ default: m.TechDomainsSection }))
+);
+const PathwaySection = lazy(() =>
+  import('./components/PathwaySection').then((m) => ({ default: m.PathwaySection }))
+);
+const FinalCtaSection = lazy(() =>
+  import('./components/FinalCtaSection').then((m) => ({ default: m.FinalCtaSection }))
+);
+const Footer = lazy(() =>
+  import('./components/Footer').then((m) => ({ default: m.Footer }))
+);
 const AboutView = lazy(() =>
   import('./components/AboutView').then((m) => ({ default: m.AboutView }))
 );
@@ -77,7 +94,7 @@ const AdminLoginModal = lazy(() =>
 
 export default function App() {
   const [cmsData, setCmsData] = useState<CmsData>(initialCmsData);
-  const [courses, setCourses] = useState<Course[]>(sampleCourses);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [leads, setLeads] = useState<LeadSubmission[]>([]);
   const [supabaseStatus, setSupabaseStatus] = useState({
     configured: false,
@@ -170,6 +187,9 @@ function checkIsEnterpriseUrl(): boolean {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
+      if (path.startsWith('/course/') || hash.startsWith('#course-')) {
+        return 'course_detail';
+      }
       if (
         path === '/cisco-training' ||
         path === '/cisco-training/' ||
@@ -186,7 +206,7 @@ function checkIsEnterpriseUrl(): boolean {
       if (path === '/about' || hash === '#about') {
         return 'about';
       }
-      if (path === '/corporate-training' || hash === '#corporate-training') {
+      if (path === '/corporate-training' || hash === '#corporate-training' || path === '/corporate' || hash === '#corporate') {
         return 'corporate_training';
       }
       if (path === '/contact' || hash === '#contact') {
@@ -198,11 +218,31 @@ function checkIsEnterpriseUrl(): boolean {
     }
     return 'home';
   });
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      let courseId = '';
+      if (path.startsWith('/course/')) {
+        courseId = path.replace('/course/', '').replace(/\/$/, '');
+      } else if (hash.startsWith('#course-')) {
+        courseId = hash.replace('#course-', '');
+      }
+      if (courseId) {
+        return sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase()) || null;
+      }
+    }
+    return null;
+  });
+
   const [activeNavId, setActiveNavId] = useState(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
+      if (path.startsWith('/course/') || hash.startsWith('#course-')) {
+        return 'nav-courses';
+      }
       if (
         path === '/cisco-training' ||
         path === '/cisco-training/' ||
@@ -219,7 +259,7 @@ function checkIsEnterpriseUrl(): boolean {
       if (path === '/about' || hash === '#about') {
         return 'nav-about';
       }
-      if (path === '/corporate-training' || hash === '#corporate-training') {
+      if (path === '/corporate-training' || hash === '#corporate-training' || path === '/corporate' || hash === '#corporate') {
         return 'nav-corp-training';
       }
       if (path === '/contact' || hash === '#contact') {
@@ -333,73 +373,151 @@ function checkIsEnterpriseUrl(): boolean {
     switch (activePage) {
       case 'about':
         return {
-          title: 'About Us | Learnify Solutions - Enterprise IT Training Ecosystem',
+          title: 'About Us | Learnify Solutions - Authorized Global IT Training Ecosystem',
           description:
-            'Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces.',
+            'Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces across USA, UK, UAE, Africa & India.',
           keywords:
-            'about Learnify Solutions, enterprise IT training organization, tech upskilling leadership, corporate training partner',
-          canonicalUrl: 'https://learnify-solutions.com/#about',
+            'about Learnify Solutions, enterprise IT training organization, tech upskilling leadership, corporate training partner, global IT academy',
+          canonicalUrl: 'https://learnify-solutions.com/about',
+          ogUrl: 'https://learnify-solutions.com/about',
         };
       case 'cisco_training':
         return {
-          title: 'Cisco Certification Training Courses & Bootcamps | Learnify Solutions',
+          title: 'Cisco Authorized Certification Training (CCNA, CCNP, DevNet, Security) | Learnify Solutions',
           description:
             'Authorized Cisco training: CCNA (200-301), CCNP Enterprise (ENCOR, ENARSI), SD-WAN, CCNP Security (SCOR, ISE), Data Center & DevNet with hands-on lab pods.',
           keywords:
-            'Cisco training, Cisco certifications, CCNA 200-301, CCNP ENCOR 350-401, CCNP ENARSI 300-410, Cisco SD-WAN course, CCNP Security SCOR, Cisco lab training, Learnify Solutions',
-          canonicalUrl: 'https://learnify-solutions.com/#cisco-training',
+            'Cisco training partner, Cisco certifications, CCNA 200-301, CCNP ENCOR 350-401, CCNP ENARSI 300-410, Cisco SD-WAN course, CCNP Security SCOR, Cisco lab training Dubai, Learnify Solutions',
+          canonicalUrl: 'https://learnify-solutions.com/cisco-training',
+          ogUrl: 'https://learnify-solutions.com/cisco-training',
         };
       case 'courses':
         return {
-          title: 'IT & Cloud Certification Courses Catalog | Learnify Solutions',
+          title: 'IT & Cloud Certification Courses Catalog (Microsoft, Cisco, CompTIA, AWS) | Learnify Solutions',
           description: isCiscoAuthorized
-            ? 'Browse official certification courses in AWS, Microsoft Azure, Google Cloud, Cisco, DevOps, Kubernetes, and Cybersecurity.'
-            : 'Browse official certification courses in AWS, Microsoft Azure, Google Cloud, DevOps, Kubernetes, CompTIA, and Cybersecurity.',
+            ? 'Browse 50+ official certification courses in Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS Cloud, DevOps, and Cybersecurity. 1-on-1 live mentorship & corporate batches.'
+            : 'Browse 50+ official certification courses in Microsoft Azure, CompTIA Security+, AWS Cloud, DevOps, Kubernetes, and Cybersecurity. 1-on-1 live mentorship & corporate batches.',
           keywords: isCiscoAuthorized
-            ? 'IT courses catalog, AWS certifications, Azure training, DevOps courses, CISSP bootcamp, Cisco CCNA, tech certifications'
-            : 'IT courses catalog, AWS certifications, Azure training, DevOps courses, CISSP bootcamp, CompTIA Security+, tech certifications',
-          canonicalUrl: 'https://learnify-solutions.com/#courses',
+            ? 'IT courses catalog, Microsoft certification training, Azure AZ-104, Cisco CCNA 200-301, Cisco CCNP ENCOR, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, Kubernetes CKA, CEH v12, IT training Dubai, UK London IT bootcamps, USA IT training'
+            : 'IT courses catalog, Microsoft certification training, Azure AZ-104, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, Kubernetes CKA, CEH v12, IT training Dubai, UK London IT bootcamps, USA IT training',
+          canonicalUrl: 'https://learnify-solutions.com/courses',
+          ogUrl: 'https://learnify-solutions.com/courses',
         };
       case 'course_detail':
         return selectedCourse
           ? {
-              title: `${selectedCourse.title} Certification Training | Learnify Solutions`,
-              description: `${selectedCourse.summary} Official ${selectedCourse.domain} course with live instructor labs and certification readiness.`,
-              keywords: `${selectedCourse.title}, ${selectedCourse.domain} training, ${selectedCourse.certificationVendor || 'IT'} certification, ${selectedCourse.skillLevel} bootcamp`,
-              canonicalUrl: `https://learnify-solutions.com/#course-${selectedCourse.id}`,
+              title: `${selectedCourse.title} ${selectedCourse.examCode ? '(' + selectedCourse.examCode + ') ' : ''}Certification Training & Bootcamp | Learnify Solutions`,
+              description: `${selectedCourse.summary || selectedCourse.overview || 'Master ' + selectedCourse.title + ' with official vendor curriculum, 1-on-1 mentor guidance, and 24/7 hands-on cloud labs.'} Official ${selectedCourse.certificationVendor || 'IT'} certification training with guaranteed batches across USA, UK, UAE, Africa & India.`,
+              keywords: `${selectedCourse.title}, ${selectedCourse.examCode || ''}, ${selectedCourse.certificationVendor || 'IT'} training, ${selectedCourse.certificationVendor || 'IT'} certification course, authorized ${selectedCourse.certificationVendor || 'IT'} training partner, ${selectedCourse.domain} bootcamps, online 1-on-1 ${selectedCourse.certificationVendor || 'IT'} training, IT training Dubai, IT certifications London UK, corporate tech upskilling, Learnify Solutions`,
+              canonicalUrl: `https://learnify-solutions.com/course/${selectedCourse.id}`,
+              ogUrl: `https://learnify-solutions.com/course/${selectedCourse.id}`,
+              ogImage: selectedCourse.imageUrl?.startsWith('http')
+                ? selectedCourse.imageUrl
+                : `https://learnify-solutions.com${selectedCourse.imageUrl || '/hero.webp'}`,
+              jsonLd: {
+                '@context': 'https://schema.org',
+                '@graph': [
+                  {
+                    '@type': 'Course',
+                    '@id': `https://learnify-solutions.com/course/${selectedCourse.id}#course`,
+                    'name': selectedCourse.title,
+                    'courseCode': selectedCourse.examCode || selectedCourse.id,
+                    'description': selectedCourse.summary || selectedCourse.overview || '',
+                    'provider': {
+                      '@type': 'EducationalOrganization',
+                      'name': 'Learnify Solutions',
+                      'url': 'https://learnify-solutions.com'
+                    },
+                    'educationalLevel': selectedCourse.skillLevel || 'Intermediate',
+                    'educationalCredentialAwarded': `${selectedCourse.title} Official Certification`,
+                    'courseMode': ['online', 'blended', 'onsite'],
+                    'teaches': selectedCourse.learningObjectives || [selectedCourse.title],
+                    'aggregateRating': {
+                      '@type': 'AggregateRating',
+                      'ratingValue': String(selectedCourse.rating || '4.95'),
+                      'reviewCount': String(selectedCourse.enrolled || '420'),
+                      'bestRating': '5'
+                    },
+                    'offers': {
+                      '@type': 'Offer',
+                      'category': 'Paid',
+                      'priceCurrency': 'USD',
+                      'price': '999',
+                      'availability': 'https://schema.org/InStock'
+                    }
+                  },
+                  {
+                    '@type': 'BreadcrumbList',
+                    '@id': `https://learnify-solutions.com/course/${selectedCourse.id}#breadcrumb`,
+                    'itemListElement': [
+                      {
+                        '@type': 'ListItem',
+                        'position': 1,
+                        'name': 'Home',
+                        'item': 'https://learnify-solutions.com/'
+                      },
+                      {
+                        '@type': 'ListItem',
+                        'position': 2,
+                        'name': 'Courses',
+                        'item': 'https://learnify-solutions.com/courses'
+                      },
+                      {
+                        '@type': 'ListItem',
+                        'position': 3,
+                        'name': selectedCourse.title,
+                        'item': `https://learnify-solutions.com/course/${selectedCourse.id}`
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           : {
-              title: 'Course Details | Learnify Solutions',
-              description: 'Comprehensive IT training course overview and curriculum syllabus.',
-              canonicalUrl: 'https://learnify-solutions.com/#courses',
+              title: 'IT Certification Courses | Learnify Solutions',
+              description: 'Comprehensive IT training course overview, learning objectives, and curriculum syllabus.',
+              canonicalUrl: 'https://learnify-solutions.com/courses',
+              ogUrl: 'https://learnify-solutions.com/courses',
             };
       case 'corporate_training':
         return {
-          title: 'Corporate IT Training & Team Upskilling Solutions | Learnify Solutions',
+          title: 'Corporate IT Training & Workforce Upskilling Solutions | Learnify Solutions',
           description:
-            'Scalable enterprise learning solutions designed for enterprise engineering teams. Custom syllabus, private cloud sandboxes, 98% completion rate.',
+            'Scalable enterprise learning solutions designed for enterprise engineering teams worldwide. Custom syllabus, private cloud sandboxes, 98.4% first-time pass rate.',
           keywords:
-            'corporate IT training, enterprise tech training, B2B workforce upskilling, cloud migration training, corporate DevOps bootcamp',
-          canonicalUrl: 'https://learnify-solutions.com/#corporate',
+            'corporate IT training, enterprise tech training, B2B workforce upskilling, cloud migration training, corporate DevOps bootcamp, team certification programs',
+          canonicalUrl: 'https://learnify-solutions.com/corporate-training',
+          ogUrl: 'https://learnify-solutions.com/corporate-training',
         };
       case 'contact':
         return {
-          title: 'Contact Us | Learnify Solutions - Schedule a Consultation',
+          title: 'Contact Admissions & Corporate Sales | Learnify Solutions',
           description:
-            'Connect with our senior enterprise advisors for custom curriculum quotes, live batch schedules, and learning consultations.',
+            'Connect with our senior enterprise advisors for custom curriculum quotes, live batch schedules, corporate discounts, and personalized learning consultations.',
           keywords:
-            'contact Learnify Solutions, corporate training quote, educational advisor, IT training inquiry',
-          canonicalUrl: 'https://learnify-solutions.com/#contact',
+            'contact Learnify Solutions, corporate training quote, educational advisor, IT training inquiry, batch schedule, course fee inquiry',
+          canonicalUrl: 'https://learnify-solutions.com/contact',
+          ogUrl: 'https://learnify-solutions.com/contact',
+        };
+      case 'privacy':
+        return {
+          title: 'Privacy Policy & Data Compliance | Learnify Solutions',
+          description:
+            'Learnify Solutions privacy policy, GDPR compliance, data security standards, and learner privacy commitments.',
+          keywords: 'privacy policy, Learnify Solutions compliance, GDPR, data protection',
+          canonicalUrl: 'https://learnify-solutions.com/privacy',
+          ogUrl: 'https://learnify-solutions.com/privacy',
         };
       default:
         return {
-          title: 'Learnify Solutions | Enterprise IT Training, AI, Cloud & Cybersecurity',
+          title: 'Learnify Solutions | Authorized Global IT Training Partner (Microsoft, Cisco, CompTIA, AWS, CEH & Kubernetes)',
           description:
-            'Empowering individuals and organizations with industry-recognized IT training, AI, Cloud Computing, DevOps, and Cybersecurity certifications.',
+            'Global authorized IT training partner for Microsoft, Cisco, CompTIA, AWS, EC-Council & Kubernetes. Live 1-on-1 instructor bootcamps, official exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Africa & India.',
           keywords: isCiscoAuthorized
-            ? 'IT training, corporate IT training, AWS certification training, Microsoft Azure training, DevOps training, Kubernetes bootcamps, Cybersecurity training, CISSP certification, Cisco CCNA, Artificial Intelligence courses, Enterprise workforce upskilling, Learnify Solutions'
-            : 'IT training, corporate IT training, AWS certification training, Microsoft Azure training, DevOps training, Kubernetes bootcamps, Cybersecurity training, CISSP certification, CompTIA, Artificial Intelligence courses, Enterprise workforce upskilling, Learnify Solutions',
+            ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Koenig Solutions alternative, enterprise IT workforce upskilling, Learnify Solutions'
+            : 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+, CompTIA Cloud+, AWS certification courses, AWS Solutions Architect SAA-C03, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Learnify Solutions',
           canonicalUrl: 'https://learnify-solutions.com/',
+          ogUrl: 'https://learnify-solutions.com/',
         };
     }
   }, [activePage, selectedCourse, isCiscoAuthorized]);
@@ -425,50 +543,10 @@ function checkIsEnterpriseUrl(): boolean {
       initialScrollDone = true;
     }, 250);
 
-    // Preload key course and section images into memory cache so fast scrolling renders instantly
-    const preloadAssets = () => {
-      const imagesToPreload = [
-        '/images/delivered_traning_1.webp',
-        '/images/delivered_traning_2.webp',
-        '/images/cisco_network_map_1787771488810.webp',
-        '/images/pc_hardware_workbench_1788294359055.webp',
-        '/images/comptia_security_soc_1787771516564.webp',
-        '/images/comptia_cloud_multicloud_1788294616227.webp',
-        '/images/cloud_essentials_business_1788294640468.webp',
-        '/images/linux_datacenter_admin_1788294344630.webp',
-        '/images/ethical_hacking_pentest_1788294329039.webp',
-        '/images/azure_cloud_infra_1787771504293.webp',
-        '/images/copilot_genai_workspace_1788294313357.webp',
-        '/images/powerbi_data_analytics_1788294280157.webp',
-        '/images/aws_architecture_diagram_1787771528914.webp',
-        '/images/kubernetes_devops_cluster_1788294296039.webp',
-        '/images/learnify_hero_workstation_1787768560565.webp',
-      ];
-
-      imagesToPreload.forEach((src) => {
-        const img = new Image();
-        img.decoding = 'async';
-        img.src = src;
-      });
-
-      // Warm up lazy-loaded views
-      import('./components/CoursesView');
-      import('./components/CorporateTrainingView');
-      import('./components/AboutView');
-      import('./components/CourseDetailView');
-    };
-
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(preloadAssets);
-    } else {
-      setTimeout(preloadAssets, 150);
-    }
-
     // Check if user navigates directly to secret admin route or cisco client url
     const checkAdminAndCiscoRoutes = () => {
       const pathname = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
-      const searchParams = new URLSearchParams(window.location.search);
 
       const isPathAdmin = pathname === '/admin-secure-portal' || pathname.startsWith('/admin-secure-portal/');
       const isHashAdmin = hash === '#admin-secure-portal';
@@ -485,6 +563,52 @@ function checkIsEnterpriseUrl(): boolean {
       // Check Enterprise / Cisco authorization from URL (No persistent storage)
       const isEnterprise = checkIsEnterpriseUrl();
       setIsCiscoAuthorized(isEnterprise);
+
+      // Synchronize active page and course if user hit back/forward buttons
+      if (pathname.startsWith('/course/') || hash.startsWith('#course-')) {
+        let courseId = '';
+        if (pathname.startsWith('/course/')) {
+          courseId = window.location.pathname.replace('/course/', '').replace(/\/$/, '');
+        } else if (hash.startsWith('#course-')) {
+          courseId = hash.replace('#course-', '');
+        }
+        const matched = sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase());
+        if (matched) {
+          setSelectedCourse(matched);
+          setActivePage('course_detail');
+          setActiveNavId('nav-courses');
+          return;
+        }
+      }
+
+      if (
+        pathname === '/cisco-training' ||
+        pathname === '/cisco-training/' ||
+        pathname === '/cisco' ||
+        pathname === '/cisco/' ||
+        hash === '#cisco-training' ||
+        hash === '#cisco'
+      ) {
+        setActivePage('cisco_training');
+        setActiveNavId('nav-cisco');
+      } else if (pathname === '/courses' || hash === '#courses') {
+        setActivePage('courses');
+        setActiveNavId('nav-courses');
+      } else if (pathname === '/about' || hash === '#about') {
+        setActivePage('about');
+        setActiveNavId('nav-about');
+      } else if (pathname === '/corporate-training' || hash === '#corporate-training' || pathname === '/corporate' || hash === '#corporate') {
+        setActivePage('corporate_training');
+        setActiveNavId('nav-corp-training');
+      } else if (pathname === '/contact' || hash === '#contact') {
+        setActivePage('contact');
+        setActiveNavId('nav-contact');
+      } else if (pathname === '/privacy' || hash === '#privacy') {
+        setActivePage('privacy');
+      } else if (pathname === '/' || pathname === '') {
+        setActivePage('home');
+        setActiveNavId('nav-home');
+      }
     };
 
     checkAdminAndCiscoRoutes();
@@ -500,14 +624,16 @@ function checkIsEnterpriseUrl(): boolean {
     };
   }, []);
 
-  // Sync course catalog whenever Cisco authorization changes
+  // Sync course catalog whenever Cisco authorization changes (only when courses are in use)
   useEffect(() => {
-    fetchCourses(undefined, undefined, isCiscoAuthorized).then((coursesRes) => {
-      if (coursesRes && coursesRes.length > 0) {
-        setCourses(coursesRes);
-      }
-    });
-  }, [isCiscoAuthorized]);
+    if (courses.length > 0 || activePage === 'courses' || activePage === 'cisco_training' || activePage === 'course_detail') {
+      fetchCourses(undefined, undefined, isCiscoAuthorized).then((coursesRes) => {
+        if (coursesRes && coursesRes.length > 0) {
+          setCourses(coursesRes);
+        }
+      });
+    }
+  }, [isCiscoAuthorized, activePage]);
 
   // Safety guard: if user is not Cisco authorized, prevent viewing Cisco course detail directly
   useEffect(() => {
@@ -562,25 +688,69 @@ function checkIsEnterpriseUrl(): boolean {
     }
   };
 
+  const ensureCoursesLoaded = () => {
+    if (courses.length === 0) {
+      fetchCourses(undefined, undefined, isCiscoAuthorized).then((coursesRes) => {
+        if (coursesRes && coursesRes.length > 0) {
+          setCourses(coursesRes);
+        }
+      }).catch(() => {});
+    }
+  };
+
   const loadAllData = async () => {
     try {
-      const [cmsRes, coursesRes, leadsRes, spStatus] = await Promise.all([
-        fetchCmsData(),
-        fetchCourses(undefined, undefined, isCiscoAuthorized),
-        fetchLeads(),
-        getSupabaseStatus(),
-      ]);
+      // 1. Non-blocking background CMS sync (page is already rendered with initialCmsData)
+      fetchCmsData().then((cmsRes) => {
+        if (cmsRes) setCmsData(cmsRes);
+      }).catch(() => {});
 
-      if (cmsRes) setCmsData(cmsRes);
-      if (coursesRes && coursesRes.length > 0) {
-        setCourses(coursesRes);
-        setSelectedCourse((prev) => {
-          if (!prev) return null;
-          return coursesRes.find((c) => c.id === prev.id) || prev;
-        });
+      // 2. Only fetch admin leads and Supabase status if administrator is authenticated
+      const isAdminAuth = typeof window !== 'undefined' && localStorage.getItem('learnify_admin_authenticated') === 'true';
+      if (isAdminAuth) {
+        fetchLeads().then((leadsRes) => {
+          if (leadsRes) setLeads(leadsRes);
+        }).catch(() => {});
+        getSupabaseStatus().then((spStatus) => {
+          if (spStatus) setSupabaseStatus(spStatus);
+        }).catch(() => {});
       }
-      if (leadsRes) setLeads(leadsRes);
-      if (spStatus) setSupabaseStatus(spStatus);
+
+      // 3. If user landed directly on courses or cisco route, load course catalog immediately;
+      // otherwise, defer course catalog hydration until browser is completely idle
+      const initialPath = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
+      const initialHash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
+      const isCourseRoute =
+        initialPath.includes('course') ||
+        initialPath.includes('cisco') ||
+        initialHash.includes('course') ||
+        initialHash.includes('cisco');
+
+      if (isCourseRoute) {
+        fetchCourses(undefined, undefined, isCiscoAuthorized).then((coursesRes) => {
+          if (coursesRes && coursesRes.length > 0) {
+            setCourses(coursesRes);
+            setSelectedCourse((prev) => {
+              if (!prev) return null;
+              return coursesRes.find((c) => c.id === prev.id) || prev;
+            });
+          }
+        }).catch(() => {});
+      } else {
+        const loadIdleCourses = () => {
+          fetchCourses(undefined, undefined, isCiscoAuthorized).then((coursesRes) => {
+            if (coursesRes && coursesRes.length > 0) {
+              setCourses(coursesRes);
+            }
+          }).catch(() => {});
+        };
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+          (window as any).requestIdleCallback(loadIdleCourses, { timeout: 3500 });
+        } else {
+          setTimeout(loadIdleCourses, 2500);
+        }
+      }
     } catch (err) {
       console.warn('Initial data load warning:', err);
     }
@@ -590,12 +760,14 @@ function checkIsEnterpriseUrl(): boolean {
     type: 'advisor' | 'corporate_quote' | 'demo' | 'course_info' = 'advisor',
     domain: string = 'General'
   ) => {
+    ensureCoursesLoaded();
     setAdvisorInquiryType(type);
     setSelectedDomainForAdvisor(domain);
     setIsAdvisorModalOpen(true);
   };
 
   const handleOpenCoursesModal = (domain: string = 'all') => {
+    ensureCoursesLoaded();
     if (domain.toLowerCase().includes('cisco')) {
       setActivePage('cisco_training');
       setActiveNavId('nav-cisco');
@@ -612,12 +784,14 @@ function checkIsEnterpriseUrl(): boolean {
 
     if (link.id === 'nav-about' || link.href === '#about' || link.label === 'About') {
       setActivePage('about');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/about');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     if (link.id === 'nav-home' || link.href === '#home' || link.label === 'Home') {
       setActivePage('home');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -629,13 +803,17 @@ function checkIsEnterpriseUrl(): boolean {
       link.label === 'Cisco Training' ||
       link.label === 'Cisco'
     ) {
+      ensureCoursesLoaded();
       setActivePage('cisco_training');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/cisco-training');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     if (link.href === '#courses' || link.id === 'nav-courses' || link.label === 'Courses') {
+      ensureCoursesLoaded();
       setActivePage('courses');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/courses');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -646,12 +824,14 @@ function checkIsEnterpriseUrl(): boolean {
       link.label === 'Corporate Training'
     ) {
       setActivePage('corporate_training');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/corporate-training');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     if (link.href === '#contact' || link.id === 'nav-contact' || link.label === 'Contact Us') {
       setActivePage('contact');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/contact');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -659,6 +839,7 @@ function checkIsEnterpriseUrl(): boolean {
     // For any section links if currently on another page, switch to Home first
     if (activePage !== 'home') {
       setActivePage('home');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
       setTimeout(() => {
         if (link.href.startsWith('#')) {
           const elem = document.querySelector(link.href);
@@ -686,6 +867,7 @@ function checkIsEnterpriseUrl(): boolean {
     ) {
       setActivePage('cisco_training');
       setActiveNavId('nav-cisco');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/cisco-training');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -695,6 +877,7 @@ function checkIsEnterpriseUrl(): boolean {
   const handleSelectCourse = (course: Course) => {
     setSelectedCourse(course);
     setActivePage('course_detail');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/course/${course.id}`);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
@@ -767,6 +950,7 @@ function checkIsEnterpriseUrl(): boolean {
               course={selectedCourse}
               onBack={() => {
                 setActivePage('courses');
+                if (typeof window !== 'undefined') window.history.pushState(null, '', '/courses');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onNavigate={(page) => {
@@ -917,47 +1101,49 @@ function checkIsEnterpriseUrl(): boolean {
       </main>
 
       {/* 12. Footer */}
-      <Footer
-        brandName={cmsData.footer.brandName}
-        description={cmsData.footer.description}
-        copyright={cmsData.footer.copyright}
-        columns={cmsData.footer.columns}
-        onLinkClick={(link) => {
-          if (link.label === 'About' || link.href === '#about') {
-            setActivePage('about');
-            setActiveNavId('nav-about');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (link.label === 'Home' || link.href === '#home' || link.label === 'Learnify') {
-            setActivePage('home');
-            setActiveNavId('nav-home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (
-            link.label === 'Cisco Training' ||
-            link.href === '#cisco-training' ||
-            link.href === '#cisco' ||
-            link.label === 'Cisco'
-          ) {
-            setActivePage('cisco_training');
-            setActiveNavId('nav-cisco');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (link.href === '#courses' || link.label === 'Courses' || link.label === 'Learning' || link.href === '#solutions') {
-            handleOpenCoursesModal('all');
-          } else if (link.href === '#contact' || link.label === 'Contact' || link.label === 'Contact Us') {
-            setActivePage('contact');
-            setActiveNavId('nav-contact');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (link.href === '#corporate' || link.label === 'Corporate Training') {
-            setActivePage('corporate_training');
-            setActiveNavId('nav-corporate');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (link.href === '#privacy' || link.label === 'Privacy Policy') {
-            setActivePage('privacy');
-            setActiveNavId('');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        }}
-        isCiscoAuthorized={isCiscoAuthorized}
-      />
+      <Suspense fallback={null}>
+        <Footer
+          brandName={cmsData.footer.brandName}
+          description={cmsData.footer.description}
+          copyright={cmsData.footer.copyright}
+          columns={cmsData.footer.columns}
+          onLinkClick={(link) => {
+            if (link.label === 'About' || link.href === '#about') {
+              setActivePage('about');
+              setActiveNavId('nav-about');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (link.label === 'Home' || link.href === '#home' || link.label === 'Learnify') {
+              setActivePage('home');
+              setActiveNavId('nav-home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (
+              link.label === 'Cisco Training' ||
+              link.href === '#cisco-training' ||
+              link.href === '#cisco' ||
+              link.label === 'Cisco'
+            ) {
+              setActivePage('cisco_training');
+              setActiveNavId('nav-cisco');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (link.href === '#courses' || link.label === 'Courses' || link.label === 'Learning' || link.href === '#solutions') {
+              handleOpenCoursesModal('all');
+            } else if (link.href === '#contact' || link.label === 'Contact' || link.label === 'Contact Us') {
+              setActivePage('contact');
+              setActiveNavId('nav-contact');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (link.href === '#corporate' || link.label === 'Corporate Training') {
+              setActivePage('corporate_training');
+              setActiveNavId('nav-corporate');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (link.href === '#privacy' || link.label === 'Privacy Policy') {
+              setActivePage('privacy');
+              setActiveNavId('');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          isCiscoAuthorized={isCiscoAuthorized}
+        />
+      </Suspense>
 
       {/* Interactive Lazy-loaded Modals */}
       <Suspense fallback={null}>

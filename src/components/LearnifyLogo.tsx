@@ -31,29 +31,39 @@ export const LearnifyLogo: React.FC<LearnifyLogoProps> = ({
   if (isDarkBg) {
     return (
       <div className="bg-white px-3.5 py-2 rounded-xl inline-flex items-center shadow-xs border border-white/40 hover:bg-white/95 transition-all">
-        <img
-          src="/logo300.png"
-          alt="Learnify - Pathway to Excellence"
-          width={2385}
-          height={464}
-          decoding="async"
-          className={`${className} object-contain select-none`}
-          referrerPolicy="no-referrer"
-        />
+        <picture>
+          <source srcSet="/logo-mobile.webp 1x, /logo.webp 2x" type="image/webp" />
+          <img
+            src="/logo-mobile.webp"
+            alt="Learnify - Pathway to Excellence"
+            width={240}
+            height={47}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            className={`${className} object-contain select-none`}
+            referrerPolicy="no-referrer"
+          />
+        </picture>
       </div>
     );
   }
 
   return (
-    <img
-      src="/logo300.png"
-      alt="Learnify - Pathway to Excellence"
-      width={2385}
-      height={464}
-      decoding="async"
-      className={`${className} object-contain select-none`}
-      referrerPolicy="no-referrer"
-    />
+    <picture>
+      <source srcSet="/logo-mobile.webp 1x, /logo.webp 2x" type="image/webp" />
+      <img
+        src="/logo-mobile.webp"
+        alt="Learnify - Pathway to Excellence"
+        width={240}
+        height={47}
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        className={`${className} object-contain select-none`}
+        referrerPolicy="no-referrer"
+      />
+    </picture>
   );
 };
 
