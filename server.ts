@@ -531,6 +531,72 @@ Sitemap: https://learnify-solutions.com/sitemap.xml
     res.send(robots);
   });
 
+  // AI Agent Catalog JSON (WebMCP / Agentic Browsing Compliance)
+  app.get('/ai-catalog.json', (req, res) => {
+    const catalog = {
+      name: "Learnify Solutions AI Catalog",
+      description: "Authorized Global IT Training & Certification Catalog (Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS, CEH & Kubernetes)",
+      version: "1.0.0",
+      documentation: "https://learnify-solutions.com/CLIENT_HANDOVER_DOCUMENTATION.md",
+      resources: [
+        {
+          name: "Home",
+          url: "https://learnify-solutions.com/",
+          description: "Authorized global IT training partner and corporate upskilling platform."
+        },
+        {
+          name: "Courses Catalog",
+          url: "https://learnify-solutions.com/courses",
+          description: "Browse 50+ official certification courses in Microsoft Azure, Cisco, CompTIA, AWS, and Kubernetes."
+        },
+        {
+          name: "Corporate Training",
+          url: "https://learnify-solutions.com/corporate-training",
+          description: "Scalable enterprise IT learning solutions and custom team training."
+        },
+        {
+          name: "Cisco Training Hub",
+          url: "https://learnify-solutions.com/cisco-training",
+          description: "Authorized Cisco CCNA 200-301, CCNP ENCOR, Security, and DevNet certification bootcamps."
+        },
+        {
+          name: "Contact Admissions",
+          url: "https://learnify-solutions.com/contact",
+          description: "Connect with senior learning advisors for course fees, batch schedules, and corporate quotes."
+        }
+      ]
+    };
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.json(catalog);
+  });
+
+  // LLMs.txt for AI agents and scrapers
+  app.get('/llms.txt', (req, res) => {
+    const llmsText = `# Learnify Solutions
+
+> Learnify Solutions is an authorized global IT training and workforce upskilling partner delivering live virtual instructor-led training, 1-on-1 personalized bootcamps, and corporate cohort programs across USA, UK, UAE, Africa (Nigeria, Kenya, South Africa, Egypt, Ghana), and India.
+
+## Key Offerings & Certification Tracks
+- **Microsoft Azure**: Azure Administrator (AZ-104), Azure Fundamentals (AZ-900), Azure Solutions Architect (AZ-305), AI Engineer (AI-102), Data Fundamentals (DP-900).
+- **Cisco Networking**: CCNA 200-301, CCNP Enterprise (ENCOR 350-401, ENARSI 300-410), Cisco Security (SCOR 350-701), DevNet Associate.
+- **CompTIA Cybersecurity & Infrastructure**: Security+ (SY0-701), Network+ (N10-009), A+ (220-1101/1102), Cloud+, Linux+, CySA+.
+- **AWS Cloud**: AWS Certified Solutions Architect (SAA-C03), AWS Cloud Practitioner, AWS Security Specialty.
+- **DevOps & Security**: Certified Kubernetes Administrator (CKA), Certified Ethical Hacker (CEH v12), CISSP.
+
+## Official Resources
+- [Website Home](https://learnify-solutions.com/)
+- [Course Catalog](https://learnify-solutions.com/courses)
+- [Corporate Training Solutions](https://learnify-solutions.com/corporate-training)
+- [Cisco Authorized Training](https://learnify-solutions.com/cisco-training)
+- [Client Handover Documentation](https://learnify-solutions.com/CLIENT_HANDOVER_DOCUMENTATION.md)
+- [Contact & Corporate Admissions](https://learnify-solutions.com/contact)
+`;
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(llmsText);
+  });
+
   // 1. Health check & Supabase connection test
   app.get('/api/health', async (req, res) => {
     let supabaseStatus = 'disconnected';
