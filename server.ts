@@ -534,35 +534,30 @@ Sitemap: https://learnify-solutions.com/sitemap.xml
   // AI Agent Catalog JSON (WebMCP / Agentic Browsing Compliance)
   app.get('/ai-catalog.json', (req, res) => {
     const catalog = {
-      name: "Learnify Solutions AI Catalog",
-      description: "Authorized Global IT Training & Certification Catalog (Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS, CEH & Kubernetes)",
-      version: "1.0.0",
-      documentation: "https://learnify-solutions.com/CLIENT_HANDOVER_DOCUMENTATION.md",
-      resources: [
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "name": "Learnify Solutions AI Catalog",
+      "description": "Authorized Global IT Training & Certification Catalog",
+      "version": "1.0.0",
+      "endpoints": [
         {
-          name: "Home",
-          url: "https://learnify-solutions.com/",
-          description: "Authorized global IT training partner and corporate upskilling platform."
+          "path": "/",
+          "method": "GET",
+          "description": "Home page with featured courses and corporate training overview."
         },
         {
-          name: "Courses Catalog",
-          url: "https://learnify-solutions.com/courses",
-          description: "Browse 50+ official certification courses in Microsoft Azure, Cisco, CompTIA, AWS, and Kubernetes."
+          "path": "/courses",
+          "method": "GET",
+          "description": "Catalog of all 50+ official IT certification courses."
         },
         {
-          name: "Corporate Training",
-          url: "https://learnify-solutions.com/corporate-training",
-          description: "Scalable enterprise IT learning solutions and custom team training."
+          "path": "/corporate-training",
+          "method": "GET",
+          "description": "Enterprise cohort and group upskilling solutions."
         },
         {
-          name: "Cisco Training Hub",
-          url: "https://learnify-solutions.com/cisco-training",
-          description: "Authorized Cisco CCNA 200-301, CCNP ENCOR, Security, and DevNet certification bootcamps."
-        },
-        {
-          name: "Contact Admissions",
-          url: "https://learnify-solutions.com/contact",
-          description: "Connect with senior learning advisors for course fees, batch schedules, and corporate quotes."
+          "path": "/cisco-training",
+          "method": "GET",
+          "description": "Specialized Cisco CCNA & CCNP certification bootcamps."
         }
       ]
     };
