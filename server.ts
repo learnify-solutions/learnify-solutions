@@ -706,6 +706,26 @@ Sitemap: https://learnify-solutions.com/sitemap.xml
     });
   });
 
+  // Client Handover Documentation endpoints
+  app.get('/api/documentation/download', (req, res) => {
+    const docPath = path.resolve(process.cwd(), 'CLIENT_HANDOVER_DOCUMENTATION.md');
+    if (fs.existsSync(docPath)) {
+      res.setHeader('Content-Disposition', 'attachment; filename="CLIENT_HANDOVER_DOCUMENTATION.md"');
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.sendFile(docPath);
+    }
+    res.status(404).json({ error: 'Documentation file not found' });
+  });
+
+  app.get('/api/documentation', (req, res) => {
+    const docPath = path.resolve(process.cwd(), 'CLIENT_HANDOVER_DOCUMENTATION.md');
+    if (fs.existsSync(docPath)) {
+      const content = fs.readFileSync(docPath, 'utf8');
+      return res.json({ success: true, content });
+    }
+    res.status(404).json({ success: false, error: 'Documentation file not found' });
+  });
+
   // 5. Courses list & filtering (Live Supabase synchronization)
   app.get('/api/courses', async (req, res) => {
     const domain = req.query.domain as string;

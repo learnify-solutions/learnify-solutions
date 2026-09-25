@@ -27,6 +27,7 @@ import {
   AlertTriangle,
   Server,
   ShieldCheck,
+  Lock,
 } from 'lucide-react';
 import { CmsData, LeadSubmission, Course } from '../types';
 import {
@@ -66,13 +67,32 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   supabaseStatus,
   onRefreshLeads,
 }) => {
-  const [activeTab, setActiveTab] = useState<'visual' | 'courses' | 'json' | 'supabase' | 'leads' | 'email'>('visual');
+  const [activeTab, setActiveTab] = useState<'visual' | 'courses' | 'json' | 'supabase' | 'leads' | 'email' | 'docs'>('visual');
   const [formData, setFormData] = useState<CmsData>(JSON.parse(JSON.stringify(cmsData)));
   const [jsonText, setJsonText] = useState(JSON.stringify(cmsData, null, 2));
   const [jsonError, setJsonError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveNotification, setSaveNotification] = useState('');
   const [copiedSchema, setCopiedSchema] = useState(false);
+  const [copiedCredentials, setCopiedCredentials] = useState(false);
+  const [docContent, setDocContent] = useState<string>('');
+  const [isLoadingDoc, setIsLoadingDoc] = useState(false);
+
+  const fetchDocumentation = async () => {
+    if (docContent) return;
+    setIsLoadingDoc(true);
+    try {
+      const res = await fetch('/api/documentation');
+      const data = await res.json();
+      if (data.success && data.content) {
+        setDocContent(data.content);
+      }
+    } catch {
+      // fallback
+    } finally {
+      setIsLoadingDoc(false);
+    }
+  };
 
   // Email diagnostics & test state
   const [testEmailAddress, setTestEmailAddress] = useState('');
@@ -132,6 +152,8 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   useEffect(() => {
     if (activeTab === 'email') {
       fetchEmailDiagnostics();
+    } else if (activeTab === 'docs') {
+      fetchDocumentation();
     }
   }, [activeTab]);
 
@@ -538,6 +560,18 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
           >
             <Mail className="w-3.5 h-3.5" />
             <span>Email & SMTP</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('docs')}
+            className={`py-3 px-4 flex items-center gap-1.5 border-b-2 cursor-pointer transition-colors shrink-0 ${
+              activeTab === 'docs'
+                ? 'border-[#ea6d24] text-[#ea6d24]'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Client Handover & Docs</span>
           </button>
         </div>
 
@@ -2072,6 +2106,191 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                   <p><span className="text-emerald-400"># In Railway Variables, add:</span></p>
                   <p><span className="text-orange-400">RESEND_API_KEY</span>=re_123456789abcdef</p>
                   <p><span className="text-orange-400">EMAIL_FROM</span>="Learnify Solutions" &lt;onboarding@resend.dev&gt; (or your domain)</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'docs' && (
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-[#ea6d24]" />
+                    <span>Master Client Handover & Credentials</span>
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Official technical report, master credentials, database strings, and 52-course blueprint specifications.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href="/api/documentation/download"
+                    download="CLIENT_HANDOVER_DOCUMENTATION.md"
+                    className="px-3.5 py-2 rounded-lg bg-[#ea6d24] hover:bg-[#d85e19] text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download .MD File</span>
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      const credsText = `LEARNIFY SOLUTIONS - MASTER CREDENTIALS HANDOVER
+===================================================
+1. Administrative CMS Control Panel:
+   URL: https://learnify-solutions.com/admin-secure-portal
+   Username: admin (or info@learnify-solutions.com)
+   Default Password: admin123
+
+2. Supabase PostgreSQL Database:
+   Project URL: https://zqilnxxgmctpclfqjevx.supabase.co
+   Key Tables: learnify_leads, learnify_courses
+
+3. Email & SMTP Notification:
+   Host: smtp.titan.email
+   Port: 465 (SSL)
+   Sender: info@learnify-solutions.com
+
+4. Direct Support & Hotline:
+   WhatsApp/Phone: +91 881 025 5422 (Chat Only)
+   Email: info@learnify-solutions.com
+
+5. GitHub Repository:
+   https://github.com/learnify-solutions/learnify-solutions (Branch: main)
+===================================================`;
+                      navigator.clipboard.writeText(credsText);
+                      setCopiedCredentials(true);
+                      setTimeout(() => setCopiedCredentials(false), 3000);
+                    }}
+                    className="px-3.5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    {copiedCredentials ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700">Credentials Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Credentials</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Credentials Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. Admin Portal */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-[#ea6d24]" />
+                      Master Admin CMS Portal
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-[#ea6d24]">Active</span>
+                  </div>
+                  <div className="space-y-1 text-xs text-slate-600">
+                    <p><strong className="text-slate-900">Access Path:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">/admin-secure-portal</code></p>
+                    <p><strong className="text-slate-900">Username:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">admin</code></p>
+                    <p><strong className="text-slate-900">Default Password:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">admin123</code></p>
+                  </div>
+                </div>
+
+                {/* 2. Supabase DB */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Database className="w-3.5 h-3.5 text-emerald-600" />
+                      Supabase PostgreSQL DB
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Connected</span>
+                  </div>
+                  <div className="space-y-1 text-xs text-slate-600">
+                    <p><strong className="text-slate-900">Project:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">zqilnxxgmctpclfqjevx</code></p>
+                    <p><strong className="text-slate-900">Leads Table:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">learnify_leads</code></p>
+                    <p><strong className="text-slate-900">Catalog Table:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">learnify_courses</code></p>
+                  </div>
+                </div>
+
+                {/* 3. Outbound SMTP */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-blue-600" />
+                      Email Gateway & Lead Alert
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">Titan SMTP</span>
+                  </div>
+                  <div className="space-y-1 text-xs text-slate-600">
+                    <p><strong className="text-slate-900">Server:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">smtp.titan.email</code></p>
+                    <p><strong className="text-slate-900">Port / Security:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">465 (SSL)</code></p>
+                    <p><strong className="text-slate-900">Sender / Receiver:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">info@learnify-solutions.com</code></p>
+                  </div>
+                </div>
+
+                {/* 4. Contact & Hotline */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-purple-600" />
+                      Client Support & Hotline
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800">24/7 Verified</span>
+                  </div>
+                  <div className="space-y-1 text-xs text-slate-600">
+                    <p><strong className="text-slate-900">Phone / WhatsApp:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">+91 881 025 5422</code></p>
+                    <p><strong className="text-slate-900">Inquiry Email:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">info@learnify-solutions.com</code></p>
+                    <p><strong className="text-slate-900">GitHub:</strong> <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">learnify-solutions/learnify-solutions</code></p>
+                  </div>
+                </div>
+              </div>
+
+              {/* File Location Notice */}
+              <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60 space-y-2 text-xs text-amber-900">
+                <h5 className="font-bold flex items-center gap-1.5 text-amber-950">
+                  <FileCheck className="w-4 h-4 text-amber-700" />
+                  Documentation File Location in Project Codebase
+                </h5>
+                <p className="text-amber-900/90 text-xs leading-relaxed">
+                  The complete report is stored at <code className="bg-white/80 px-2 py-0.5 rounded font-mono font-bold text-amber-950 border border-amber-300">/CLIENT_HANDOVER_DOCUMENTATION.md</code> in the repository root and linked directly in <code className="bg-white/80 px-2 py-0.5 rounded font-mono font-bold text-amber-950 border border-amber-300">/README.md</code>.
+                  It contains complete specification tables for all 52 certified courses, syllabus vector layout blueprints, security headers, and deployment instructions.
+                </p>
+              </div>
+
+              {/* Complete Markdown Document Preview Container */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <Code className="w-3.5 h-3.5 text-slate-500" />
+                    Complete Document Preview (CLIENT_HANDOVER_DOCUMENTATION.md)
+                  </span>
+                  <button
+                    onClick={() => {
+                      if (docContent) {
+                        navigator.clipboard.writeText(docContent);
+                        setCopiedCredentials(true);
+                        setTimeout(() => setCopiedCredentials(false), 3000);
+                      }
+                    }}
+                    className="text-xs text-[#ea6d24] font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>Copy Full Markdown</span>
+                  </button>
+                </div>
+
+                <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs max-h-96 overflow-y-auto leading-relaxed border border-slate-800 shadow-inner whitespace-pre-wrap select-all">
+                  {isLoadingDoc ? (
+                    <div className="flex items-center justify-center py-12 text-slate-400 gap-2">
+                      <RefreshCw className="w-4 h-4 animate-spin text-[#ea6d24]" />
+                      <span>Loading complete documentation...</span>
+                    </div>
+                  ) : (
+                    docContent || 'Loading /CLIENT_HANDOVER_DOCUMENTATION.md...'
+                  )}
                 </div>
               </div>
             </div>

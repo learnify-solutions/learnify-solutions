@@ -69,6 +69,11 @@ npm run build
 npm start
 ```
 
+## Client Handover & Credentials Documentation
+
+For complete project credentials, administrative access, database connection strings, architecture diagrams, and the full 52-course blueprint catalog, please refer to:
+👉 **[CLIENT_HANDOVER_DOCUMENTATION.md](./CLIENT_HANDOVER_DOCUMENTATION.md)**
+
 ## License
 
 All rights reserved © Learnify Solutions.

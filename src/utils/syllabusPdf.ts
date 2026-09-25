@@ -289,19 +289,32 @@ export async function generateSyllabusPdf(courseInput: Course): Promise<void> {
   // Vendor Tag Box
   doc.setFillColor(241, 245, 249);
   doc.setDrawColor(203, 213, 225);
-  doc.roundedRect(margin, y, 32, 6.5, 1, 1, 'FD');
+  doc.roundedRect(margin, y, 30, 6.5, 1, 1, 'FD');
   doc.setTextColor(21, 46, 77);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text(vendor.toUpperCase(), margin + 16, y + 4.5, { align: 'center' });
+  doc.text(vendor.toUpperCase(), margin + 15, y + 4.5, { align: 'center' });
 
   // Level Tag Box
   doc.setFillColor(254, 242, 237);
   doc.setDrawColor(253, 186, 116);
-  doc.roundedRect(margin + 35, y, 32, 6.5, 1, 1, 'FD');
+  doc.roundedRect(margin + 33, y, 28, 6.5, 1, 1, 'FD');
   doc.setTextColor(234, 109, 36);
   doc.setFont('helvetica', 'bold');
-  doc.text(level.toUpperCase(), margin + 51, y + 4.5, { align: 'center' });
+  doc.text(level.toUpperCase(), margin + 47, y + 4.5, { align: 'center' });
+
+  // Exam Code Tag Box (if available)
+  if (course.examCode) {
+    const examText = cleanPdfText(`EXAM: ${course.examCode}`);
+    const examWidth = Math.min(48, Math.max(34, doc.getTextWidth(examText) + 6));
+    doc.setFillColor(240, 253, 244);
+    doc.setDrawColor(187, 247, 208);
+    doc.roundedRect(margin + 64, y, examWidth, 6.5, 1, 1, 'FD');
+    doc.setTextColor(22, 101, 52);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text(examText, margin + 64 + examWidth / 2, y + 4.5, { align: 'center' });
+  }
 
   // Format & Duration info on right
   doc.setTextColor(100, 116, 139);

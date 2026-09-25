@@ -266,6 +266,12 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                 <span className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                   {course.skillLevel || course.level || 'Intermediate'}
                 </span>
+                {course.examCode && (
+                  <span className="px-3 py-1 text-[11px] font-bold tracking-wider rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 shadow-xs">
+                    <Award className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Exam: {course.examCode}</span>
+                  </span>
+                )}
                 <span className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full bg-orange-50 text-[#ea6d24] border border-orange-200 flex items-center gap-1.5">
                   <Layers className="w-3 h-3 text-[#ea6d24]" />
                   <span>Online • Classroom • 1-on-1 Mentorship</span>
