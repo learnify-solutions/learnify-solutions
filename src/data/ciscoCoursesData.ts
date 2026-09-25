@@ -116,11 +116,64 @@ export const ciscoCourses: Course[] = [
       'Familiarity with standard operating systems and command-line interfaces'
     ],
     outline: [
-      { title: 'Module 1: Network Fundamentals & Topology (20%)', description: 'Network roles, OSI & TCP/IP models, physical cabling, IPv4/IPv6 addressing schemes and VLSM calculations.' },
-      { title: 'Module 2: Network Access & Layer 2 Protocols (20%)', description: 'VLAN configuration, switchport modes, Spanning Tree (STP/RSTP), Cisco Discovery Protocol (CDP/LLDP), and EtherChannel bonding.' },
-      { title: 'Module 3: IP Connectivity & Dynamic Routing (25%)', description: 'Routing tables, administrative distance, static routes, default gateways, and hands-on OSPF configuration.' },
-      { title: 'Module 4: IP Services & Security Fundamentals (25%)', description: 'Inside/outside NAT, DHCP relay, access control lists (ACLs), Layer 2 port security, and WPA3 wireless security.' },
-      { title: 'Module 5: Automation, Programmability & Exam Capstone (10%)', description: 'REST APIs, JSON payloads, Ansible/Puppet concepts, controller-managed networks, and comprehensive mock exam review.' }
+      {
+        title: '1. Network Fundamentals (20%)',
+        description: 'Network roles, OSI & TCP/IP models, physical cabling, IPv4/IPv6 addressing schemes and VLSM calculations.',
+        items: [
+          'Roles and functions of network components: routers, Layer 2 and Layer 3 switches, next-generation firewalls, access points, and controllers',
+          'Network topology architectures: two-tier, three-tier, spine-leaf, WAN, small office/home office (SOHO), and on-premise vs cloud',
+          'Physical interface and cabling types: single-mode fiber, multimode fiber, copper cabling, auto-MDIX, and PoE standards (802.3af/at/bt)',
+          'IPv4 addressing, subnetting, VLSM calculations, and address planning for private and public address spaces',
+          'IPv6 addressing and concepts: unicast (global, unique local, link-local), anycast, multicast, EUI-64, and prefix delegation',
+          'IP parameters verification on client OS (Windows, Linux, macOS), and virtualization fundamentals (Type 1/2 hypervisors, VMs, containers)'
+        ]
+      },
+      {
+        title: '2. Network Access & Layer 2 Technologies (20%)',
+        description: 'VLAN configuration, switchport modes, Spanning Tree (STP/RSTP), Cisco Discovery Protocol (CDP/LLDP), and EtherChannel bonding.',
+        items: [
+          'Configuring and verifying VLANs: normal range VLANs, data vs voice VLANs, and default access switchport assignment',
+          'Interswitch connectivity: 802.1Q trunking, native VLAN security, and allowed VLAN lists configuration',
+          'Layer 2 discovery protocols: Cisco Discovery Protocol (CDP) and Link Layer Discovery Protocol (LLDP) operational verification',
+          'EtherChannel (Layer 2 / Layer 3): LACP negotiation, static channel groups, and load balancing mechanisms',
+          'Spanning Tree Protocol (STP): Rapid PVST+, root bridge election, bridge priorities, port states, PortFast, and BPDU Guard'
+        ]
+      },
+      {
+        title: '3. IP Connectivity & Dynamic Routing (25%)',
+        description: 'Routing tables, administrative distance, static routes, default gateways, and hands-on OSPF configuration.',
+        items: [
+          'Routing table components: routing protocol code, prefix, network mask, next hop, administrative distance, metric, and gateway of last resort',
+          'Routing decision process: longest prefix match, administrative distance comparison, and metric calculation',
+          'Static IPv4 and IPv6 routing: default static routes, network static routes, host static routes, and floating static routes with tracking',
+          'Single-area OSPFv2 configuration: neighbor adjacencies, Point-to-Point and Broadcast network types, router ID election, and passive interfaces',
+          'First Hop Redundancy Protocols (FHRP): High availability concepts and default gateway redundancy mechanisms'
+        ]
+      },
+      {
+        title: '4. IP Services & Security Fundamentals (25%)',
+        description: 'Inside/outside NAT, DHCP relay, access control lists (ACLs), Layer 2 port security, and WPA3 wireless security.',
+        items: [
+          'Network Address Translation (NAT): Inside source NAT, dynamic NAT pools, and Port Address Translation (PAT / NAT Overload)',
+          'DHCP & DNS Services: DHCP client, DHCP server pools, DHCP relay agent (ip helper-address), and DNS name resolution lookup',
+          'Network Management: NTP client synchronization, SNMPv2c/SNMPv3 community/user configuration, and Syslog remote logging',
+          'Security Concepts: Threats, vulnerabilities, exploits, mitigation techniques, social engineering, and defense-in-depth security posture',
+          'Access Control Lists (ACLs): Standard IPv4 ACLs and extended IPv4 ACLs with source, destination, port, and protocol matching',
+          'Layer 2 Security: Switchport port security (static, dynamic, sticky MAC), DHCP snooping, Dynamic ARP Inspection (DAI), and BPDU guard',
+          'Wireless Security: WPA, WPA2, and WPA3 (Personal & Enterprise SAE), 802.1X authentication, and client isolation'
+        ]
+      },
+      {
+        title: '5. Automation and Programmability (10%)',
+        description: 'REST APIs, JSON payloads, Ansible/Puppet concepts, controller-managed networks, and comprehensive mock exam review.',
+        items: [
+          'Traditional vs Controller-Based Networking: Management plane, control plane, and data plane separation',
+          'Software-Defined Architecture: Cisco DNA Center controller, fabric overlays, and Cisco SD-WAN architecture concepts',
+          'REST APIs: CRUD operations, HTTP verbs (GET, POST, PUT, DELETE), status codes, authentication headers, and JSON data parsing',
+          'Configuration Management: Ansible playbooks, Puppet manifests, Chef cookbooks, and declarative infrastructure automation',
+          'Version Control: Git version control principles, repository branching, commits, and pull requests in network operations'
+        ]
+      }
     ]
   },
   {
