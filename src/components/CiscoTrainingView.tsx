@@ -32,7 +32,7 @@ import {
 import { Course } from '../types';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
 import { SyllabusDownloadModal } from './SyllabusDownloadModal';
-import { CISCO_PROFESSIONAL_TRACKS } from '../data/ciscoCoursesData';
+import { CISCO_PROFESSIONAL_TRACKS, ciscoCourses as staticCiscoCourses } from '../data/ciscoCoursesData';
 
 interface CiscoTrainingViewProps {
   courses: Course[];
@@ -81,7 +81,7 @@ export const CiscoTrainingView: React.FC<CiscoTrainingViewProps> = ({
 
   // Extract all Cisco courses using structured fields with graceful fallbacks
   const allCiscoCourses = useMemo(() => {
-    return courses.filter((c) => {
+    const list = courses.filter((c) => {
       const vendor = (c.certificationVendor || '').toLowerCase();
       const domain = (c.domain || '').toLowerCase();
       const id = (c.id || '').toLowerCase();
@@ -101,6 +101,9 @@ export const CiscoTrainingView: React.FC<CiscoTrainingViewProps> = ({
         title.includes('scor')
       );
     });
+
+    if (list.length > 0) return list;
+    return staticCiscoCourses;
   }, [courses]);
 
   // Total counts for badges

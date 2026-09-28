@@ -103,12 +103,28 @@ export default function App() {
   });
 
   // Helper to detect if current URL has authorized enterprise / Cisco parameters
-function checkIsEnterpriseUrl(): boolean {
-  return false;
-}
+  function checkIsEnterpriseUrl(): boolean {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    const catalog = params.get('catalog');
+    const path = window.location.pathname.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+    return (
+      catalog === 'enterprise' ||
+      catalog === 'cisco' ||
+      path === '/cisco-training' ||
+      path === '/cisco-training/' ||
+      path === '/cisco' ||
+      path === '/cisco/' ||
+      hash === '#cisco-training' ||
+      hash === '#cisco'
+    );
+  }
 
-  // Gated Cisco Training Authorization State (Permanently disabled)
-  const [isCiscoAuthorized, setIsCiscoAuthorized] = useState<boolean>(false);
+  // Gated Cisco Training Authorization State
+  const [isCiscoAuthorized, setIsCiscoAuthorized] = useState<boolean>(() => {
+    return checkIsEnterpriseUrl();
+  });
 
   const [activePage, setActivePage] = useState<
     'home' | 'about' | 'courses' | 'course_detail' | 'corporate_training' | 'contact' | 'privacy' | 'cisco_training'
@@ -116,10 +132,15 @@ function checkIsEnterpriseUrl(): boolean {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const catalog = params.get('catalog');
+
       if (path.startsWith('/course/') || hash.startsWith('#course-')) {
         return 'course_detail';
       }
       if (
+        catalog === 'enterprise' ||
+        catalog === 'cisco' ||
         path === '/cisco-training' ||
         path === '/cisco-training/' ||
         path === '/cisco' ||
@@ -169,10 +190,15 @@ function checkIsEnterpriseUrl(): boolean {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const catalog = params.get('catalog');
+
       if (path.startsWith('/course/') || hash.startsWith('#course-')) {
         return 'nav-courses';
       }
       if (
+        catalog === 'enterprise' ||
+        catalog === 'cisco' ||
         path === '/cisco-training' ||
         path === '/cisco-training/' ||
         path === '/cisco' ||
@@ -439,9 +465,12 @@ function checkIsEnterpriseUrl(): boolean {
         };
       default:
         return {
-          title: 'Learnify Solutions | Authorized Global IT Training Partner (Microsoft, Cisco, CompTIA, AWS, CEH & Kubernetes)',
-          description:
-            'Global authorized IT training partner for Microsoft, Cisco, CompTIA, AWS, EC-Council & Kubernetes. Live 1-on-1 instructor bootcamps, official exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Africa & India.',
+          title: isCiscoAuthorized
+            ? 'Learnify Solutions | Authorized Global IT Training Partner (Microsoft, Cisco, CompTIA, AWS, CEH & Kubernetes)'
+            : 'Learnify Solutions | Authorized Microsoft & CompTIA Global IT Training Partner',
+          description: isCiscoAuthorized
+            ? 'Global authorized IT training partner for Microsoft, Cisco, CompTIA, AWS, EC-Council & Kubernetes. Live 1-on-1 instructor bootcamps, official exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Africa & India.'
+            : 'Global authorized IT training partner for Microsoft, CompTIA, AWS, EC-Council & Kubernetes. Live 1-on-1 instructor bootcamps, official exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Africa & India.',
           keywords: isCiscoAuthorized
             ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Koenig Solutions alternative, enterprise IT workforce upskilling, Learnify Solutions'
             : 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+, CompTIA Cloud+, AWS certification courses, AWS Solutions Architect SAA-C03, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Learnify Solutions',
@@ -510,7 +539,12 @@ function checkIsEnterpriseUrl(): boolean {
         }
       }
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const catalogParam = urlParams.get('catalog');
+
       if (
+        catalogParam === 'enterprise' ||
+        catalogParam === 'cisco' ||
         pathname === '/cisco-training' ||
         pathname === '/cisco-training/' ||
         pathname === '/cisco' ||
@@ -649,7 +683,11 @@ function checkIsEnterpriseUrl(): boolean {
       // otherwise, defer course catalog hydration until browser is completely idle
       const initialPath = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
       const initialHash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
+      const initialParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const initialCatalog = initialParams?.get('catalog');
       const isCourseRoute =
+        initialCatalog === 'enterprise' ||
+        initialCatalog === 'cisco' ||
         initialPath.includes('course') ||
         initialPath.includes('cisco') ||
         initialHash.includes('course') ||
