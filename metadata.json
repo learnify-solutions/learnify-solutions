@@ -1,0 +1,6 @@
+{
+  "name": "Learnify Solutions",
+  "description": "Backend-driven corporate IT training platform featuring dynamic UI configuration, course catalog, technology domain roadmaps, and real-time backend updates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
