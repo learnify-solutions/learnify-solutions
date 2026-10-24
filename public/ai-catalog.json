@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Learnify Solutions AI Catalog",
+  "description": "Authorized Global IT Training & Certification Catalog",
+  "version": "1.0.0",
+  "endpoints": [
+    {
+      "path": "/",
+      "method": "GET",
+      "description": "Home page with featured courses and corporate training overview."
+    },
+    {
+      "path": "/courses",
+      "method": "GET",
+      "description": "Catalog of all 50+ official IT certification courses."
+    },
+    {
+      "path": "/corporate-training",
+      "method": "GET",
+      "description": "Enterprise cohort and group upskilling solutions."
+    },
+    {
+      "path": "/cisco-training",
+      "method": "GET",
+      "description": "Specialized Cisco CCNA & CCNP certification bootcamps."
+    }
+  ]
+}
