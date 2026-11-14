@@ -1582,9 +1582,10 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       })
     );
 
-    // General static file serving with 1 day caching
+    // General static file serving with 1 day caching (index: false lets SSR handler serve /)
     app.use(
       express.static(distPath, {
+        index: false,
         maxAge: '1d',
         setHeaders: (res, filePath) => {
           if (filePath.endsWith('.html')) {
