@@ -445,6 +445,77 @@ async function startServer() {
 
   const SITE_BASE_URL = 'https://www.learnify-solutions.com';
 
+  // Legacy WordPress SEO cleanup: canonicalize ?nocache, 301 redirect old WP course/lesson slugs, and 410 Gone permanently deleted WP artifacts
+  const LEGACY_301_REDIRECTS: Record<string, string> = {
+    '/course/ai-102-designing-and-implementing-an-azure-ai-solutions': '/course/course-ms-ai-102',
+    '/course/comptia-server': '/course/course-comptia-server-plus',
+    '/privacy-policy': '/privacy',
+    '/cisco-certified-network-associate-and-ccna-the-essential-cisco-networking-certification': '/course/course-cisco-ccna',
+  };
+
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      return next();
+    }
+    const reqPath = req.path || '/';
+    if (
+      reqPath.startsWith('/api/') ||
+      reqPath.startsWith('/assets/') ||
+      reqPath.startsWith('/images/') ||
+      reqPath.startsWith('/src/')
+    ) {
+      return next();
+    }
+
+    const normalizedPath = reqPath.replace(/\/+$/, '').toLowerCase() || '/';
+
+    // 1. Strip WordPress ?nocache=... query parameter cleanly
+    if (typeof req.query.nocache !== 'undefined') {
+      const remaining = new URLSearchParams();
+      for (const [k, v] of Object.entries(req.query)) {
+        if (k !== 'nocache' && typeof v === 'string') {
+          remaining.set(k, v);
+        }
+      }
+      const qs = remaining.toString();
+      const target = `${reqPath === '/' ? '/' : normalizedPath}${qs ? `?${qs}` : ''}`;
+      return res.redirect(301, target);
+    }
+
+    // 2. Exact legacy WordPress slug redirects -> new Learnify URLs
+    if (LEGACY_301_REDIRECTS[normalizedPath]) {
+      return res.redirect(301, LEGACY_301_REDIRECTS[normalizedPath]);
+    }
+
+    // 3. Old LearnDash /courses/<slug>/lessons/<lesson> -> /courses
+    if (/^\/courses\/[^/]+\/lessons(\/|$)/i.test(reqPath)) {
+      return res.redirect(301, '/courses');
+    }
+
+    // 4. Permanently removed WordPress system/feed/archive endpoints -> 410 Gone
+    const isGoneWpArtifact =
+      normalizedPath === '/xmlrpc.php' ||
+      normalizedPath === '/wp-login.php' ||
+      normalizedPath === '/membership' ||
+      normalizedPath.startsWith('/membership/') ||
+      normalizedPath.startsWith('/wp-includes/') ||
+      normalizedPath.startsWith('/wp-content/') ||
+      normalizedPath.startsWith('/wp-admin/') ||
+      normalizedPath.startsWith('/wp-json/') ||
+      normalizedPath.startsWith('/testimonial/') ||
+      normalizedPath.startsWith('/stores/') ||
+      /^\/202[0-9](\/|$)/.test(normalizedPath) ||
+      normalizedPath === '/feed' ||
+      normalizedPath.endsWith('/feed');
+
+    if (isGoneWpArtifact) {
+      res.setHeader('X-Robots-Tag', 'noindex, follow');
+      return res.status(410).type('text/plain').send('410 Gone - Legacy page removed.');
+    }
+
+    next();
+  });
+
   // Helper to serve static XML sitemaps from public/
   const servePublicXml = (fileName: string) => (_req: express.Request, res: express.Response) => {
     const xmlPath = path.join(process.cwd(), 'public', fileName);
@@ -1863,6 +1934,22 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     </script>
     </head>`;
 
+            const regionalLinksHtml = courseAlternates
+              ? `<p><strong>Regional Editions:</strong> <a href="${escapeHtml(courseAlternates.ae.replace(SITE_BASE_URL, ''))}">Dubai &amp; UAE Training</a> | <a href="${escapeHtml(courseAlternates.za.replace(SITE_BASE_URL, ''))}">South Africa Training</a></p>`
+              : '';
+
+            const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+              <nav><a href="/">Home</a> &gt; <a href="/courses">Courses</a> &gt; <span>${escapeHtml(course.title)}</span></nav>
+              <h1>${escapeHtml(course.title)} Certification Training</h1>
+              <p>${escapeHtml(course.summary || course.overview || '')}</p>
+              <p><strong>Vendor:</strong> ${escapeHtml(course.certificationVendor)} | <strong>Duration:</strong> ${escapeHtml(course.duration)} | <strong>Level:</strong> ${escapeHtml(course.skillLevel || 'Intermediate')}</p>
+              ${regionalLinksHtml}
+              <h2>Course Learning Objectives</h2>
+              <ul>${(course.learningObjectives || []).map((o) => `<li>${escapeHtml(o)}</li>`).join('')}</ul>
+              <h2>Curriculum Modules</h2>
+              <ul>${(course.curriculum || []).map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>
+            </main>`;
+
             html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
               .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(courseTitle)}</title>`)
               .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(courseTitle)}" />`)
@@ -1876,13 +1963,21 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(courseTitle)}" />`)
               .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(courseDesc)}" />`)
               .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${escapeHtml(courseImg)}" />`)
-              .replace(/<\/head>/, dynamicCourseSchema);
+              .replace(/<\/head>/, dynamicCourseSchema)
+              .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+          } else {
+            res.status(404);
+            html = stripHomeHeroPreloads(html)
+              .replace(/<title>.*?<\/title>/, `<title>Course Not Found | Learnify Solutions</title>`)
+              .replace(/<head>/, `<head><meta name="robots" content="noindex, follow" />`)
+              .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Course Not Found</h1><p>Explore our <a href="/courses">full IT certification catalog</a>, <a href="/ae">UAE Training Hub</a>, or <a href="/za">South Africa Training Hub</a>.</p></main></div>`);
           }
         } else if (url.startsWith('/about')) {
           const canonicalUrl = `${SITE_BASE_URL}/about`;
           const title = 'About Us | Learnify Solutions - Global Enterprise IT Training';
           const desc = 'Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces across USA, UK, UAE, Africa & India.';
           const keywords = 'about Learnify Solutions, enterprise IT training organization, tech upskilling leadership, corporate training partner, global IT academy, authorized training partner';
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>About Us</span></nav><h1>About Learnify Solutions</h1><p>${escapeHtml(desc)}</p><p><a href="/courses">Browse Courses</a> | <a href="/ae">UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact Us</a></p></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -1893,12 +1988,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/courses')) {
           const canonicalUrl = `${SITE_BASE_URL}/courses`;
           const title = 'IT & Cloud Certification Courses Catalog (Microsoft, Cisco, CompTIA, AWS) | Learnify Solutions';
           const desc = 'Browse 50+ official certification courses in Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS Cloud, CEH v12, and Kubernetes CKA. 1-on-1 & corporate batches across USA, UK, UAE & India.';
           const keywords = 'Microsoft certification training, Azure AZ-104, Cisco CCNA 200-301 training, Cisco CCNP ENCOR, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, CEH v12, CKA Kubernetes, IT training partner, 1-on-1 tech bootcamps Dubai, London, USA';
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Courses</span></nav><h1>IT &amp; Cloud Certification Courses Catalog</h1><p>${escapeHtml(desc)}</p><p><strong>Regional Programs:</strong> <a href="/ae">Dubai &amp; UAE CompTIA/Microsoft Hub</a> | <a href="/za">South Africa CompTIA/Microsoft Hub</a> | <a href="/cisco-training">Cisco Training</a></p><h2>All Certification Programs</h2><ul>${coursesStore.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)} (${escapeHtml(c.duration)})</li>`).join('')}</ul></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -1909,12 +2006,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/corporate-training') || url.startsWith('/corporate')) {
           const canonicalUrl = `${SITE_BASE_URL}/corporate-training`;
           const title = 'Corporate IT Training & Workforce Upskilling Solutions | Learnify Solutions';
           const desc = 'Scalable enterprise IT learning solutions for engineering teams worldwide. Custom syllabus, private cloud sandboxes, 98.4% first-time certification rate.';
           const keywords = 'corporate IT training, enterprise tech upskilling, Microsoft corporate training, Cisco enterprise training, CompTIA corporate cohorts, B2B IT training, workforce digital transformation';
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Corporate Training</span></nav><h1>Corporate IT Training &amp; Workforce Upskilling Solutions</h1><p>${escapeHtml(desc)}</p><ul><li>Private Corporate Cohorts &amp; Custom Syllabi</li><li>24/7 Cloud Sandbox Labs &amp; Instructor Mentorship</li><li>Dedicated Regional Delivery: <a href="/ae">UAE (Dubai &amp; Abu Dhabi)</a> | <a href="/za">South Africa (Johannesburg &amp; Cape Town)</a></li></ul><p><a href="/courses">Explore All Courses</a> | <a href="/contact">Request Corporate Quote</a></p></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -1925,12 +2024,15 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/cisco-training') || url.startsWith('/cisco')) {
           const canonicalUrl = `${SITE_BASE_URL}/cisco-training`;
           const title = 'Cisco Authorized Certification Training (CCNA, CCNP, DevNet, Security) | Learnify Solutions';
           const desc = 'Authorized Cisco training partner covering CCNA 200-301, CCNP Enterprise ENCOR, Security SCOR, SD-WAN, and DevNet. Real hardware topologies & virtual labs.';
           const keywords = 'Cisco training partner, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN course, CCNP Security SCOR 350-701, DevNet DEVASC, Cisco bootcamps Dubai, Cisco certified instructors';
+          const ciscoList = coursesStore.filter((c) => c.certificationVendor === 'Cisco');
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Cisco Training</span></nav><h1>Cisco Authorized Certification Training</h1><p>${escapeHtml(desc)}</p><ul>${ciscoList.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.duration)}</li>`).join('')}</ul></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -1941,12 +2043,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/contact')) {
           const canonicalUrl = `${SITE_BASE_URL}/contact`;
           const title = 'Contact Admissions & Corporate Sales | Learnify Solutions';
           const desc = 'Connect with Learnify Solutions educational advisors for 1-on-1 batch schedules, course fees, corporate discount quotes, and custom syllabus planning.';
           const keywords = 'contact Learnify Solutions, corporate training quote, educational advisor, IT training inquiry, batch schedule, course fee inquiry';
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Contact</span></nav><h1>Contact Admissions &amp; Corporate Sales</h1><p>${escapeHtml(desc)}</p><p>Email: <a href="mailto:info@learnify-solutions.com">info@learnify-solutions.com</a></p><p><a href="/courses">Browse Courses</a> | <a href="/ae">UAE Training Hub</a> | <a href="/za">South Africa Training Hub</a></p></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -1957,18 +2061,37 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`);
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/privacy')) {
           const canonicalUrl = `${SITE_BASE_URL}/privacy`;
           const title = 'Privacy Policy & Compliance | Learnify Solutions';
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Privacy Policy</span></nav><h1>Privacy Policy &amp; Compliance</h1><p>Learnify Solutions maintains strict GDPR, UAE PDPL, and South Africa POPIA data privacy standards across all training portals.</p></main>`;
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
-            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`);
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (url.startsWith('/admin')) {
           html = stripHomeHeroPreloads(html)
             .replace(/<title>.*?<\/title>/, `<title>Learnify Portal Administration</title>`)
             .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`);
+        } else if (cleanPath === '/' || cleanPath === '') {
+          const flagship = coursesStore.slice(0, 12);
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+            <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
+            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, CompTIA, Cisco, AWS, and Cybersecurity across USA, UK, UAE, South Africa, and India.</p>
+            <nav><a href="/courses">All Courses</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
+            <h2>Featured Certification Courses</h2>
+            <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a></li>`).join('')}</ul>
+          </main>`;
+          html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+        } else {
+          res.status(404);
+          html = stripHomeHeroPreloads(html)
+            .replace(/<title>.*?<\/title>/, `<title>Page Not Found | Learnify Solutions</title>`)
+            .replace(/<head>/, `<head><meta name="robots" content="noindex, follow" />`)
+            .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Page Not Found</h1><p>Explore our <a href="/courses">IT Certification Courses</a>, <a href="/ae">UAE Training Hub</a>, or <a href="/za">South Africa Training Hub</a>.</p></main></div>`);
         }
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
