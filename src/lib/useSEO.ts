@@ -100,11 +100,15 @@ export function useSEO({
     const twitterDesc = document.querySelector('meta[name="twitter:description"]');
     if (twitterDesc) twitterDesc.setAttribute('content', ogDescription || description);
 
-    // 8. Dynamic JSON-LD Structured Data
+    // 8. Dynamic JSON-LD Structured Data (deduplicated against SSR-injected tags)
     const scriptId = 'learnify-dynamic-jsonld';
     let dynamicJsonLdScript = document.getElementById(scriptId) as HTMLScriptElement | null;
 
     if (jsonLd) {
+      document
+        .querySelectorAll(`script[type="application/ld+json"]:not(#${scriptId})`)
+        .forEach((el) => el.remove());
+
       if (!dynamicJsonLdScript) {
         dynamicJsonLdScript = document.createElement('script');
         dynamicJsonLdScript.id = scriptId;

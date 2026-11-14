@@ -527,12 +527,6 @@ export default function App() {
                   },
                 },
                 'teaches': p.course.learningObjectives || [p.course.title],
-                'aggregateRating': {
-                  '@type': 'AggregateRating',
-                  'ratingValue': String(p.course.rating || '4.9'),
-                  'reviewCount': String(p.course.enrolled || '420'),
-                  'bestRating': '5',
-                },
                 'offers': {
                   '@type': 'Offer',
                   'category': 'Paid',
@@ -605,12 +599,6 @@ export default function App() {
                     'educationalCredentialAwarded': `${selectedCourse.title} Official Certification`,
                     'courseMode': ['online', 'blended', 'onsite'],
                     'teaches': selectedCourse.learningObjectives || [selectedCourse.title],
-                    'aggregateRating': {
-                      '@type': 'AggregateRating',
-                      'ratingValue': String(selectedCourse.rating || '4.95'),
-                      'reviewCount': String(selectedCourse.enrolled || '420'),
-                      'bestRating': '5'
-                    },
                     'offers': {
                       '@type': 'Offer',
                       'category': 'Paid',

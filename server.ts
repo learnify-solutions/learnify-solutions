@@ -1764,12 +1764,6 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                   },
                 },
                 teaches: p.course.learningObjectives || [p.course.title],
-                aggregateRating: {
-                  '@type': 'AggregateRating',
-                  ratingValue: String(p.course.rating || '4.9'),
-                  reviewCount: String(p.course.enrolled || '420'),
-                  bestRating: '5',
-                },
                 offers: {
                   '@type': 'Offer',
                   category: 'Paid',
@@ -1891,12 +1885,6 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             "@type": "CourseInstance",
             "courseMode": "online",
             "courseWorkload": ${JSON.stringify('PT' + (parseInt(course.duration, 10) || 40) + 'H')}
-          },
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "${course.rating || '4.9'}",
-            "reviewCount": "${course.enrolled || '350'}",
-            "bestRating": "5"
           },
           "offers": {
             "@type": "Offer",
