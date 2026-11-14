@@ -11,6 +11,12 @@ import rateLimit from 'express-rate-limit';
 import { createServer as createViteServer } from 'vite';
 import { initialCmsData } from './src/data/defaultCmsData';
 import { sampleCourses } from './src/data/coursesData';
+import {
+  REGION_CONFIGS,
+  getRegionalCoursePages,
+  getRegionalAlternatesForCourse,
+  resolveRegionalRoute,
+} from './src/data/regionalSeoData';
 import { CmsData, LeadSubmission, Course } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -1451,15 +1457,19 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     );
 
     // Explicit sitemap and robots routes with optimal caching headers
-    app.get('/sitemap.xml', (req, res) => {
-      const sitemapPath = path.join(process.cwd(), 'public/sitemap.xml');
-      if (fs.existsSync(sitemapPath)) {
+    const servePublicXml = (fileName: string) => (_req: express.Request, res: express.Response) => {
+      const xmlPath = path.join(process.cwd(), 'public', fileName);
+      if (fs.existsSync(xmlPath)) {
         res.setHeader('Content-Type', 'application/xml; charset=utf-8');
         res.setHeader('Cache-Control', 'public, max-age=86400');
-        return res.sendFile(sitemapPath);
+        return res.sendFile(xmlPath);
       }
-      res.status(404).end();
-    });
+      return res.status(404).end();
+    };
+
+    app.get('/sitemap.xml', servePublicXml('sitemap.xml'));
+    app.get('/sitemap-ae.xml', servePublicXml('sitemap-ae.xml'));
+    app.get('/sitemap-za.xml', servePublicXml('sitemap-za.xml'));
 
     app.get('/robots.txt', (req, res) => {
       const robotsPath = path.join(process.cwd(), 'public/robots.txt');
@@ -1471,15 +1481,247 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       res.status(404).end();
     });
 
+    const escapeHtml = (val: string) =>
+      String(val || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const replaceHreflangBlock = (
+      htmlInput: string,
+      alternates: Array<{ hreflang: string; href: string }>
+    ) => {
+      const cleaned = htmlInput.replace(
+        /\s*<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/gi,
+        ''
+      );
+      const tags = alternates
+        .map(
+          (a) =>
+            `    <link rel="alternate" hreflang="${escapeHtml(a.hreflang)}" href="${escapeHtml(a.href)}" />`
+        )
+        .join('\n');
+      return cleaned.replace(/<\/head>/i, `${tags}\n  </head>`);
+    };
+
+    const stripGlobalJsonLd = (htmlInput: string) =>
+      htmlInput.replace(
+        /\s*<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/gi,
+        ''
+      );
+
     app.get('*', (req, res) => {
       const url = req.originalUrl || req.url;
+      const cleanPath = url.split('?')[0].split('#')[0];
       const indexPath = path.join(distPath, 'index.html');
-      
+
       try {
         let html = fs.readFileSync(indexPath, 'utf-8');
+        const regionalMatch = resolveRegionalRoute(cleanPath);
 
-        // Dynamic SSR Meta Tag & Structured Data Injection for Courses & Pages
-        if (url.startsWith('/course/') || url.includes('course=')) {
+        // 1. Dedicated Regional SEO Routes (/ae, /za, /ae/:slug, /za/:slug)
+        if (regionalMatch && regionalMatch.type === 'hub') {
+          const region = regionalMatch.region;
+          const hubPages = getRegionalCoursePages(region.code);
+          const canonicalUrl = `https://learnify-solutions.com${region.hubPath}`;
+          const schemaObj = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'EducationalOrganization',
+                '@id': 'https://learnify-solutions.com/#organization',
+                name: 'Learnify Solutions',
+                url: 'https://learnify-solutions.com',
+              },
+              {
+                '@type': 'ItemList',
+                '@id': `${canonicalUrl}#course-list`,
+                name: `CompTIA & Microsoft Certification Training in ${region.countryName}`,
+                numberOfItems: hubPages.length,
+                itemListElement: hubPages.map((p, idx) => ({
+                  '@type': 'ListItem',
+                  position: idx + 1,
+                  name: p.h1Title,
+                  url: p.canonicalUrl,
+                })),
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://learnify-solutions.com/' },
+                  { '@type': 'ListItem', position: 2, name: `${region.shortName} Training`, item: canonicalUrl },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                mainEntity: region.hubFaqs.map((f) => ({
+                  '@type': 'Question',
+                  name: f.q,
+                  acceptedAnswer: { '@type': 'Answer', text: f.a },
+                })),
+              },
+            ],
+          };
+
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+            <nav><a href="/">Home</a> &gt; <span>${escapeHtml(region.shortName)} Training</span></nav>
+            <h1>CompTIA &amp; Microsoft Certification Training in ${escapeHtml(region.countryName)}</h1>
+            <p>${escapeHtml(region.hubDescription)}</p>
+            <p><strong>Cities Served:</strong> ${escapeHtml(region.cities.join(', '))} | <strong>Timezone:</strong> ${escapeHtml(region.timezone)} | <strong>Currency:</strong> ${escapeHtml(region.currency)}</p>
+            <h2>Certified Programs in ${escapeHtml(region.countryName)}</h2>
+            <ul>${hubPages
+              .map(
+                (p) =>
+                  `<li><a href="/${region.code}/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a> — ${escapeHtml(p.course.duration)}</li>`
+              )
+              .join('')}</ul>
+            <h2>Frequently Asked Questions</h2>
+            ${region.hubFaqs
+              .map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`)
+              .join('')}
+          </main>`;
+
+          html = stripGlobalJsonLd(html);
+          html = replaceHreflangBlock(html, [
+            { hreflang: 'x-default', href: 'https://learnify-solutions.com/courses' },
+            { hreflang: 'en', href: 'https://learnify-solutions.com/courses' },
+            { hreflang: 'en-AE', href: 'https://learnify-solutions.com/ae' },
+            { hreflang: 'en-ZA', href: 'https://learnify-solutions.com/za' },
+          ]);
+
+          html = html
+            .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(region.hubTitle)}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(region.hubTitle)}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(region.hubDescription)}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${escapeHtml(region.hubKeywords)}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(region.hubTitle)}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(region.hubDescription)}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(region.hubTitle)}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(region.hubDescription)}" />`)
+            .replace(/<meta name="geo.region" content=".*?" \/>/, `<meta name="geo.region" content="${region.code.toUpperCase()}" />`)
+            .replace(/<meta name="geo.placename" content=".*?" \/>/, `<meta name="geo.placename" content="${escapeHtml(region.cities.join(', '))}" />`)
+            .replace(
+              /<\/head>/,
+              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+            )
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+        } else if (regionalMatch && regionalMatch.type === 'course') {
+          const p = regionalMatch.page;
+          const courseImg = p.course.imageUrl?.startsWith('http')
+            ? p.course.imageUrl
+            : `https://learnify-solutions.com${p.course.imageUrl || '/hero.webp'}`;
+
+          const schemaObj = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'Course',
+                '@id': `${p.canonicalUrl}#course`,
+                name: p.h1Title,
+                courseCode: p.course.examCode || p.course.id,
+                description: p.localizedOverview,
+                inLanguage: 'en',
+                provider: {
+                  '@type': 'EducationalOrganization',
+                  name: 'Learnify Solutions',
+                  url: 'https://learnify-solutions.com',
+                },
+                educationalLevel: p.course.skillLevel || 'Intermediate',
+                educationalCredentialAwarded: `${p.course.title} Official Certification`,
+                courseMode: ['online', 'blended', 'onsite'],
+                hasCourseInstance: {
+                  '@type': 'CourseInstance',
+                  courseMode: 'online',
+                  location: {
+                    '@type': 'Country',
+                    name: p.region.countryName,
+                  },
+                },
+                teaches: p.course.learningObjectives || [p.course.title],
+                aggregateRating: {
+                  '@type': 'AggregateRating',
+                  ratingValue: String(p.course.rating || '4.9'),
+                  reviewCount: String(p.course.enrolled || '420'),
+                  bestRating: '5',
+                },
+                offers: {
+                  '@type': 'Offer',
+                  category: 'Paid',
+                  priceCurrency: p.region.currency,
+                  availability: 'https://schema.org/InStock',
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                '@id': `${p.canonicalUrl}#breadcrumb`,
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://learnify-solutions.com/' },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: `${p.region.shortName} Training`,
+                    item: `https://learnify-solutions.com${p.region.hubPath}`,
+                  },
+                  { '@type': 'ListItem', position: 3, name: p.meta.shortName, item: p.canonicalUrl },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                '@id': `${p.canonicalUrl}#faq`,
+                mainEntity: p.localizedFaqs.map((f) => ({
+                  '@type': 'Question',
+                  name: f.q,
+                  acceptedAnswer: { '@type': 'Answer', text: f.a },
+                })),
+              },
+            ],
+          };
+
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+            <nav><a href="/">Home</a> &gt; <a href="/${p.region.code}">${escapeHtml(p.region.shortName)} Training</a> &gt; <span>${escapeHtml(p.meta.shortName)}</span></nav>
+            <h1>${escapeHtml(p.h1Title)}</h1>
+            <p>${escapeHtml(p.localizedOverview)}</p>
+            <p><strong>Cities Served:</strong> ${escapeHtml(p.region.cities.join(', '))} | <strong>Timezone:</strong> ${escapeHtml(p.region.timezone)} | <strong>Corporate Invoicing:</strong> ${escapeHtml(p.region.currency)}</p>
+            <h2>Course Learning Objectives</h2>
+            <ul>${(p.course.learningObjectives || []).map((o) => `<li>${escapeHtml(o)}</li>`).join('')}</ul>
+            <h2>Frequently Asked Questions</h2>
+            ${p.localizedFaqs
+              .map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`)
+              .join('')}
+          </main>`;
+
+          html = stripGlobalJsonLd(html);
+          html = replaceHreflangBlock(html, [
+            { hreflang: 'x-default', href: p.alternateUrls.global },
+            { hreflang: 'en', href: p.alternateUrls.global },
+            { hreflang: 'en-AE', href: p.alternateUrls.ae },
+            { hreflang: 'en-ZA', href: p.alternateUrls.za },
+          ]);
+
+          html = html
+            .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(p.seoTitle)}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(p.seoTitle)}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(p.seoDescription)}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${escapeHtml(p.seoKeywords)}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${p.canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(p.seoTitle)}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(p.seoDescription)}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${p.canonicalUrl}" />`)
+            .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${escapeHtml(courseImg)}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(p.seoTitle)}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(p.seoDescription)}" />`)
+            .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${escapeHtml(courseImg)}" />`)
+            .replace(/<meta name="geo.region" content=".*?" \/>/, `<meta name="geo.region" content="${p.region.code.toUpperCase()}" />`)
+            .replace(/<meta name="geo.placename" content=".*?" \/>/, `<meta name="geo.placename" content="${escapeHtml(p.region.cities.join(', '))}" />`)
+            .replace(
+              /<\/head>/,
+              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+            )
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+        } else if (url.startsWith('/course/') || url.includes('course=')) {
           const courseIdMatch = url.match(/\/course\/([a-zA-Z0-9_-]+)/) || url.match(/course=([a-zA-Z0-9_-]+)/);
           const courseId = courseIdMatch ? courseIdMatch[1] : null;
           const course = courseId ? coursesStore.find(c => c.id === courseId) : null;
@@ -1492,6 +1734,16 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             const courseImg = course.imageUrl?.startsWith('http')
               ? course.imageUrl
               : `https://learnify-solutions.com${course.imageUrl || '/hero.webp'}`;
+
+            const courseAlternates = getRegionalAlternatesForCourse(course.id);
+            if (courseAlternates) {
+              html = replaceHreflangBlock(html, [
+                { hreflang: 'x-default', href: courseAlternates.global },
+                { hreflang: 'en', href: courseAlternates.global },
+                { hreflang: 'en-AE', href: courseAlternates.ae },
+                { hreflang: 'en-ZA', href: courseAlternates.za },
+              ]);
+            }
 
             // Specific Course & Breadcrumb Schema
             const dynamicCourseSchema = `
@@ -1560,19 +1812,19 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     </script>
     </head>`;
 
-            html = html
-              .replace(/<title>.*?<\/title>/, `<title>${courseTitle}</title>`)
-              .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${courseTitle}" />`)
-              .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${courseDesc}" />`)
-              .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${courseKeywords}" />`)
+            html = stripGlobalJsonLd(html)
+              .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(courseTitle)}</title>`)
+              .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(courseTitle)}" />`)
+              .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(courseDesc)}" />`)
+              .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${escapeHtml(courseKeywords)}" />`)
               .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
-              .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${courseTitle}" />`)
-              .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${courseDesc}" />`)
+              .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(courseTitle)}" />`)
+              .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(courseDesc)}" />`)
               .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
-              .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${courseImg}" />`)
-              .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${courseTitle}" />`)
-              .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${courseDesc}" />`)
-              .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${courseImg}" />`)
+              .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${escapeHtml(courseImg)}" />`)
+              .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(courseTitle)}" />`)
+              .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(courseDesc)}" />`)
+              .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${escapeHtml(courseImg)}" />`)
               .replace(/<\/head>/, dynamicCourseSchema);
           }
         } else if (url.startsWith('/about')) {

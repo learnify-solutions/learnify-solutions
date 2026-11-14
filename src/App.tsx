@@ -1,6 +1,16 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { initialCmsData } from './data/defaultCmsData';
 import { sampleCourses } from './data/coursesData';
+import {
+  RegionCode,
+  REGION_CONFIGS,
+  ResolvedRegionalCoursePage,
+  TARGET_REGIONAL_COURSES,
+  buildRegionalCoursePage,
+  getRegionalAlternatesForCourse,
+  getRegionalCoursePages,
+  resolveRegionalRoute,
+} from './data/regionalSeoData';
 import { CmsData, Course, TechDomain, LeadSubmission } from './types';
 import {
   fetchCmsData,
@@ -74,6 +84,12 @@ const PrivacyPolicyView = lazy(() =>
 const ContactView = lazy(() =>
   import('./components/ContactView').then((m) => ({ default: m.ContactView }))
 );
+const CountryHubView = lazy(() =>
+  import('./components/CountryHubView').then((m) => ({ default: m.CountryHubView }))
+);
+const RegionalCourseView = lazy(() =>
+  import('./components/RegionalCourseView').then((m) => ({ default: m.RegionalCourseView }))
+);
 const AdvisorModal = lazy(() =>
   import('./components/AdvisorModal').then((m) => ({ default: m.AdvisorModal }))
 );
@@ -129,13 +145,27 @@ export default function App() {
   });
 
   const [activePage, setActivePage] = useState<
-    'home' | 'about' | 'courses' | 'course_detail' | 'corporate_training' | 'contact' | 'privacy' | 'cisco_training'
+    | 'home'
+    | 'about'
+    | 'courses'
+    | 'course_detail'
+    | 'corporate_training'
+    | 'contact'
+    | 'privacy'
+    | 'cisco_training'
+    | 'country_hub'
+    | 'regional_course'
   >(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
       const params = new URLSearchParams(window.location.search);
       const catalog = params.get('catalog');
+
+      const regionalMatch = resolveRegionalRoute(path);
+      if (regionalMatch) {
+        return regionalMatch.type === 'hub' ? 'country_hub' : 'regional_course';
+      }
 
       if (path.startsWith('/course/') || hash.startsWith('#course-')) {
         return 'course_detail';
@@ -169,6 +199,22 @@ export default function App() {
       }
     }
     return 'home';
+  });
+
+  const [regionalRegion, setRegionalRegion] = useState<RegionCode>(() => {
+    if (typeof window !== 'undefined') {
+      const match = resolveRegionalRoute(window.location.pathname);
+      if (match) return match.region.code;
+    }
+    return 'ae';
+  });
+
+  const [selectedRegionalCourse, setSelectedRegionalCourse] = useState<ResolvedRegionalCoursePage | null>(() => {
+    if (typeof window !== 'undefined') {
+      const match = resolveRegionalRoute(window.location.pathname);
+      if (match && match.type === 'course') return match.page;
+    }
+    return null;
   });
 
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(() => {
@@ -374,7 +420,155 @@ export default function App() {
           canonicalUrl: 'https://learnify-solutions.com/courses',
           ogUrl: 'https://learnify-solutions.com/courses',
         };
-      case 'course_detail':
+      case 'country_hub': {
+        const region = REGION_CONFIGS[regionalRegion];
+        const hubPages = getRegionalCoursePages(regionalRegion);
+        return {
+          title: region.hubTitle,
+          description: region.hubDescription,
+          keywords: region.hubKeywords,
+          canonicalUrl: `https://learnify-solutions.com${region.hubPath}`,
+          ogUrl: `https://learnify-solutions.com${region.hubPath}`,
+          hreflangAlternates: [
+            { hreflang: 'x-default', href: 'https://learnify-solutions.com/courses' },
+            { hreflang: 'en', href: 'https://learnify-solutions.com/courses' },
+            { hreflang: 'en-AE', href: 'https://learnify-solutions.com/ae' },
+            { hreflang: 'en-ZA', href: 'https://learnify-solutions.com/za' },
+          ],
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'ItemList',
+                '@id': `https://learnify-solutions.com${region.hubPath}#course-list`,
+                'name': `CompTIA & Microsoft Certification Training in ${region.countryName}`,
+                'numberOfItems': hubPages.length,
+                'itemListElement': hubPages.map((p, idx) => ({
+                  '@type': 'ListItem',
+                  'position': idx + 1,
+                  'name': p.h1Title,
+                  'url': p.canonicalUrl,
+                })),
+              },
+              {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                  { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://learnify-solutions.com/' },
+                  {
+                    '@type': 'ListItem',
+                    'position': 2,
+                    'name': `${region.shortName} IT Training`,
+                    'item': `https://learnify-solutions.com${region.hubPath}`,
+                  },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                'mainEntity': region.hubFaqs.map((f) => ({
+                  '@type': 'Question',
+                  'name': f.q,
+                  'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+                })),
+              },
+            ],
+          },
+        };
+      }
+      case 'regional_course': {
+        if (!selectedRegionalCourse) {
+          return {
+            title: 'Regional IT Certification Training | Learnify Solutions',
+            description: 'Authorized CompTIA & Microsoft live certification bootcamps across UAE and South Africa.',
+            canonicalUrl: 'https://learnify-solutions.com/courses',
+            ogUrl: 'https://learnify-solutions.com/courses',
+          };
+        }
+        const p = selectedRegionalCourse;
+        const imgUrl = p.course.imageUrl?.startsWith('http')
+          ? p.course.imageUrl
+          : `https://learnify-solutions.com${p.course.imageUrl || '/hero.webp'}`;
+        return {
+          title: p.seoTitle,
+          description: p.seoDescription,
+          keywords: p.seoKeywords,
+          canonicalUrl: p.canonicalUrl,
+          ogUrl: p.canonicalUrl,
+          ogImage: imgUrl,
+          hreflangAlternates: [
+            { hreflang: 'x-default', href: p.alternateUrls.global },
+            { hreflang: 'en', href: p.alternateUrls.global },
+            { hreflang: 'en-AE', href: p.alternateUrls.ae },
+            { hreflang: 'en-ZA', href: p.alternateUrls.za },
+          ],
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'Course',
+                '@id': `${p.canonicalUrl}#course`,
+                'name': p.h1Title,
+                'courseCode': p.course.examCode || p.course.id,
+                'description': p.localizedOverview,
+                'inLanguage': 'en',
+                'provider': {
+                  '@type': 'EducationalOrganization',
+                  'name': 'Learnify Solutions',
+                  'url': 'https://learnify-solutions.com',
+                },
+                'educationalLevel': p.course.skillLevel || 'Intermediate',
+                'educationalCredentialAwarded': `${p.course.title} Official Certification`,
+                'courseMode': ['online', 'blended', 'onsite'],
+                'hasCourseInstance': {
+                  '@type': 'CourseInstance',
+                  'courseMode': 'online',
+                  'location': {
+                    '@type': 'Country',
+                    'name': p.region.countryName,
+                  },
+                },
+                'teaches': p.course.learningObjectives || [p.course.title],
+                'aggregateRating': {
+                  '@type': 'AggregateRating',
+                  'ratingValue': String(p.course.rating || '4.9'),
+                  'reviewCount': String(p.course.enrolled || '420'),
+                  'bestRating': '5',
+                },
+                'offers': {
+                  '@type': 'Offer',
+                  'category': 'Paid',
+                  'priceCurrency': p.region.currency,
+                  'availability': 'https://schema.org/InStock',
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                '@id': `${p.canonicalUrl}#breadcrumb`,
+                'itemListElement': [
+                  { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://learnify-solutions.com/' },
+                  {
+                    '@type': 'ListItem',
+                    'position': 2,
+                    'name': `${p.region.shortName} Training`,
+                    'item': `https://learnify-solutions.com${p.region.hubPath}`,
+                  },
+                  { '@type': 'ListItem', 'position': 3, 'name': p.meta.shortName, 'item': p.canonicalUrl },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                '@id': `${p.canonicalUrl}#faq`,
+                'mainEntity': p.localizedFaqs.map((f) => ({
+                  '@type': 'Question',
+                  'name': f.q,
+                  'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+                })),
+              },
+            ],
+          },
+        };
+      }
+      case 'course_detail': {
+        const courseAlternates = selectedCourse ? getRegionalAlternatesForCourse(selectedCourse.id) : null;
         return selectedCourse
           ? {
               title: `${selectedCourse.title} ${selectedCourse.examCode ? '(' + selectedCourse.examCode + ') ' : ''}Certification Training & Bootcamp | Learnify Solutions`,
@@ -385,6 +579,14 @@ export default function App() {
               ogImage: selectedCourse.imageUrl?.startsWith('http')
                 ? selectedCourse.imageUrl
                 : `https://learnify-solutions.com${selectedCourse.imageUrl || '/hero.webp'}`,
+              hreflangAlternates: courseAlternates
+                ? [
+                    { hreflang: 'x-default', href: courseAlternates.global },
+                    { hreflang: 'en', href: courseAlternates.global },
+                    { hreflang: 'en-AE', href: courseAlternates.ae },
+                    { hreflang: 'en-ZA', href: courseAlternates.za },
+                  ]
+                : undefined,
               jsonLd: {
                 '@context': 'https://schema.org',
                 '@graph': [
@@ -450,6 +652,7 @@ export default function App() {
               canonicalUrl: 'https://learnify-solutions.com/courses',
               ogUrl: 'https://learnify-solutions.com/courses',
             };
+      }
       case 'corporate_training':
         return {
           title: 'Enterprise & Corporate IT Training Solutions | Learnify Solutions',
@@ -516,7 +719,7 @@ export default function App() {
           ogUrl: 'https://learnify-solutions.com/',
         };
     }
-  }, [activePage, selectedCourse, isCiscoAuthorized]);
+  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse]);
 
   useSEO(seoConfig);
 
@@ -559,6 +762,21 @@ export default function App() {
       // Check Enterprise / Cisco authorization from URL (No persistent storage)
       const isEnterprise = checkIsEnterpriseUrl();
       setIsCiscoAuthorized(isEnterprise);
+
+      const regionalMatch = resolveRegionalRoute(pathname);
+      if (regionalMatch) {
+        setRegionalRegion(regionalMatch.region.code);
+        if (regionalMatch.type === 'hub') {
+          setSelectedRegionalCourse(null);
+          setActivePage('country_hub');
+          setActiveNavId('nav-courses');
+        } else {
+          setSelectedRegionalCourse(regionalMatch.page);
+          setActivePage('regional_course');
+          setActiveNavId('nav-courses');
+        }
+        return;
+      }
 
       // Synchronize active page and course if user hit back/forward buttons
       if (pathname.startsWith('/course/') || hash.startsWith('#course-')) {
@@ -886,6 +1104,34 @@ export default function App() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
+  const navigateToRegionalHub = (region: RegionCode) => {
+    setRegionalRegion(region);
+    setSelectedRegionalCourse(null);
+    setActivePage('country_hub');
+    setActiveNavId('nav-courses');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/${region}`);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
+  const navigateToRegionalCourse = (page: ResolvedRegionalCoursePage) => {
+    setRegionalRegion(page.region.code);
+    setSelectedRegionalCourse(page);
+    setActivePage('regional_course');
+    setActiveNavId('nav-courses');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/${page.region.code}/${page.slug}`);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
+  const navigateToRegionalPath = (path: string) => {
+    const match = resolveRegionalRoute(path);
+    if (!match) return;
+    if (match.type === 'hub') {
+      navigateToRegionalHub(match.region.code);
+    } else {
+      navigateToRegionalCourse(match.page);
+    }
+  };
+
   return (
     <div id="top" className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-orange-200 selection:text-[#152e4d]">
       <header className="sticky top-0 z-50 flex flex-col w-full shadow-xs">
@@ -949,6 +1195,52 @@ export default function App() {
               }}
               isCiscoAuthorized={isCiscoAuthorized}
             />
+          ) : activePage === 'country_hub' ? (
+            /* Dedicated Regional Country Hub Page (/ae or /za) */
+            <CountryHubView
+              regionCode={regionalRegion}
+              onNavigateRegionalCourse={navigateToRegionalCourse}
+              onSwitchRegion={navigateToRegionalHub}
+              onNavigateHome={() => {
+                setActivePage('home');
+                setActiveNavId('nav-home');
+                if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onOpenAdvisorModal={handleOpenAdvisorModal}
+            />
+          ) : activePage === 'regional_course' && selectedRegionalCourse ? (
+            /* Dedicated Country x Course SEO Page (/ae/:slug or /za/:slug) */
+            <RegionalCourseView
+              page={selectedRegionalCourse}
+              onNavigateHome={() => {
+                setActivePage('home');
+                setActiveNavId('nav-home');
+                if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onNavigateHub={navigateToRegionalHub}
+              onNavigateGlobalCourse={(courseId) => {
+                const matched = sampleCourses.find((c) => c.id === courseId);
+                if (matched) handleSelectCourse(matched);
+              }}
+              onSwitchCourseRegion={(targetRegion, courseId) => {
+                const meta = TARGET_REGIONAL_COURSES.find((c) => c.courseId === courseId);
+                if (!meta) return;
+                const built = buildRegionalCoursePage(meta, targetRegion);
+                if (built) navigateToRegionalCourse(built);
+              }}
+              onNavigateRegionalCourse={navigateToRegionalCourse}
+              onSubmitLead={async (data) => {
+                try {
+                  await submitLead(data);
+                  const updatedLeads = await fetchLeads();
+                  setLeads(updatedLeads);
+                } catch (err) {
+                  console.error('Failed to submit lead:', err);
+                }
+              }}
+            />
           ) : activePage === 'course_detail' && selectedCourse ? (
             /* Dedicated Course Detail Page */
             <CourseDetailView
@@ -961,6 +1253,7 @@ export default function App() {
               onNavigate={(page) => {
                 setActivePage(page as any);
               }}
+              onNavigateRegionalPath={navigateToRegionalPath}
               onSubmitLead={async (data) => {
                 try {
                   await submitLead(data);
@@ -1150,6 +1443,10 @@ export default function App() {
               setActivePage('corporate_training');
               setActiveNavId('nav-corporate');
               window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (link.href === '/ae' || link.label === 'UAE Training') {
+              navigateToRegionalHub('ae');
+            } else if (link.href === '/za' || link.label === 'South Africa Training') {
+              navigateToRegionalHub('za');
             } else if (link.href === '#privacy' || link.label === 'Privacy Policy') {
               setActivePage('privacy');
               setActiveNavId('');

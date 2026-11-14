@@ -106,7 +106,7 @@ export const Footer: React.FC<FooterProps> = ({
               {description}
             </p>
             
-            {/* Global Accreditation & Trust Badges */}
+            {/* Global Accreditation & Regional Hubs */}
             <div className="pt-2 flex flex-wrap gap-2 text-xs">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#1a4163] text-slate-300 border border-[#255883]">
                 <Globe2 className="w-3.5 h-3.5 text-orange-400" />
@@ -116,6 +116,31 @@ export const Footer: React.FC<FooterProps> = ({
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Authorized Curriculum</span>
               </span>
+            </div>
+
+            <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300">
+              <span className="text-slate-400 font-semibold">Regional Hubs:</span>
+              <a
+                href="/ae"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'UAE Training', href: '/ae' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                UAE &amp; Dubai Training
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/za"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'South Africa Training', href: '/za' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                South Africa Training
+              </a>
             </div>
           </div>
 

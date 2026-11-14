@@ -34,3 +34,5 @@ Host: https://learnify-solutions.com
 
 # XML Sitemaps
 Sitemap: https://learnify-solutions.com/sitemap.xml
+Sitemap: https://learnify-solutions.com/sitemap-ae.xml
+Sitemap: https://learnify-solutions.com/sitemap-za.xml

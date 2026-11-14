@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Course } from '../types';
 import { sampleCourses } from '../data/coursesData';
+import { getRegionalAlternatesForCourse } from '../data/regionalSeoData';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
 import { 
   Check, 
@@ -31,6 +32,7 @@ interface CourseDetailViewProps {
   onSubmitLead: (data: any) => void;
   onDownloadSyllabus?: (course: Course) => void;
   onNavigate?: (page: string) => void;
+  onNavigateRegionalPath?: (path: string) => void;
 }
 
 type TabType = 'overview' | 'learn' | 'prerequisites' | 'outline' | 'schedule' | 'faqs';
@@ -40,8 +42,10 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
   onBack,
   onSubmitLead,
   onDownloadSyllabus,
-  onNavigate
+  onNavigate,
+  onNavigateRegionalPath,
 }) => {
+  const regionalLinks = getRegionalAlternatesForCourse(course.id);
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [course.id]);
@@ -308,6 +312,37 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                   <span>Download Syllabus</span>
                 </button>
               </div>
+
+              {regionalLinks && (
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 pt-1">
+                  <span className="font-semibold text-slate-700">Regional Editions:</span>
+                  <a
+                    href={regionalLinks.ae.replace('https://learnify-solutions.com', '')}
+                    onClick={(e) => {
+                      if (onNavigateRegionalPath) {
+                        e.preventDefault();
+                        onNavigateRegionalPath(regionalLinks.ae.replace('https://learnify-solutions.com', ''));
+                      }
+                    }}
+                    className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
+                  >
+                    UAE / Dubai (GST · AED)
+                  </a>
+                  <span aria-hidden="true">·</span>
+                  <a
+                    href={regionalLinks.za.replace('https://learnify-solutions.com', '')}
+                    onClick={(e) => {
+                      if (onNavigateRegionalPath) {
+                        e.preventDefault();
+                        onNavigateRegionalPath(regionalLinks.za.replace('https://learnify-solutions.com', ''));
+                      }
+                    }}
+                    className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
+                  >
+                    South Africa (SAST · ZAR)
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Hero Right: Image & Quick Stats */}

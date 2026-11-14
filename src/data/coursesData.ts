@@ -171,7 +171,7 @@ export const sampleCourses: Course[] = [
   },
   {
     "id": "course-comptia-security-plus",
-    "title": "CompTIA Security+ South Africa (SY0-701 Training & Certification)",
+    "title": "CompTIA Security+ (SY0-701)",
     "domain": "Cybersecurity",
     "certificationVendor": "CompTIA",
     "skillLevel": "Intermediate",
@@ -181,8 +181,8 @@ export const sampleCourses: Course[] = [
     "rating": 4.9,
     "enrolled": 6150,
     "imageUrl": "/images/comptia_security_soc_1787771516564.webp",
-    "imageAlt": "CompTIA Security+ South Africa cybersecurity training bootcamp",
-    "summary": "Premier CompTIA Security+ (SY0-701) training and certification bootcamp in South Africa, Johannesburg, Pretoria & Cape Town. Master threat vectors, zero trust architecture, and incident response.",
+    "imageAlt": "CompTIA Security+ SY0-701 cybersecurity operations training bootcamp",
+    "summary": "The world’s leading baseline cybersecurity certification (SY0-701), establishing core mastery in threat vectors, zero trust architecture, cryptography, security operations, and incident response.",
     "curriculum": [
       "Module 1: General Security Concepts, CIA Triad, Zero Trust & Cryptography",
       "Module 2: Threat Vectors, Vulnerabilities, Social Engineering & Malware Types",
