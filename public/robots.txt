@@ -1,5 +1,5 @@
 # Learnify Solutions Enterprise Search Engine Directives
-# https://learnify-solutions.com
+# https://www.learnify-solutions.com
 
 User-agent: *
 Allow: /
@@ -30,9 +30,9 @@ Disallow: /admin
 Disallow: /admin-secure-portal
 
 # Host Definition
-Host: https://learnify-solutions.com
+Host: https://www.learnify-solutions.com
 
 # XML Sitemaps
-Sitemap: https://learnify-solutions.com/sitemap.xml
-Sitemap: https://learnify-solutions.com/sitemap-ae.xml
-Sitemap: https://learnify-solutions.com/sitemap-za.xml
+Sitemap: https://www.learnify-solutions.com/sitemap.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-ae.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-za.xml

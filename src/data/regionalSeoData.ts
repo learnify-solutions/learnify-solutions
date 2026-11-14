@@ -1,6 +1,8 @@
 import { Course } from '../types';
 import { sampleCourses } from './coursesData';
 
+export const SITE_BASE_URL = 'https://www.learnify-solutions.com';
+
 export type RegionCode = 'ae' | 'za';
 
 export interface RegionBatchSchedule {
@@ -502,15 +504,20 @@ export function buildRegionalCoursePage(
 
   const region = REGION_CONFIGS[regionCode];
   const slug = regionCode === 'ae' ? meta.aeSlug : meta.zaSlug;
-  const canonicalUrl = `https://learnify-solutions.com/${regionCode}/${slug}`;
+  const canonicalUrl = `${SITE_BASE_URL}/${regionCode}/${slug}`;
 
   const alternateUrls = {
-    global: `https://learnify-solutions.com/course/${course.id}`,
-    ae: `https://learnify-solutions.com/ae/${meta.aeSlug}`,
-    za: `https://learnify-solutions.com/za/${meta.zaSlug}`,
+    global: `${SITE_BASE_URL}/course/${course.id}`,
+    ae: `${SITE_BASE_URL}/ae/${meta.aeSlug}`,
+    za: `${SITE_BASE_URL}/za/${meta.zaSlug}`,
   };
 
-  const examCodeText = course.examCode ? ` (${course.examCode})` : '';
+  const hasExamCodeInShortName = Boolean(
+    course.examCode &&
+      meta.shortName.toLowerCase().includes(course.examCode.toLowerCase())
+  );
+  const examCodeText =
+    course.examCode && !hasExamCodeInShortName ? ` (${course.examCode})` : '';
   const seoTitle =
     regionCode === 'ae'
       ? `${meta.shortName}${examCodeText} Training in Dubai & UAE | Learnify Solutions`
@@ -585,9 +592,9 @@ export function getRegionalAlternatesForCourse(courseId: string): {
   const meta = TARGET_REGIONAL_COURSES.find((c) => c.courseId === courseId);
   if (!meta) return null;
   return {
-    global: `https://learnify-solutions.com/course/${courseId}`,
-    ae: `https://learnify-solutions.com/ae/${meta.aeSlug}`,
-    za: `https://learnify-solutions.com/za/${meta.zaSlug}`,
+    global: `${SITE_BASE_URL}/course/${courseId}`,
+    ae: `${SITE_BASE_URL}/ae/${meta.aeSlug}`,
+    za: `${SITE_BASE_URL}/za/${meta.zaSlug}`,
   };
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ResolvedRegionalCoursePage,
   RegionCode,
@@ -90,20 +90,30 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
     setSubmitted(true);
   };
 
-  const relatedRegionalCourses = getRegionalCoursePages(region.code)
-    .filter((p) => p.course.id !== course.id && p.course.certificationVendor === course.certificationVendor)
-    .slice(0, 3);
+  const relatedRegionalCourses = useMemo(
+    () =>
+      getRegionalCoursePages(region.code)
+        .filter((p) => p.course.id !== course.id && p.course.certificationVendor === course.certificationVendor)
+        .slice(0, 3),
+    [region.code, course.id, course.certificationVendor]
+  );
 
-  const outlineItems =
-    course.outline && course.outline.length > 0
-      ? course.outline
-      : (course.curriculum || []).map((c, idx) => ({
-          title: c,
-          items: [`Module ${idx + 1} instructor-led walkthrough and cloud sandbox practice`],
-        }));
+  const outlineItems = useMemo(
+    () =>
+      course.outline && course.outline.length > 0
+        ? course.outline
+        : (course.curriculum || []).map((c, idx) => ({
+            title: c,
+            items: [`Module ${idx + 1} instructor-led walkthrough and cloud sandbox practice`],
+          })),
+    [course.outline, course.curriculum]
+  );
 
   // Note: getSvgCourseFallback(title, vendor) expects title first, vendor second
-  const fallbackImg = getSvgCourseFallback(meta.shortName, course.certificationVendor);
+  const fallbackImg = useMemo(
+    () => getSvgCourseFallback(meta.shortName, course.certificationVendor),
+    [meta.shortName, course.certificationVendor]
+  );
   const heroImageSrc = normalizeImageUrl(course.imageUrl, 'course') || fallbackImg;
 
   return (
@@ -248,7 +258,10 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                 <img
                   src={heroImageSrc}
                   alt={page.h1Title}
+                  width={640}
+                  height={360}
                   loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   onError={(e) => {
                     const target = e.currentTarget;

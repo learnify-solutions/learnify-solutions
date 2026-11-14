@@ -313,36 +313,40 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                 </button>
               </div>
 
-              {regionalLinks && (
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 pt-1">
-                  <span className="font-semibold text-slate-700">Regional Editions:</span>
-                  <a
-                    href={regionalLinks.ae.replace('https://learnify-solutions.com', '')}
-                    onClick={(e) => {
-                      if (onNavigateRegionalPath) {
-                        e.preventDefault();
-                        onNavigateRegionalPath(regionalLinks.ae.replace('https://learnify-solutions.com', ''));
-                      }
-                    }}
-                    className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
-                  >
-                    UAE / Dubai (GST · AED)
-                  </a>
-                  <span aria-hidden="true">·</span>
-                  <a
-                    href={regionalLinks.za.replace('https://learnify-solutions.com', '')}
-                    onClick={(e) => {
-                      if (onNavigateRegionalPath) {
-                        e.preventDefault();
-                        onNavigateRegionalPath(regionalLinks.za.replace('https://learnify-solutions.com', ''));
-                      }
-                    }}
-                    className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
-                  >
-                    South Africa (SAST · ZAR)
-                  </a>
-                </div>
-              )}
+              {regionalLinks && (() => {
+                const aePath = regionalLinks.ae.replace(/^https:\/\/(www\.)?learnify-solutions\.com/, '');
+                const zaPath = regionalLinks.za.replace(/^https:\/\/(www\.)?learnify-solutions\.com/, '');
+                return (
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 pt-1">
+                    <span className="font-semibold text-slate-700">Regional Editions:</span>
+                    <a
+                      href={aePath}
+                      onClick={(e) => {
+                        if (onNavigateRegionalPath) {
+                          e.preventDefault();
+                          onNavigateRegionalPath(aePath);
+                        }
+                      }}
+                      className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
+                    >
+                      UAE / Dubai (GST · AED)
+                    </a>
+                    <span aria-hidden="true">·</span>
+                    <a
+                      href={zaPath}
+                      onClick={(e) => {
+                        if (onNavigateRegionalPath) {
+                          e.preventDefault();
+                          onNavigateRegionalPath(zaPath);
+                        }
+                      }}
+                      className="text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 font-medium"
+                    >
+                      South Africa (SAST · ZAR)
+                    </a>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Hero Right: Image & Quick Stats */}

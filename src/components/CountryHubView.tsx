@@ -48,8 +48,15 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
     return regionalPages.filter((p) => p.course.certificationVendor === vendorFilter);
   }, [regionalPages, vendorFilter]);
 
-  const comptiaCount = regionalPages.filter((p) => p.course.certificationVendor === 'CompTIA').length;
-  const msCount = regionalPages.filter((p) => p.course.certificationVendor === 'Microsoft').length;
+  const { comptiaCount, msCount } = useMemo(() => {
+    let comptia = 0;
+    let ms = 0;
+    for (const p of regionalPages) {
+      if (p.course.certificationVendor === 'CompTIA') comptia++;
+      else if (p.course.certificationVendor === 'Microsoft') ms++;
+    }
+    return { comptiaCount: comptia, msCount: ms };
+  }, [regionalPages]);
 
   return (
     <div className="w-full bg-[#f8fafc] min-h-screen pb-20">
@@ -264,7 +271,10 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
                     <img
                       src={thumbSrc}
                       alt={page.h1Title}
+                      width={640}
+                      height={360}
                       loading={index < 3 ? 'eager' : 'lazy'}
+                      fetchPriority={index === 0 ? 'high' : undefined}
                       decoding="async"
                       onError={(e) => {
                         const target = e.currentTarget;

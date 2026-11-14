@@ -24,12 +24,18 @@ export default defineConfig(() => {
               if (id.includes('lucide-react')) {
                 return 'vendor-icons';
               }
+              if (id.includes('/motion/') || id.includes('framer-motion')) {
+                return 'vendor-motion';
+              }
               if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('scheduler')) {
                 return 'vendor-react';
               }
               if (id.includes('@supabase')) {
                 return 'vendor-supabase';
               }
+            }
+            if (id.includes('regionalSeoData')) {
+              return 'regional-seo';
             }
             if (id.includes('coursesData') || id.includes('ciscoCoursesData')) {
               return 'courses-catalog';
