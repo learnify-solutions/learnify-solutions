@@ -510,7 +510,7 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                 </p>
                 <div className="pt-2">
                   <a
-                    href="/guides"
+                    href="/blogs"
                     onClick={(e) => {
                       if (onNavigateGuides) {
                         e.preventDefault();
@@ -519,7 +519,7 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                     }}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#ea6d24] hover:underline"
                   >
-                    <span>View {region.shortName} Exam Centers &amp; {region.currency} Cost Guides</span>
+                    <span>View {region.shortName} Exam Centers &amp; {region.currency} Blogs</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </a>
                 </div>

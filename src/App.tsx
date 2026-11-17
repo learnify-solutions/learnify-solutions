@@ -12,11 +12,11 @@ import {
   resolveRegionalRoute,
 } from './data/regionalSeoData';
 import {
-  SEO_GUIDES,
-  SeoGuide,
-  resolveGuideRoute,
-} from './data/guidesData';
-import { CmsData, Course, TechDomain, LeadSubmission } from './types';
+  SEO_BLOGS,
+  getMergedBlogs,
+  resolveBlogRoute,
+} from './data/blogsData';
+import { CmsData, Course, TechDomain, LeadSubmission, BlogPost } from './types';
 import {
   fetchCmsData,
   fetchCourses,
@@ -95,11 +95,14 @@ const CountryHubView = lazy(() =>
 const RegionalCourseView = lazy(() =>
   import('./components/RegionalCourseView').then((m) => ({ default: m.RegionalCourseView }))
 );
-const GuidesHubView = lazy(() =>
-  import('./components/GuidesHubView').then((m) => ({ default: m.GuidesHubView }))
+const BlogSection = lazy(() =>
+  import('./components/BlogSection').then((m) => ({ default: m.BlogSection }))
 );
-const GuideDetailView = lazy(() =>
-  import('./components/GuideDetailView').then((m) => ({ default: m.GuideDetailView }))
+const BlogsHubView = lazy(() =>
+  import('./components/BlogsHubView').then((m) => ({ default: m.BlogsHubView }))
+);
+const BlogDetailView = lazy(() =>
+  import('./components/BlogDetailView').then((m) => ({ default: m.BlogDetailView }))
 );
 const AdvisorModal = lazy(() =>
   import('./components/AdvisorModal').then((m) => ({ default: m.AdvisorModal }))
@@ -166,8 +169,8 @@ export default function App() {
     | 'cisco_training'
     | 'country_hub'
     | 'regional_course'
-    | 'guides_hub'
-    | 'guide_detail'
+    | 'blogs_hub'
+    | 'blog_detail'
   >(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
@@ -175,9 +178,9 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const catalog = params.get('catalog');
 
-      const guideMatch = resolveGuideRoute(path);
-      if (guideMatch) {
-        return guideMatch.type === 'hub' ? 'guides_hub' : 'guide_detail';
+      const blogMatch = resolveBlogRoute(path);
+      if (blogMatch) {
+        return blogMatch.type === 'hub' ? 'blogs_hub' : 'blog_detail';
       }
 
       const regionalMatch = resolveRegionalRoute(path);
@@ -235,10 +238,10 @@ export default function App() {
     return null;
   });
 
-  const [selectedGuide, setSelectedGuide] = useState<SeoGuide | null>(() => {
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(() => {
     if (typeof window !== 'undefined') {
-      const match = resolveGuideRoute(window.location.pathname);
-      if (match && match.type === 'detail') return match.guide;
+      const match = resolveBlogRoute(window.location.pathname);
+      if (match && match.type === 'detail') return match.post;
     }
     return null;
   });
@@ -282,6 +285,9 @@ export default function App() {
       ) {
         return 'nav-cisco';
       }
+      if (resolveBlogRoute(path)) {
+        return 'nav-blogs';
+      }
       if (path === '/courses' || hash === '#courses') {
         return 'nav-courses';
       }
@@ -308,6 +314,7 @@ export default function App() {
 
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isCmsDrawerOpen, setIsCmsDrawerOpen] = useState(false);
+  const [cmsDrawerInitialTab, setCmsDrawerInitialTab] = useState<'visual' | 'blogs'>('visual');
   const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
 
   // Filter courses based on Cisco authorization status
@@ -363,36 +370,63 @@ export default function App() {
     return withoutCisco;
   }, [cmsData.techDomainsSection.domains, isCiscoAuthorized]);
 
-  // Filter navigation links based on Cisco authorization status
+  // Filter navigation links based on Cisco authorization status & ensure Blogs link is always present
   const displayedNavLinks = React.useMemo(() => {
     const rawLinks = cmsData.navigation?.links || [];
+    let filteredLinks = isCiscoAuthorized
+      ? rawLinks
+      : rawLinks.filter(
+          (l) =>
+            l.id !== 'nav-cisco' &&
+            !l.label.toLowerCase().includes('cisco') &&
+            l.href !== '#cisco-training' &&
+            l.href !== '#cisco'
+        );
+
+    const hasBlogs = filteredLinks.some(
+      (l) =>
+        l.id === 'nav-blogs' ||
+        l.href === '#blogs' ||
+        l.href === '/blogs' ||
+        l.label.toLowerCase() === 'blogs'
+    );
+    if (!hasBlogs) {
+      const coursesIdx = filteredLinks.findIndex(
+        (l) => l.id === 'nav-courses' || l.label.toLowerCase() === 'courses'
+      );
+      const blogsLink = { id: 'nav-blogs', label: 'Blogs', href: '#blogs' };
+      const withBlogs = [...filteredLinks];
+      if (coursesIdx >= 0) {
+        withBlogs.splice(coursesIdx + 1, 0, blogsLink);
+      } else {
+        withBlogs.push(blogsLink);
+      }
+      filteredLinks = withBlogs;
+    }
+
     if (isCiscoAuthorized) {
-      const hasCisco = rawLinks.some(
+      const hasCisco = filteredLinks.some(
         (l) => l.id === 'nav-cisco' || l.label.toLowerCase().includes('cisco')
       );
       if (!hasCisco) {
-        const coursesIdx = rawLinks.findIndex(
+        const blogsIdx = filteredLinks.findIndex(
+          (l) => l.id === 'nav-blogs' || l.label.toLowerCase() === 'blogs'
+        );
+        const coursesIdx = filteredLinks.findIndex(
           (l) => l.id === 'nav-courses' || l.label.toLowerCase() === 'courses'
         );
+        const insertAfter = blogsIdx >= 0 ? blogsIdx : coursesIdx;
         const ciscoLink = { id: 'nav-cisco', label: 'Cisco Training', href: '#cisco-training' };
-        if (coursesIdx >= 0) {
-          const updated = [...rawLinks];
-          updated.splice(coursesIdx + 1, 0, ciscoLink);
+        if (insertAfter >= 0) {
+          const updated = [...filteredLinks];
+          updated.splice(insertAfter + 1, 0, ciscoLink);
           return updated;
         }
-        return [...rawLinks, ciscoLink];
+        return [...filteredLinks, ciscoLink];
       }
-      return rawLinks;
     }
 
-    // Gated: on normal URLs, never show Cisco link in navigation
-    return rawLinks.filter(
-      (l) =>
-        l.id !== 'nav-cisco' &&
-        !l.label.toLowerCase().includes('cisco') &&
-        l.href !== '#cisco-training' &&
-        l.href !== '#cisco'
-    );
+    return filteredLinks;
   }, [cmsData.navigation?.links, isCiscoAuthorized]);
 
   // Dynamic SEO Configuration for Top Google Ranking across every section & course
@@ -500,30 +534,31 @@ export default function App() {
           },
         };
       }
-      case 'guides_hub':
+      case 'blogs_hub': {
+        const allBlogs = getMergedBlogs(cmsData.blogs);
         return {
-          title: 'Exam Centers, Costs & Certification Guides (UAE & South Africa) | Learnify Solutions',
+          title: 'IT Certification Blogs, Exam Centers & Fee Guides (UAE & SA) | Learnify Solutions',
           description:
-            '2026 city-by-city guides for Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, plus AED and ZAR course costs.',
+            'Daily-updated IT certification blogs covering Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, AED & ZAR course costs, and CompTIA, Microsoft & AWS roadmaps.',
           keywords:
-            'where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai, Learnify guides',
-          canonicalUrl: 'https://www.learnify-solutions.com/guides',
-          ogUrl: 'https://www.learnify-solutions.com/guides',
+            'Learnify blogs, where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai',
+          canonicalUrl: 'https://www.learnify-solutions.com/blogs',
+          ogUrl: 'https://www.learnify-solutions.com/blogs',
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
               {
                 '@type': 'CollectionPage',
-                '@id': 'https://www.learnify-solutions.com/guides#collection',
-                'name': 'UAE & South Africa IT Exam Center and Cost Guides',
+                '@id': 'https://www.learnify-solutions.com/blogs#collection',
+                'name': 'Learnify IT Certification Blogs, Exam Centers & Fee Guides',
                 'mainEntity': {
                   '@type': 'ItemList',
-                  'numberOfItems': SEO_GUIDES.length,
-                  'itemListElement': SEO_GUIDES.map((g, idx) => ({
+                  'numberOfItems': allBlogs.length,
+                  'itemListElement': allBlogs.map((g, idx) => ({
                     '@type': 'ListItem',
                     'position': idx + 1,
                     'name': g.title,
-                    'url': `https://www.learnify-solutions.com/guides/${g.slug}`,
+                    'url': `https://www.learnify-solutions.com/blogs/${g.slug}`,
                   })),
                 },
               },
@@ -531,66 +566,72 @@ export default function App() {
                 '@type': 'BreadcrumbList',
                 'itemListElement': [
                   { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.learnify-solutions.com/' },
-                  { '@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': 'https://www.learnify-solutions.com/guides' },
+                  { '@type': 'ListItem', 'position': 2, 'name': 'Blogs', 'item': 'https://www.learnify-solutions.com/blogs' },
                 ],
               },
             ],
           },
         };
-      case 'guide_detail': {
-        if (!selectedGuide) {
+      }
+      case 'blog_detail': {
+        if (!selectedBlog) {
           return {
-            title: 'IT Certification Guides | Learnify Solutions',
-            description: 'Exam center and regional certification cost guides for UAE & South Africa.',
-            canonicalUrl: 'https://www.learnify-solutions.com/guides',
-            ogUrl: 'https://www.learnify-solutions.com/guides',
+            title: 'IT Certification Blogs | Learnify Solutions',
+            description: 'Exam center, certification cost, and regional IT career blogs for UAE & South Africa.',
+            canonicalUrl: 'https://www.learnify-solutions.com/blogs',
+            ogUrl: 'https://www.learnify-solutions.com/blogs',
           };
         }
-        const canonical = `https://www.learnify-solutions.com/guides/${selectedGuide.slug}`;
+        const canonical = `https://www.learnify-solutions.com/blogs/${selectedBlog.slug}`;
+        const graphNodes: Record<string, any>[] = [
+          {
+            '@type': 'BlogPosting',
+            '@id': `${canonical}#blogposting`,
+            'headline': selectedBlog.title,
+            'description': selectedBlog.seoDescription,
+            'datePublished': selectedBlog.publishedIso || '2026-11-17',
+            'dateModified': selectedBlog.publishedIso || '2026-11-17',
+            'inLanguage': 'en',
+            'author': {
+              '@type': 'Organization',
+              'name': 'Learnify Solutions',
+              'url': 'https://www.learnify-solutions.com',
+            },
+            'publisher': {
+              '@type': 'EducationalOrganization',
+              'name': 'Learnify Solutions',
+              'url': 'https://www.learnify-solutions.com',
+            },
+            'mainEntityOfPage': canonical,
+          },
+          {
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+              { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.learnify-solutions.com/' },
+              { '@type': 'ListItem', 'position': 2, 'name': 'Blogs', 'item': 'https://www.learnify-solutions.com/blogs' },
+              { '@type': 'ListItem', 'position': 3, 'name': selectedBlog.regionLabel, 'item': canonical },
+            ],
+          },
+        ];
+        if (selectedBlog.faqs && selectedBlog.faqs.length > 0) {
+          graphNodes.push({
+            '@type': 'FAQPage',
+            'mainEntity': selectedBlog.faqs.map((f) => ({
+              '@type': 'Question',
+              'name': f.q,
+              'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+            })),
+          });
+        }
         return {
-          title: selectedGuide.seoTitle,
-          description: selectedGuide.seoDescription,
-          keywords: selectedGuide.seoKeywords,
+          title: selectedBlog.seoTitle,
+          description: selectedBlog.seoDescription,
+          keywords: selectedBlog.seoKeywords,
           canonicalUrl: canonical,
           ogUrl: canonical,
           jsonLd: {
             '@context': 'https://schema.org',
-            '@graph': [
-              {
-                '@type': 'Article',
-                '@id': `${canonical}#article`,
-                'headline': selectedGuide.title,
-                'description': selectedGuide.seoDescription,
-                'inLanguage': 'en',
-                'author': {
-                  '@type': 'Organization',
-                  'name': 'Learnify Solutions',
-                  'url': 'https://www.learnify-solutions.com',
-                },
-                'publisher': {
-                  '@type': 'EducationalOrganization',
-                  'name': 'Learnify Solutions',
-                  'url': 'https://www.learnify-solutions.com',
-                },
-                'mainEntityOfPage': canonical,
-              },
-              {
-                '@type': 'BreadcrumbList',
-                'itemListElement': [
-                  { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.learnify-solutions.com/' },
-                  { '@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': 'https://www.learnify-solutions.com/guides' },
-                  { '@type': 'ListItem', 'position': 3, 'name': selectedGuide.regionLabel, 'item': canonical },
-                ],
-              },
-              {
-                '@type': 'FAQPage',
-                'mainEntity': selectedGuide.faqs.map((f) => ({
-                  '@type': 'Question',
-                  'name': f.q,
-                  'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
-                })),
-              },
-            ],
+            '@graph': graphNodes,
           },
         };
       }
@@ -827,7 +868,7 @@ export default function App() {
           ogUrl: 'https://www.learnify-solutions.com/',
         };
     }
-  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedGuide]);
+  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, cmsData.blogs]);
 
   useSEO(seoConfig);
 
@@ -871,16 +912,20 @@ export default function App() {
       const isEnterprise = checkIsEnterpriseUrl();
       setIsCiscoAuthorized(isEnterprise);
 
-      const guideMatch = resolveGuideRoute(pathname);
-      if (guideMatch) {
-        if (guideMatch.type === 'hub') {
-          setSelectedGuide(null);
-          setActivePage('guides_hub');
-        } else {
-          setSelectedGuide(guideMatch.guide);
-          setActivePage('guide_detail');
+      const blogMatch = resolveBlogRoute(pathname, cmsData.blogs);
+      if (blogMatch) {
+        if (blogMatch.isLegacyGuidesRedirect && typeof window !== 'undefined') {
+          const newUrl = blogMatch.type === 'hub' ? '/blogs' : `/blogs/${blogMatch.post.slug}`;
+          window.history.replaceState(null, '', newUrl);
         }
-        setActiveNavId('nav-courses');
+        if (blogMatch.type === 'hub') {
+          setSelectedBlog(null);
+          setActivePage('blogs_hub');
+        } else {
+          setSelectedBlog(blogMatch.post);
+          setActivePage('blog_detail');
+        }
+        setActiveNavId('nav-blogs');
         return;
       }
 
@@ -1006,7 +1051,7 @@ export default function App() {
       cancelAnimationFrame(frameId);
       clearTimeout(timer);
     };
-  }, [activePage, selectedCourse?.id, selectedRegionalCourse?.slug, regionalRegion, selectedGuide?.slug]);
+  }, [activePage, selectedCourse?.id, selectedRegionalCourse?.slug, regionalRegion, selectedBlog?.slug]);
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoginModalOpen(false);
@@ -1042,7 +1087,17 @@ export default function App() {
     try {
       // 1. Non-blocking background CMS sync (page is already rendered with initialCmsData)
       fetchCmsData().then((cmsRes) => {
-        if (cmsRes) setCmsData(cmsRes);
+        if (cmsRes) {
+          setCmsData(cmsRes);
+          if (typeof window !== 'undefined' && Array.isArray(cmsRes.blogs) && cmsRes.blogs.length > 0) {
+            const blogMatch = resolveBlogRoute(window.location.pathname, cmsRes.blogs);
+            if (blogMatch && blogMatch.type === 'detail') {
+              setSelectedBlog(blogMatch.post);
+              setActivePage('blog_detail');
+              setActiveNavId('nav-blogs');
+            }
+          }
+        }
       }).catch(() => {});
 
       // 2. Only fetch admin leads and Supabase status if administrator is authenticated
@@ -1163,6 +1218,16 @@ export default function App() {
     }
 
     if (
+      link.id === 'nav-blogs' ||
+      link.href === '#blogs' ||
+      link.href === '/blogs' ||
+      link.label === 'Blogs'
+    ) {
+      navigateToBlogsHub();
+      return;
+    }
+
+    if (
       link.href === '#corporate' ||
       link.id === 'nav-corporate' ||
       link.label === 'Corporate Training'
@@ -1253,19 +1318,19 @@ export default function App() {
     }
   };
 
-  const navigateToGuidesHub = () => {
-    setSelectedGuide(null);
-    setActivePage('guides_hub');
-    setActiveNavId('nav-courses');
-    if (typeof window !== 'undefined') window.history.pushState(null, '', '/guides');
+  const navigateToBlogsHub = () => {
+    setSelectedBlog(null);
+    setActivePage('blogs_hub');
+    setActiveNavId('nav-blogs');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', '/blogs');
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
-  const navigateToGuide = (guide: SeoGuide) => {
-    setSelectedGuide(guide);
-    setActivePage('guide_detail');
-    setActiveNavId('nav-courses');
-    if (typeof window !== 'undefined') window.history.pushState(null, '', `/guides/${guide.slug}`);
+  const navigateToBlog = (post: BlogPost) => {
+    setSelectedBlog(post);
+    setActivePage('blog_detail');
+    setActiveNavId('nav-blogs');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/blogs/${post.slug}`);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
@@ -1344,13 +1409,19 @@ export default function App() {
                 if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              onNavigateGuides={navigateToGuidesHub}
+              onNavigateGuides={navigateToBlogsHub}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
-          ) : activePage === 'guides_hub' ? (
-            /* Dedicated UAE & South Africa Exam-Center & Cost Guides Hub (/guides) */
-            <GuidesHubView
-              onSelectGuide={navigateToGuide}
+          ) : activePage === 'blogs_hub' ? (
+            /* Dedicated High-Demand Blogs Hub (/blogs) */
+            <BlogsHubView
+              customBlogs={cmsData.blogs}
+              isAdminAuthenticated={isAdminAuthenticated}
+              onOpenBlogPublisher={() => {
+                setCmsDrawerInitialTab('blogs');
+                setIsCmsDrawerOpen(true);
+              }}
+              onSelectBlog={navigateToBlog}
               onNavigateHub={navigateToRegionalHub}
               onNavigateHome={() => {
                 setActivePage('home');
@@ -1360,18 +1431,19 @@ export default function App() {
               }}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
-          ) : activePage === 'guide_detail' && selectedGuide ? (
-            /* Dedicated High-Intent SEO Guide (/guides/:slug) */
-            <GuideDetailView
-              guide={selectedGuide}
+          ) : activePage === 'blog_detail' && selectedBlog ? (
+            /* Dedicated High-Demand Blog Post (/blogs/:slug) */
+            <BlogDetailView
+              post={selectedBlog}
+              customBlogs={cmsData.blogs}
               onNavigateHome={() => {
                 setActivePage('home');
                 setActiveNavId('nav-home');
                 if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              onNavigateGuides={navigateToGuidesHub}
-              onSelectGuide={navigateToGuide}
+              onNavigateBlogs={navigateToBlogsHub}
+              onSelectBlog={navigateToBlog}
               onNavigateHub={navigateToRegionalHub}
               onNavigateRegionalPath={navigateToRegionalPath}
               onOpenAdvisorModal={handleOpenAdvisorModal}
@@ -1387,7 +1459,7 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onNavigateHub={navigateToRegionalHub}
-              onNavigateGuides={navigateToGuidesHub}
+              onNavigateGuides={navigateToBlogsHub}
               onNavigateGlobalCourse={(courseId) => {
                 const matched = sampleCourses.find((c) => c.id === courseId);
                 if (matched) handleSelectCourse(matched);
@@ -1562,6 +1634,13 @@ export default function App() {
                 steps={cmsData.pathwaySection.steps}
               />
 
+              {/* 10b. Homepage High-Demand Certification Blogs Section */}
+              <BlogSection
+                customBlogs={cmsData.blogs}
+                onSelectBlog={navigateToBlog}
+                onViewAllBlogs={navigateToBlogsHub}
+              />
+
               {/* 11. Final CTA Banner */}
               <FinalCtaSection
                 title={cmsData.finalCtaSection.title}
@@ -1615,8 +1694,15 @@ export default function App() {
               navigateToRegionalHub('ae');
             } else if (link.href === '/za' || link.label === 'South Africa Training') {
               navigateToRegionalHub('za');
-            } else if (link.href === '/guides' || link.label === 'Guides & Exam Centers') {
-              navigateToGuidesHub();
+            } else if (
+              link.href === '/blogs' ||
+              link.href === '#blogs' ||
+              link.href === '/guides' ||
+              link.label === 'Blogs' ||
+              link.label === 'Blogs & Exam Centers' ||
+              link.label === 'Guides & Exam Centers'
+            ) {
+              navigateToBlogsHub();
             } else if (link.href === '#privacy' || link.label === 'Privacy Policy') {
               setActivePage('privacy');
               setActiveNavId('');
@@ -1676,13 +1762,17 @@ export default function App() {
         {isCmsDrawerOpen && (
           <BackendCmsDrawer
             isOpen={isCmsDrawerOpen}
-            onClose={handleCloseCmsDrawer}
+            onClose={() => {
+              setCmsDrawerInitialTab('visual');
+              handleCloseCmsDrawer();
+            }}
             cmsData={cmsData}
             onCmsUpdated={(newData) => setCmsData(newData)}
             courses={courses}
             onCoursesUpdated={(newCourses) => setCourses(newCourses)}
             leads={leads}
             supabaseStatus={supabaseStatus}
+            initialTab={cmsDrawerInitialTab}
             onRefreshLeads={() => {
               fetchLeads().then((res) => setLeads(res));
             }}

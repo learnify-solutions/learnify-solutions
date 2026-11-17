@@ -17,7 +17,7 @@ import {
   getRegionalAlternatesForCourse,
   resolveRegionalRoute,
 } from './src/data/regionalSeoData';
-import { SEO_GUIDES, resolveGuideRoute } from './src/data/guidesData';
+import { getMergedBlogs, resolveBlogRoute } from './src/data/blogsData';
 import { CmsData, LeadSubmission, Course } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -501,6 +501,12 @@ async function startServer() {
       return res.redirect(301, '/courses');
     }
 
+    // 3b. Legacy /guides routes -> consolidated /blogs section
+    if (normalizedPath === '/guides' || normalizedPath.startsWith('/guides/')) {
+      const targetPath = normalizedPath.replace(/^\/guides/, '/blogs');
+      return res.redirect(301, targetPath);
+    }
+
     // 4. Permanently removed WordPress system/feed/archive endpoints -> 410 Gone
     const isGoneWpArtifact =
       normalizedPath === '/xmlrpc.php' ||
@@ -543,16 +549,19 @@ async function startServer() {
   app.get('/sitemap.xml', (req, res) => {
     const today = new Date().toISOString().split('T')[0];
 
+    const allBlogs = getMergedBlogs(currentCmsData.blogs);
+
     const staticRoutes = [
       { loc: '', priority: '1.0', changefreq: 'daily' },
       { loc: '/courses', priority: '0.98', changefreq: 'daily' },
       { loc: '/corporate-training', priority: '0.95', changefreq: 'weekly' },
       { loc: '/cisco-training', priority: '0.95', changefreq: 'weekly' },
-      { loc: '/guides', priority: '0.95', changefreq: 'weekly' },
-      ...SEO_GUIDES.map((g) => ({
-        loc: `/guides/${g.slug}`,
+      { loc: '/blogs', priority: '0.96', changefreq: 'daily' },
+      ...allBlogs.map((g) => ({
+        loc: `/blogs/${g.slug}`,
         priority: '0.92',
         changefreq: 'weekly',
+        lastmod: g.publishedIso || today,
       })),
       { loc: '/about', priority: '0.85', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.90', changefreq: 'monthly' },
@@ -642,7 +651,7 @@ ${staticRoutes
   .map(
     (r) => `  <url>
     <loc>${SITE_BASE_URL}${r.loc}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${(r as any).lastmod || today}</lastmod>
     <changefreq>${r.changefreq}</changefreq>
     <priority>${r.priority}</priority>
   </url>`
@@ -709,9 +718,9 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
           "description": "South Africa CompTIA, Microsoft, AWS & Kubernetes certification training hub."
         },
         {
-          "path": "/guides",
+          "path": "/blogs",
           "method": "GET",
-          "description": "UAE (AED) and South Africa / Gauteng (ZAR) exam center and certification cost guides."
+          "description": "Learnify IT Certification Blogs covering UAE (AED) and South Africa / Gauteng (ZAR) exam centers, fees, and career roadmaps."
         },
         {
           "path": "/corporate-training",
@@ -747,7 +756,7 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
 - [Course Catalog](${SITE_BASE_URL}/courses)
 - [UAE & Dubai Training Hub](${SITE_BASE_URL}/ae)
 - [South Africa Training Hub](${SITE_BASE_URL}/za)
-- [Exam Center & Regional Cost Guides](${SITE_BASE_URL}/guides)
+- [Exam Center, Cost & IT Certification Blogs](${SITE_BASE_URL}/blogs)
 - [Corporate Training Solutions](${SITE_BASE_URL}/corporate-training)
 - [Contact & Corporate Admissions](${SITE_BASE_URL}/contact)
 `;
@@ -1663,31 +1672,32 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       try {
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
         const regionalMatch = resolveRegionalRoute(cleanPath);
-        const guideMatch = resolveGuideRoute(cleanPath);
+        const blogMatch = resolveBlogRoute(cleanPath, currentCmsData.blogs);
+        const allBlogs = getMergedBlogs(currentCmsData.blogs);
 
-        // 0. Dedicated Exam-Center & Cost SEO Guides (/guides & /guides/:slug)
-        if (guideMatch && guideMatch.type === 'hub') {
-          const canonicalUrl = `${SITE_BASE_URL}/guides`;
-          const title = 'Exam Centers, Costs & Certification Guides (UAE & South Africa) | Learnify Solutions';
+        // 0. Dedicated High-Demand Blogs Hub & Detail (/blogs & /blogs/:slug)
+        if (blogMatch && blogMatch.type === 'hub') {
+          const canonicalUrl = `${SITE_BASE_URL}/blogs`;
+          const title = 'IT Certification Blogs, Exam Centers & Fee Guides (UAE & SA) | Learnify Solutions';
           const desc =
-            '2026 city-by-city guides for Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, plus AED and ZAR course costs.';
+            'Daily-updated IT certification blogs covering Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, AED & ZAR course costs, and CompTIA, Microsoft & AWS roadmaps.';
           const keywords =
-            'where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai, Learnify guides';
+            'Learnify blogs, where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai';
           const schemaObj = {
             '@context': 'https://schema.org',
             '@graph': [
               {
                 '@type': 'CollectionPage',
                 '@id': `${canonicalUrl}#collection`,
-                name: 'UAE & South Africa IT Exam Center and Cost Guides',
+                name: 'Learnify IT Certification Blogs, Exam Centers & Fee Guides',
                 mainEntity: {
                   '@type': 'ItemList',
-                  numberOfItems: SEO_GUIDES.length,
-                  itemListElement: SEO_GUIDES.map((g, idx) => ({
+                  numberOfItems: allBlogs.length,
+                  itemListElement: allBlogs.map((g, idx) => ({
                     '@type': 'ListItem',
                     position: idx + 1,
                     name: g.title,
-                    url: `${SITE_BASE_URL}/guides/${g.slug}`,
+                    url: `${SITE_BASE_URL}/blogs/${g.slug}`,
                   })),
                 },
               },
@@ -1695,20 +1705,20 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                 '@type': 'BreadcrumbList',
                 itemListElement: [
                   { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE_URL}/` },
-                  { '@type': 'ListItem', position: 2, name: 'Guides', item: canonicalUrl },
+                  { '@type': 'ListItem', position: 2, name: 'Blogs', item: canonicalUrl },
                 ],
               },
             ],
           };
 
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
-            <nav><a href="/">Home</a> &gt; <span>Exam Center &amp; Cost Guides</span></nav>
-            <h1>Exam Centers, Fees &amp; Certification Roadmaps for UAE &amp; South Africa</h1>
+            <nav><a href="/">Home</a> &gt; <span>Blogs</span></nav>
+            <h1>IT Certification Blogs, Exam Centers &amp; Fee Guides</h1>
             <p>${escapeHtml(desc)}</p>
             <p><a href="/ae">UAE &amp; Dubai Hub (AED / GST)</a> | <a href="/za">South Africa Hub (ZAR / SAST)</a></p>
-            <ul>${SEO_GUIDES.map(
+            <ul>${allBlogs.map(
               (g) =>
-                `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.regionLabel)} (${escapeHtml(g.citiesCovered.join(', '))})</li>`
+                `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.regionLabel)} (${escapeHtml(g.citiesCovered.join(', '))})</li>`
             ).join('')}</ul>
           </main>`;
 
@@ -1728,51 +1738,56 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
             )
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (guideMatch && guideMatch.type === 'detail') {
-          const g = guideMatch.guide;
-          const canonicalUrl = `${SITE_BASE_URL}/guides/${g.slug}`;
+        } else if (blogMatch && blogMatch.type === 'detail') {
+          const g = blogMatch.post;
+          const canonicalUrl = `${SITE_BASE_URL}/blogs/${g.slug}`;
+          const graphNodes: Record<string, any>[] = [
+            {
+              '@type': 'BlogPosting',
+              '@id': `${canonicalUrl}#blogposting`,
+              headline: g.title,
+              description: g.seoDescription,
+              datePublished: g.publishedIso || '2026-11-17',
+              dateModified: g.publishedIso || '2026-11-17',
+              inLanguage: 'en',
+              author: {
+                '@type': 'Organization',
+                name: 'Learnify Solutions',
+                url: SITE_BASE_URL,
+              },
+              publisher: {
+                '@type': 'EducationalOrganization',
+                name: 'Learnify Solutions',
+                url: SITE_BASE_URL,
+              },
+              mainEntityOfPage: canonicalUrl,
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE_URL}/` },
+                { '@type': 'ListItem', position: 2, name: 'Blogs', item: `${SITE_BASE_URL}/blogs` },
+                { '@type': 'ListItem', position: 3, name: g.regionLabel, item: canonicalUrl },
+              ],
+            },
+          ];
+          if (g.faqs && g.faqs.length > 0) {
+            graphNodes.push({
+              '@type': 'FAQPage',
+              mainEntity: g.faqs.map((f) => ({
+                '@type': 'Question',
+                name: f.q,
+                acceptedAnswer: { '@type': 'Answer', text: f.a },
+              })),
+            });
+          }
           const schemaObj = {
             '@context': 'https://schema.org',
-            '@graph': [
-              {
-                '@type': 'Article',
-                '@id': `${canonicalUrl}#article`,
-                headline: g.title,
-                description: g.seoDescription,
-                inLanguage: 'en',
-                author: {
-                  '@type': 'Organization',
-                  name: 'Learnify Solutions',
-                  url: SITE_BASE_URL,
-                },
-                publisher: {
-                  '@type': 'EducationalOrganization',
-                  name: 'Learnify Solutions',
-                  url: SITE_BASE_URL,
-                },
-                mainEntityOfPage: canonicalUrl,
-              },
-              {
-                '@type': 'BreadcrumbList',
-                itemListElement: [
-                  { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE_URL}/` },
-                  { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE_BASE_URL}/guides` },
-                  { '@type': 'ListItem', position: 3, name: g.regionLabel, item: canonicalUrl },
-                ],
-              },
-              {
-                '@type': 'FAQPage',
-                mainEntity: g.faqs.map((f) => ({
-                  '@type': 'Question',
-                  name: f.q,
-                  acceptedAnswer: { '@type': 'Answer', text: f.a },
-                })),
-              },
-            ],
+            '@graph': graphNodes,
           };
 
           const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
-            <nav><a href="/">Home</a> &gt; <a href="/guides">Guides</a> &gt; <span>${escapeHtml(g.regionLabel)}</span></nav>
+            <nav><a href="/">Home</a> &gt; <a href="/blogs">Blogs</a> &gt; <span>${escapeHtml(g.regionLabel)}</span></nav>
             <h1>${escapeHtml(g.title)}</h1>
             <p>${escapeHtml(g.intro)}</p>
             <p><strong>Cities Covered:</strong> ${escapeHtml(g.citiesCovered.join(', '))}</p>
@@ -1802,8 +1817,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <ul>${g.relatedRegionalLinks
               .map((l) => `<li><a href="${escapeHtml(l.href)}">${escapeHtml(l.label)}</a> — ${escapeHtml(l.subtitle)}</li>`)
               .join('')}</ul>
-            <h2>Frequently Asked Questions</h2>
-            ${g.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}
+            ${g.faqs.length > 0 ? `<h2>Frequently Asked Questions</h2>${g.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}` : ''}
           </main>`;
 
           html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
@@ -1868,7 +1882,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           };
 
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
-            <nav><a href="/">Home</a> &gt; <span>${escapeHtml(region.shortName)} Training</span> | <a href="/guides">Exam Center &amp; Cost Guides</a></nav>
+            <nav><a href="/">Home</a> &gt; <span>${escapeHtml(region.shortName)} Training</span> | <a href="/blogs">Blogs &amp; Exam Center Guides</a></nav>
             <h1>CompTIA, Microsoft &amp; AWS Certification Training in ${escapeHtml(region.countryName)}</h1>
             <p>${escapeHtml(region.hubDescription)}</p>
             <p><strong>Cities Served:</strong> ${escapeHtml(region.cities.join(', '))} | <strong>Timezone:</strong> ${escapeHtml(region.timezone)} | <strong>Currency:</strong> ${escapeHtml(region.currency)}</p>
@@ -2268,15 +2282,15 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
             <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, Power BI, CompTIA, Cisco, AWS, and Cybersecurity across UAE (Dubai, Abu Dhabi, Sharjah, Al Ain, Ajman), South Africa (Johannesburg, Sandton, Midrand, Pretoria, Gauteng, Cape Town, Durban), USA, UK, and India.</p>
-            <nav><a href="/courses">All Courses</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/guides">Exam Centers &amp; Cost Guides</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
+            <nav><a href="/courses">All Courses</a> | <a href="/blogs">Blogs</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
             <h2>Featured Global Certification Courses</h2>
             <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
             <h2>Dubai &amp; UAE Training Editions</h2>
             <ul><li><a href="/ae">All UAE CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <h2>South Africa &amp; Gauteng Training Editions</h2>
             <ul><li><a href="/za">All South Africa CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
-            <h2>UAE &amp; South Africa Exam-Center &amp; Fee Guides</h2>
-            <ul>${SEO_GUIDES.map((g) => `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
+            <h2>Latest High-Demand IT Certification Blogs</h2>
+            <ul>${allBlogs.map((g) => `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
           </main>`;
           html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {

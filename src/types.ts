@@ -213,6 +213,53 @@ export interface CmsData {
     copyright: string;
     columns: FooterColumn[];
   };
+  blogs?: BlogPost[];
+}
+
+export interface BlogTableRow {
+  label: string;
+  col2: string;
+  col3: string;
+  col4: string;
+}
+
+export interface BlogSectionBlock {
+  id: string;
+  heading: string;
+  paragraphs: string[];
+  bullets?: string[];
+  table?: {
+    caption: string;
+    headers: [string, string, string, string];
+    rows: BlogTableRow[];
+  };
+}
+
+export interface BlogRelatedLink {
+  label: string;
+  href: string;
+  subtitle: string;
+}
+
+export interface BlogPost {
+  slug: string;
+  region: 'ae' | 'za' | 'global';
+  regionLabel: string;
+  category: string;
+  title: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+  readTime: string;
+  updatedDate: string;
+  publishedIso?: string;
+  citiesCovered: string[];
+  intro: string;
+  keyTakeaways: string[];
+  sections: BlogSectionBlock[];
+  relatedRegionalLinks: BlogRelatedLink[];
+  faqs: Array<{ q: string; a: string }>;
+  isCustom?: boolean;
 }
 
 export interface LeadSubmission {

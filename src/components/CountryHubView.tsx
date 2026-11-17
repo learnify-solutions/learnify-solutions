@@ -413,7 +413,7 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
             </ul>
             <div className="pt-2 flex flex-col gap-2.5">
               <a
-                href="/guides"
+                href="/blogs"
                 onClick={(e) => {
                   e.preventDefault();
                   onNavigateGuides();
@@ -421,7 +421,7 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#ea6d24] hover:text-[#c95716] transition-colors"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Read {region.shortName} Exam Center &amp; {region.currency} Cost Guides</span>
+                <span>Read {region.shortName} Exam Center &amp; {region.currency} Blogs</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
               <a

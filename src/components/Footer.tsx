@@ -143,14 +143,14 @@ export const Footer: React.FC<FooterProps> = ({
               </a>
               <span aria-hidden="true">·</span>
               <a
-                href="/guides"
+                href="/blogs"
                 onClick={(e) => {
                   e.preventDefault();
-                  onLinkClick && onLinkClick({ label: 'Guides & Exam Centers', href: '/guides' });
+                  onLinkClick && onLinkClick({ label: 'Blogs', href: '/blogs' });
                 }}
                 className="hover:text-orange-300 underline underline-offset-4 transition-colors"
               >
-                Guides &amp; Exam Centers
+                Blogs &amp; Exam Centers
               </a>
             </div>
           </div>

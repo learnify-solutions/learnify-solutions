@@ -16,6 +16,7 @@ export const initialCmsData: CmsData = {
     links: [
       { id: 'nav-home', label: 'Home', href: '#home', active: true },
       { id: 'nav-courses', label: 'Courses', href: '#courses' },
+      { id: 'nav-blogs', label: 'Blogs', href: '#blogs' },
       { id: 'nav-corporate', label: 'Corporate Training', href: '#corporate' },
       { id: 'nav-about', label: 'About', href: '#about' },
       { id: 'nav-contact', label: 'Contact Us', href: '#contact' },
@@ -430,6 +431,7 @@ export const initialCmsData: CmsData = {
         links: [
           { label: 'Learnify', href: '#' },
           { label: 'Courses', href: '#courses' },
+          { label: 'Blogs', href: '/blogs' },
           { label: 'Learning', href: '#solutions' },
         ],
       },

@@ -28,8 +28,10 @@ import {
   Server,
   ShieldCheck,
   Lock,
+  PenSquare,
+  Globe2,
 } from 'lucide-react';
-import { CmsData, LeadSubmission, Course } from '../types';
+import { CmsData, LeadSubmission, Course, BlogPost } from '../types';
 import {
   updateCmsData,
   resetCmsData,
@@ -39,6 +41,12 @@ import {
   uploadSyllabusPdf,
 } from '../services/cmsService';
 import { downloadCourseSyllabus } from '../utils/syllabusPdf';
+import {
+  SEO_BLOGS,
+  getMergedBlogs,
+  slugifyBlogTitle,
+  getDefaultRegionalLinksForRegion,
+} from '../data/blogsData';
 
 interface BackendCmsDrawerProps {
   isOpen: boolean;
@@ -54,6 +62,7 @@ interface BackendCmsDrawerProps {
     sqlSchema: string;
   };
   onRefreshLeads: () => void;
+  initialTab?: 'visual' | 'courses' | 'blogs' | 'json' | 'supabase' | 'leads' | 'email' | 'docs';
 }
 
 export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
@@ -66,10 +75,54 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   leads,
   supabaseStatus,
   onRefreshLeads,
+  initialTab = 'visual',
 }) => {
-  const [activeTab, setActiveTab] = useState<'visual' | 'courses' | 'json' | 'supabase' | 'leads' | 'email' | 'docs'>('visual');
+  const [activeTab, setActiveTab] = useState<
+    'visual' | 'courses' | 'blogs' | 'json' | 'supabase' | 'leads' | 'email' | 'docs'
+  >(initialTab);
   const [formData, setFormData] = useState<CmsData>(JSON.parse(JSON.stringify(cmsData)));
   const [jsonText, setJsonText] = useState(JSON.stringify(cmsData, null, 2));
+
+  useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
+
+  // Daily Blog Publisher state
+  const [editingBlogSlug, setEditingBlogSlug] = useState<string | null>(null);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [blogForm, setBlogForm] = useState<{
+    title: string;
+    slug: string;
+    region: 'ae' | 'za' | 'global';
+    category: string;
+    citiesCovered: string;
+    readTime: string;
+    seoDescription: string;
+    seoKeywords: string;
+    intro: string;
+    keyTakeaways: string;
+    sectionHeading: string;
+    sectionParagraphs: string;
+    sectionBullets: string;
+    faqsText: string;
+  }>({
+    title: '',
+    slug: '',
+    region: 'ae',
+    category: 'Exam Centers & Vouchers',
+    citiesCovered: 'Dubai, Abu Dhabi, Sharjah',
+    readTime: '5 min read',
+    seoDescription: '',
+    seoKeywords: '',
+    intro: '',
+    keyTakeaways: '',
+    sectionHeading: 'Key Insights & Practical Breakdown',
+    sectionParagraphs: '',
+    sectionBullets: '',
+    faqsText: '',
+  });
   const [jsonError, setJsonError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveNotification, setSaveNotification] = useState('');
@@ -425,6 +478,198 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     setTimeout(() => setCopiedSchema(false), 2500);
   };
 
+  const resetBlogForm = () => {
+    setEditingBlogSlug(null);
+    setSlugManuallyEdited(false);
+    setBlogForm({
+      title: '',
+      slug: '',
+      region: 'ae',
+      category: 'Exam Centers & Vouchers',
+      citiesCovered: 'Dubai, Abu Dhabi, Sharjah',
+      readTime: '5 min read',
+      seoDescription: '',
+      seoKeywords: '',
+      intro: '',
+      keyTakeaways: '',
+      sectionHeading: 'Key Insights & Practical Breakdown',
+      sectionParagraphs: '',
+      sectionBullets: '',
+      faqsText: '',
+    });
+  };
+
+  const handlePublishBlog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanTitle = blogForm.title.trim();
+    const cleanIntro = blogForm.intro.trim();
+    if (!cleanTitle || !cleanIntro) {
+      alert('Please enter both Blog Title and Intro Paragraph.');
+      return;
+    }
+
+    const computedSlug = (blogForm.slug.trim() || slugifyBlogTitle(cleanTitle))
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!computedSlug) {
+      alert('Please provide a valid URL slug.');
+      return;
+    }
+
+    const regionLabelMap: Record<'ae' | 'za' | 'global', string> = {
+      ae: 'Dubai & UAE',
+      za: 'South Africa & Gauteng',
+      global: 'Global & Cloud',
+    };
+
+    const now = new Date();
+    const monthYear = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const publishedIso = now.toISOString().split('T')[0];
+
+    const citiesArr = blogForm.citiesCovered
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const takeawaysArr = blogForm.keyTakeaways
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const paragraphsArr = blogForm.sectionParagraphs
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const bulletsArr = blogForm.sectionBullets
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const faqsArr = blogForm.faqsText
+      .split('\n')
+      .map((line) => {
+        const parts = line.split('|').map((p) => p.trim());
+        return { q: parts[0] || '', a: parts[1] || '' };
+      })
+      .filter((f) => f.q && f.a);
+
+    const newPost: BlogPost = {
+      slug: computedSlug,
+      region: blogForm.region,
+      regionLabel: regionLabelMap[blogForm.region],
+      category: blogForm.category.trim() || 'Certification Insights',
+      title: cleanTitle,
+      seoTitle: `${cleanTitle} | Learnify Blogs`,
+      seoDescription: (blogForm.seoDescription.trim() || cleanIntro).slice(0, 160),
+      seoKeywords:
+        blogForm.seoKeywords.trim() ||
+        `${cleanTitle}, ${regionLabelMap[blogForm.region]}, IT certification training, Learnify Solutions`,
+      readTime: blogForm.readTime.trim() || '5 min read',
+      updatedDate: monthYear,
+      publishedIso,
+      citiesCovered:
+        citiesArr.length > 0
+          ? citiesArr
+          : blogForm.region === 'ae'
+            ? ['Dubai', 'Abu Dhabi', 'Sharjah']
+            : blogForm.region === 'za'
+              ? ['Johannesburg', 'Sandton', 'Pretoria', 'Cape Town']
+              : ['Global', 'UAE', 'South Africa'],
+      intro: cleanIntro,
+      keyTakeaways: takeawaysArr.length > 0 ? takeawaysArr : [cleanIntro],
+      sections: [
+        {
+          id: 'main-section',
+          heading: blogForm.sectionHeading.trim() || 'Key Insights & Practical Breakdown',
+          paragraphs: paragraphsArr.length > 0 ? paragraphsArr : [cleanIntro],
+          ...(bulletsArr.length > 0 ? { bullets: bulletsArr } : {}),
+        },
+      ],
+      relatedRegionalLinks: getDefaultRegionalLinksForRegion(blogForm.region),
+      faqs: faqsArr,
+      isCustom: true,
+    };
+
+    const existingCustom = Array.isArray(formData.blogs) ? formData.blogs : [];
+    const filteredCustom = existingCustom.filter(
+      (b) => b.slug.toLowerCase() !== (editingBlogSlug || computedSlug).toLowerCase()
+    );
+    const updatedBlogs = [newPost, ...filteredCustom];
+    const updatedCms: CmsData = {
+      ...formData,
+      blogs: updatedBlogs,
+    };
+
+    setIsSaving(true);
+    setSaveNotification('');
+    try {
+      const result = await updateCmsData(updatedCms);
+      setFormData(result);
+      onCmsUpdated(result);
+      setJsonText(JSON.stringify(result, null, 2));
+      setSaveNotification(`Blog "${cleanTitle}" published live at /blogs/${computedSlug}`);
+      resetBlogForm();
+      setTimeout(() => setSaveNotification(''), 4500);
+    } catch (err: any) {
+      alert('Failed to publish blog: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEditCustomBlog = (post: BlogPost) => {
+    setEditingBlogSlug(post.slug);
+    setSlugManuallyEdited(true);
+    const primarySection = post.sections?.[0];
+    setBlogForm({
+      title: post.title,
+      slug: post.slug,
+      region: post.region,
+      category: post.category,
+      citiesCovered: (post.citiesCovered || []).join(', '),
+      readTime: post.readTime || '5 min read',
+      seoDescription: post.seoDescription || '',
+      seoKeywords: post.seoKeywords || '',
+      intro: post.intro || '',
+      keyTakeaways: (post.keyTakeaways || []).join('\n'),
+      sectionHeading: primarySection?.heading || 'Key Insights & Practical Breakdown',
+      sectionParagraphs: (primarySection?.paragraphs || []).join('\n'),
+      sectionBullets: (primarySection?.bullets || []).join('\n'),
+      faqsText: (post.faqs || []).map((f) => `${f.q} | ${f.a}`).join('\n'),
+    });
+  };
+
+  const handleDeleteCustomBlog = async (slug: string, title: string) => {
+    if (!window.confirm(`Delete custom blog "${title}"?`)) return;
+    const existingCustom = Array.isArray(formData.blogs) ? formData.blogs : [];
+    const updatedCms: CmsData = {
+      ...formData,
+      blogs: existingCustom.filter((b) => b.slug.toLowerCase() !== slug.toLowerCase()),
+    };
+
+    setIsSaving(true);
+    try {
+      const result = await updateCmsData(updatedCms);
+      setFormData(result);
+      onCmsUpdated(result);
+      setJsonText(JSON.stringify(result, null, 2));
+      if (editingBlogSlug === slug) {
+        resetBlogForm();
+      }
+      setSaveNotification(`Blog "${title}" removed.`);
+      setTimeout(() => setSaveNotification(''), 4000);
+    } catch (err: any) {
+      alert('Failed to delete blog: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const mergedBlogCount = getMergedBlogs(formData.blogs).length;
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-xs flex justify-end">
       <div
@@ -503,6 +748,18 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>Courses Catalog DB ({courses.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('blogs')}
+            className={`py-3 px-4 flex items-center gap-1.5 border-b-2 cursor-pointer transition-colors shrink-0 ${
+              activeTab === 'blogs'
+                ? 'border-[#ea6d24] text-[#ea6d24]'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <PenSquare className="w-3.5 h-3.5" />
+            <span>Blogs Publisher ({mergedBlogCount})</span>
           </button>
 
           <button
@@ -1740,6 +1997,354 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'blogs' && (
+            <div className="space-y-6">
+              {/* Publish / Edit Daily High-Demand Blog Form */}
+              <form
+                onSubmit={handlePublishBlog}
+                className="p-4 rounded-xl border border-orange-200 bg-orange-50/50 space-y-4"
+              >
+                <div className="flex items-center justify-between border-b border-orange-200/80 pb-2">
+                  <span className="font-bold text-sm text-[#152e4d] flex items-center gap-2">
+                    <PenSquare className="w-4 h-4 text-[#ea6d24]" />
+                    <span>
+                      {editingBlogSlug
+                        ? 'Edit Published Blog Post'
+                        : 'Publish New High-Demand Blog (Live at /blogs)'}
+                    </span>
+                  </span>
+                  {editingBlogSlug && (
+                    <button
+                      type="button"
+                      onClick={resetBlogForm}
+                      className="text-xs text-slate-500 hover:text-slate-800 underline cursor-pointer"
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Blog Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Microsoft Azure AZ-104 Exam Centers & Fees in Dubai (2026)"
+                      value={blogForm.title}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setBlogForm((prev) => ({
+                          ...prev,
+                          title: val,
+                          slug: slugManuallyEdited ? prev.slug : slugifyBlogTitle(val),
+                        }));
+                      }}
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      URL Slug (/blogs/...)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="auto-generated-from-title"
+                      value={blogForm.slug}
+                      onChange={(e) => {
+                        setSlugManuallyEdited(true);
+                        setBlogForm((prev) => ({ ...prev, slug: e.target.value }));
+                      }}
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Target Region *
+                    </label>
+                    <select
+                      value={blogForm.region}
+                      onChange={(e) => {
+                        const r = e.target.value as 'ae' | 'za' | 'global';
+                        const defaultCities =
+                          r === 'ae'
+                            ? 'Dubai, Abu Dhabi, Sharjah'
+                            : r === 'za'
+                              ? 'Johannesburg, Sandton, Midrand, Pretoria, Cape Town'
+                              : 'Dubai, Johannesburg, London, New York';
+                        setBlogForm((prev) => ({
+                          ...prev,
+                          region: r,
+                          citiesCovered: defaultCities,
+                        }));
+                      }}
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    >
+                      <option value="ae">Dubai &amp; UAE (AED / GST)</option>
+                      <option value="za">South Africa &amp; Gauteng (ZAR / SAST)</option>
+                      <option value="global">Global &amp; Cloud</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Category
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Exam Centers & Vouchers"
+                      value={blogForm.category}
+                      onChange={(e) =>
+                        setBlogForm((prev) => ({ ...prev, category: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Read Time
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 5 min read"
+                      value={blogForm.readTime}
+                      onChange={(e) =>
+                        setBlogForm((prev) => ({ ...prev, readTime: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Cities Covered (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Dubai, Abu Dhabi, Sharjah"
+                      value={blogForm.citiesCovered}
+                      onChange={(e) =>
+                        setBlogForm((prev) => ({ ...prev, citiesCovered: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    SEO Meta Description (Recommended 140-160 chars)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Concise Google Search snippet summary..."
+                    value={blogForm.seoDescription}
+                    onChange={(e) =>
+                      setBlogForm((prev) => ({ ...prev, seoDescription: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Intro Paragraph *
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Opening executive summary addressing the exact learner search query..."
+                    value={blogForm.intro}
+                    onChange={(e) => setBlogForm((prev) => ({ ...prev, intro: e.target.value }))}
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Key Takeaways (One per line)
+                    </label>
+                    <textarea
+                      rows={4}
+                      placeholder="Pearson VUE centers operate across Sandton & Midrand&#10;Live GST & SAST batches run weekly"
+                      value={blogForm.keyTakeaways}
+                      onChange={(e) =>
+                        setBlogForm((prev) => ({ ...prev, keyTakeaways: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Action Checklist / Bullets (One per line)
+                    </label>
+                    <textarea
+                      rows={4}
+                      placeholder="Bring two valid government IDs&#10;Complete timed PBQ mock drills before booking"
+                      value={blogForm.sectionBullets}
+                      onChange={(e) =>
+                        setBlogForm((prev) => ({ ...prev, sectionBullets: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Main Section Heading
+                  </label>
+                  <input
+                    type="text"
+                    value={blogForm.sectionHeading}
+                    onChange={(e) =>
+                      setBlogForm((prev) => ({ ...prev, sectionHeading: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white mb-2"
+                  />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Main Article Paragraphs (One paragraph per line)
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Write detailed paragraphs covering exam centers, pricing tiers, corporate vouchers, and study roadmap..."
+                    value={blogForm.sectionParagraphs}
+                    onChange={(e) =>
+                      setBlogForm((prev) => ({ ...prev, sectionParagraphs: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white leading-relaxed"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    FAQs (Format: Question | Answer, one per line)
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Where can I write the exam in Dubai? | Pearson VUE operates at Dubai Knowledge Park and BurJuman."
+                    value={blogForm.faqsText}
+                    onChange={(e) =>
+                      setBlogForm((prev) => ({ ...prev, faqsText: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white font-mono leading-relaxed"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="w-full bg-[#ea6d24] hover:bg-[#d85e19] text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>
+                    {isSaving
+                      ? 'Publishing to Live Site...'
+                      : editingBlogSlug
+                        ? 'Save Blog Changes'
+                        : 'Publish Blog to Homepage & /blogs'}
+                  </span>
+                </button>
+              </form>
+
+              {/* Published Blogs List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    All Live Blogs ({mergedBlogCount})
+                  </h4>
+                  <span className="text-[11px] text-slate-400">
+                    Synced with Homepage, /blogs &amp; /sitemap.xml
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {(Array.isArray(formData.blogs) ? formData.blogs : []).map((post) => (
+                    <div
+                      key={post.slug}
+                      className="p-3 rounded-xl border border-orange-200 bg-orange-50/30 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <h5 className="text-xs font-bold text-[#152e4d] truncate">{post.title}</h5>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap mt-0.5">
+                          <span className="font-semibold text-[#ea6d24]">{post.regionLabel}</span>
+                          <span>·</span>
+                          <span>{post.updatedDate}</span>
+                          <span>·</span>
+                          <span className="font-mono text-slate-600">/blogs/{post.slug}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={`/blogs/${post.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-slate-500 hover:text-[#152e4d] hover:bg-white rounded-md transition-colors"
+                          title="View live blog"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleEditCustomBlog(post)}
+                          className="p-1.5 text-slate-600 hover:text-[#152e4d] hover:bg-white rounded-md transition-colors cursor-pointer"
+                          title="Edit blog"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCustomBlog(post.slug, post.title)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                          title="Delete custom blog"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {SEO_BLOGS.map((post) => (
+                    <div
+                      key={post.slug}
+                      className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <h5 className="text-xs font-bold text-[#152e4d] truncate">{post.title}</h5>
+                        <div className="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap mt-0.5">
+                          <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
+                            <Globe2 className="w-3 h-3" />
+                            Built-in Core SEO Blog (Protected)
+                          </span>
+                          <span>·</span>
+                          <span>{post.regionLabel}</span>
+                          <span>·</span>
+                          <span className="font-mono text-slate-600">/blogs/{post.slug}</span>
+                        </div>
+                      </div>
+                      <a
+                        href={`/blogs/${post.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1 text-[11px] font-semibold text-[#152e4d] hover:text-[#ea6d24] bg-slate-50 hover:bg-slate-100 rounded-md flex items-center gap-1 shrink-0 transition-colors"
+                      >
+                        <span>View</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
                     </div>
                   ))}
                 </div>

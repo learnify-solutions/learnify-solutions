@@ -1,13 +1,15 @@
-import React from 'react';
-import { SEO_GUIDES, SeoGuide } from '../data/guidesData';
+import React, { useMemo } from 'react';
+import { BlogPost } from '../types';
+import { getMergedBlogs } from '../data/blogsData';
 import { RegionCode } from '../data/regionalSeoData';
 import { ArrowRight, CheckCircle2, ChevronRight, MapPin } from 'lucide-react';
 
-interface GuideDetailViewProps {
-  guide: SeoGuide;
+interface BlogDetailViewProps {
+  post: BlogPost;
+  customBlogs?: BlogPost[];
   onNavigateHome: () => void;
-  onNavigateGuides: () => void;
-  onSelectGuide: (guide: SeoGuide) => void;
+  onNavigateBlogs: () => void;
+  onSelectBlog: (post: BlogPost) => void;
   onNavigateHub: (region: RegionCode) => void;
   onNavigateRegionalPath: (path: string) => void;
   onOpenAdvisorModal: (
@@ -16,16 +18,22 @@ interface GuideDetailViewProps {
   ) => void;
 }
 
-export const GuideDetailView: React.FC<GuideDetailViewProps> = ({
-  guide,
+export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
+  post,
+  customBlogs,
   onNavigateHome,
-  onNavigateGuides,
-  onSelectGuide,
+  onNavigateBlogs,
+  onSelectBlog,
   onNavigateHub,
   onNavigateRegionalPath,
   onOpenAdvisorModal,
 }) => {
-  const otherGuides = SEO_GUIDES.filter((g) => g.slug !== guide.slug).slice(0, 3);
+  const otherBlogs = useMemo(
+    () => getMergedBlogs(customBlogs).filter((g) => g.slug !== post.slug).slice(0, 3),
+    [customBlogs, post.slug]
+  );
+
+  const targetHub: RegionCode = post.region === 'za' ? 'za' : 'ae';
 
   return (
     <div className="w-full bg-[#f8fafc] min-h-screen pb-20">
@@ -45,61 +53,65 @@ export const GuideDetailView: React.FC<GuideDetailViewProps> = ({
             </a>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             <a
-              href="/guides"
+              href="/blogs"
               onClick={(e) => {
                 e.preventDefault();
-                onNavigateGuides();
+                onNavigateBlogs();
               }}
               className="hover:text-[#ea6d24] transition-colors font-semibold"
             >
-              Guides
+              Blogs
             </a>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-900 font-semibold">{guide.regionLabel}</span>
+            <span className="text-slate-900 font-semibold">{post.regionLabel}</span>
           </nav>
 
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-            <span className="text-[#ea6d24]">{guide.regionLabel}</span>
+            <span className="text-[#ea6d24]">{post.regionLabel}</span>
             <span aria-hidden="true">·</span>
-            <span>{guide.category}</span>
+            <span>{post.category}</span>
             <span aria-hidden="true">·</span>
-            <span>{guide.readTime}</span>
+            <span>{post.readTime}</span>
             <span aria-hidden="true">·</span>
-            <span>Updated {guide.updatedDate}</span>
+            <span>Updated {post.updatedDate}</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-bold text-[#152e4d] leading-tight tracking-tight [text-wrap:balance]">
-            {guide.title}
+            {post.title}
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">{guide.intro}</p>
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">{post.intro}</p>
 
-          <p className="text-xs text-slate-600 flex items-center gap-1.5 pt-1">
-            <MapPin className="w-4 h-4 text-[#ea6d24] shrink-0" />
-            <span>
-              <strong className="text-slate-800">Cities &amp; Hubs Covered:</strong> {guide.citiesCovered.join(' · ')}
-            </span>
-          </p>
+          {post.citiesCovered && post.citiesCovered.length > 0 && (
+            <p className="text-xs text-slate-600 flex items-center gap-1.5 pt-1">
+              <MapPin className="w-4 h-4 text-[#ea6d24] shrink-0" />
+              <span>
+                <strong className="text-slate-800">Cities &amp; Hubs Covered:</strong> {post.citiesCovered.join(' · ')}
+              </span>
+            </p>
+          )}
         </div>
       </section>
 
       {/* Main Content */}
       <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         {/* Key Takeaways */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
-          <h2 className="text-lg font-bold text-[#152e4d]">Key Takeaways</h2>
-          <ul className="space-y-2.5">
-            {guide.keyTakeaways.map((point) => (
-              <li key={point} className="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 text-[#ea6d24] shrink-0 mt-1" />
-                <span>{point}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+          <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
+            <h2 className="text-lg font-bold text-[#152e4d]">Key Takeaways</h2>
+            <ul className="space-y-2.5">
+              {post.keyTakeaways.map((point) => (
+                <li key={point} className="flex items-start gap-2.5 text-sm text-slate-700 leading-relaxed">
+                  <CheckCircle2 className="w-4 h-4 text-[#ea6d24] shrink-0 mt-1" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Detailed Sections & Tables */}
-        {guide.sections.map((section) => (
+        {post.sections.map((section) => (
           <section key={section.id} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
             <h2 className="text-2xl font-bold text-[#152e4d]">{section.heading}</h2>
             {section.paragraphs.map((p, idx) => (
@@ -151,65 +163,69 @@ export const GuideDetailView: React.FC<GuideDetailViewProps> = ({
         ))}
 
         {/* Related Regional Course Pages */}
-        <section className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-xl font-bold text-[#152e4d]">
-              Recommended Live Certification Bootcamps ({guide.regionLabel})
-            </h2>
-            <a
-              href={`/${guide.region}`}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigateHub(guide.region);
-              }}
-              className="text-xs font-semibold text-[#ea6d24] hover:underline"
-            >
-              View All {guide.region === 'ae' ? 'UAE' : 'South Africa'} Courses
-            </a>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {guide.relatedRegionalLinks.map((link) => (
+        {post.relatedRegionalLinks && post.relatedRegionalLinks.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-xl font-bold text-[#152e4d]">
+                Recommended Live Certification Bootcamps ({post.regionLabel})
+              </h2>
               <a
-                key={link.href}
-                href={link.href}
+                href={`/${targetHub}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  onNavigateRegionalPath(link.href);
+                  onNavigateHub(targetHub);
                 }}
-                className="bg-white border border-slate-200 rounded-xl p-5 hover:border-[#ea6d24]/60 transition-colors flex flex-col justify-between gap-3"
+                className="text-xs font-semibold text-[#ea6d24] hover:underline"
               >
-                <div className="space-y-1.5">
-                  <h3 className="text-sm font-bold text-[#152e4d] leading-snug">{link.label}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{link.subtitle}</p>
-                </div>
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#ea6d24]">
-                  <span>View Syllabus &amp; Batches</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </span>
+                View All {targetHub === 'ae' ? 'UAE' : 'South Africa'} Courses
               </a>
-            ))}
-          </div>
-        </section>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {post.relatedRegionalLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigateRegionalPath(link.href);
+                  }}
+                  className="bg-white border border-slate-200 rounded-xl p-5 hover:border-[#ea6d24]/60 transition-colors flex flex-col justify-between gap-3"
+                >
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-[#152e4d] leading-snug">{link.label}</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">{link.subtitle}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#ea6d24]">
+                    <span>View Syllabus &amp; Batches</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* FAQs */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5">
-          <h2 className="text-xl font-bold text-[#152e4d]">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            {guide.faqs.map((faq) => (
-              <div key={faq.q} className="border border-slate-200 rounded-xl p-4 bg-[#f8fafc] space-y-1.5">
-                <h3 className="text-sm font-bold text-[#152e4d]">{faq.q}</h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {post.faqs && post.faqs.length > 0 && (
+          <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5">
+            <h2 className="text-xl font-bold text-[#152e4d]">Frequently Asked Questions</h2>
+            <div className="space-y-4">
+              {post.faqs.map((faq) => (
+                <div key={faq.q} className="border border-slate-200 rounded-xl p-4 bg-[#f8fafc] space-y-1.5">
+                  <h3 className="text-sm font-bold text-[#152e4d]">{faq.q}</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* CTA Banner */}
         <section className="bg-[#152e4d] text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-1.5">
             <h2 className="text-xl font-bold">
-              Plan Your {guide.region === 'ae' ? 'UAE (AED / GST)' : 'South Africa (ZAR / SAST)'} Certification
+              Plan Your {post.region === 'za' ? 'South Africa (ZAR / SAST)' : post.region === 'ae' ? 'UAE (AED / GST)' : 'Global Live'} Certification
             </h2>
             <p className="text-sm text-slate-300">
               Speak with an advisor for upcoming live batch dates, exam voucher bundles, and corporate Purchase Orders.
@@ -218,7 +234,7 @@ export const GuideDetailView: React.FC<GuideDetailViewProps> = ({
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => onOpenAdvisorModal('advisor', guide.regionLabel)}
+              onClick={() => onOpenAdvisorModal('advisor', post.regionLabel)}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-semibold text-sm transition-colors cursor-pointer min-h-[44px]"
             >
               <span>Talk to Advisor</span>
@@ -227,18 +243,30 @@ export const GuideDetailView: React.FC<GuideDetailViewProps> = ({
           </div>
         </section>
 
-        {/* More Guides */}
-        {otherGuides.length > 0 && (
+        {/* More Blogs */}
+        {otherBlogs.length > 0 && (
           <section className="space-y-4">
-            <h2 className="text-lg font-bold text-[#152e4d]">More Regional Guides</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg font-bold text-[#152e4d]">More High-Demand Blogs</h2>
+              <a
+                href="/blogs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateBlogs();
+                }}
+                className="text-xs font-semibold text-[#ea6d24] hover:underline"
+              >
+                View All Blogs
+              </a>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {otherGuides.map((g) => (
+              {otherBlogs.map((g) => (
                 <a
                   key={g.slug}
-                  href={`/guides/${g.slug}`}
+                  href={`/blogs/${g.slug}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    onSelectGuide(g);
+                    onSelectBlog(g);
                   }}
                   className="bg-white border border-slate-200 rounded-xl p-4 hover:border-[#ea6d24]/60 transition-colors space-y-1.5"
                 >

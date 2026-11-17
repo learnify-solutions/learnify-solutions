@@ -1,63 +1,21 @@
+import { BlogPost } from '../types';
 import { RegionCode, SITE_BASE_URL } from './regionalSeoData';
 
-export interface GuideTableRow {
-  label: string;
-  col2: string;
-  col3: string;
-  col4: string;
-}
-
-export interface GuideSection {
-  id: string;
-  heading: string;
-  paragraphs: string[];
-  bullets?: string[];
-  table?: {
-    caption: string;
-    headers: [string, string, string, string];
-    rows: GuideTableRow[];
-  };
-}
-
-export interface GuideRelatedLink {
-  label: string;
-  href: string;
-  subtitle: string;
-}
-
-export interface SeoGuide {
-  slug: string;
-  region: RegionCode;
-  regionLabel: string;
-  category: string;
-  title: string;
-  seoTitle: string;
-  seoDescription: string;
-  seoKeywords: string;
-  readTime: string;
-  updatedDate: string;
-  citiesCovered: string[];
-  intro: string;
-  keyTakeaways: string[];
-  sections: GuideSection[];
-  relatedRegionalLinks: GuideRelatedLink[];
-  faqs: Array<{ q: string; a: string }>;
-}
-
-export const SEO_GUIDES: SeoGuide[] = [
+export const SEO_BLOGS: BlogPost[] = [
   {
     slug: 'where-to-write-comptia-exams-gauteng-south-africa',
     region: 'za',
     regionLabel: 'South Africa & Gauteng',
     category: 'Exam Centers & Vouchers',
     title: 'Where to Write CompTIA Exams in Gauteng, Johannesburg & South Africa (2026 Guide)',
-    seoTitle: 'Where to Write CompTIA A+, Network+ & Security+ in Gauteng & SA | Learnify',
+    seoTitle: 'Where to Write CompTIA A+, Network+ & Security+ in Gauteng & SA | Learnify Blogs',
     seoDescription:
       'Complete 2026 guide on where to write CompTIA A+, Network+, and Security+ exams across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town & Durban, plus ZAR costs & OnVUE.',
     seoKeywords:
       'where to write CompTIA A+ in Gauteng, CompTIA exam centres Johannesburg, Pearson VUE Gauteng Pretoria Sandton Midrand, CompTIA Security+ exam cost South Africa ZAR, OnVUE proctored exam South Africa',
     readTime: '6 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Johannesburg', 'Sandton', 'Midrand', 'Pretoria', 'Centurion', 'Cape Town', 'Durban'],
     intro:
       'If you are searching for where to write CompTIA A+ (220-1101 / 220-1102), Network+ (N10-009), or Security+ (SY0-701) in Gauteng or anywhere in South Africa, all official CompTIA exams are delivered exclusively through Pearson VUE—either in person at authorized VUE test centers or online via OnVUE proctoring.',
@@ -195,13 +153,14 @@ export const SEO_GUIDES: SeoGuide[] = [
     regionLabel: 'Dubai & UAE',
     category: 'Fees & Exam Planning',
     title: 'Microsoft Azure & Power BI (PL-300 / AZ-104) Certification Cost & Schedules in Dubai & UAE',
-    seoTitle: 'Power BI (PL-300) & Azure AZ-104 Course Cost in Dubai & UAE | Learnify',
+    seoTitle: 'Power BI (PL-300) & Azure AZ-104 Course Cost in Dubai & UAE | Learnify Blogs',
     seoDescription:
       'Compare 2026 training schedules, AED course fees, Pearson VUE exam costs, and corporate batch options for Microsoft Power BI PL-300, Azure AZ-104, AI-102, and Copilot MS-4018 in Dubai, Abu Dhabi & Sharjah.',
     seoKeywords:
       'Power BI training Dubai cost, Power BI course in Dubai fees, Microsoft Azure AZ-104 training Dubai price AED, Microsoft AI-102 Dubai UAE, Pearson VUE exam centers Dubai Knowledge Park, MS-4018 Copilot Dubai',
     readTime: '7 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah'],
     intro:
       'Professionals and corporate L&D teams across Dubai, Abu Dhabi, and Sharjah frequently ask how much Microsoft Power BI (PL-300), Azure Administrator (AZ-104), and Azure AI (AI-102) certifications cost in AED—including official instructor-led bootcamps versus standalone Pearson VUE exam fees.',
@@ -298,13 +257,14 @@ export const SEO_GUIDES: SeoGuide[] = [
     regionLabel: 'Dubai & UAE',
     category: 'Exam Centers & Security',
     title: 'CompTIA Security+, Network+ & A+ Exam Centers and Costs in Dubai, Abu Dhabi & Sharjah',
-    seoTitle: 'CompTIA Security+ & A+ Cost & Exam Centers in Dubai & UAE | Learnify',
+    seoTitle: 'CompTIA Security+ & A+ Cost & Exam Centers in Dubai & UAE | Learnify Blogs',
     seoDescription:
       'Explore CompTIA Security+ (SY0-701), A+, Network+, Cloud+, and PenTest+ exam centers in Dubai, Abu Dhabi, Sharjah & Al Ain plus AED pricing, NESA alignment, and GST bootcamps.',
     seoKeywords:
       'CompTIA Security+ Dubai cost, CompTIA training UAE, CompTIA A+ Dubai Knowledge Park, CompTIA Network+ Abu Dhabi Sharjah, Pearson VUE CompTIA exam centers UAE, NESA cybersecurity training Dubai',
     readTime: '6 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah'],
     intro:
       'Whether you are based in Dubai Internet City, Abu Dhabi Global Market (ADGM), Sharjah, Al Ain, or Ras Al Khaimah, CompTIA credentials validate hands-on infrastructure and security competence aligned to UAE NESA and TDRA cyber resilience frameworks.',
@@ -393,13 +353,14 @@ export const SEO_GUIDES: SeoGuide[] = [
     regionLabel: 'South Africa',
     category: 'Azure & BI Careers',
     title: 'Microsoft Azure (AZ-104 / DP-900) & Power BI (PL-300) Training & Costs in South Africa',
-    seoTitle: 'Azure AZ-104, DP-900 & Power BI (PL-300) Training in South Africa | Learnify',
+    seoTitle: 'Azure AZ-104, DP-900 & Power BI (PL-300) Training in South Africa | Learnify Blogs',
     seoDescription:
       'Compare Microsoft Azure AZ-104, DP-900, Power BI PL-300, and AI-102 bootcamps across Johannesburg, Sandton, Pretoria, Cape Town & Durban with ZAR corporate PO pricing and SAST timings.',
     seoKeywords:
       'Microsoft Azure training Johannesburg ZAR, AZ-104 South Africa cost, DP-900 training South Africa, Power BI course South Africa Pretoria Cape Town, AI-102 Azure training Sandton, WSP corporate IT training South Africa',
     readTime: '6 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Johannesburg', 'Sandton', 'Pretoria', 'Cape Town', 'Durban', 'Centurion', 'Gqeberha'],
     intro:
       'With Microsoft’s South Africa North (Johannesburg) and South Africa West (Cape Town) data center regions powering banking, insurance, telecom, and retail workloads nationwide, certified Azure and Power BI talent remains in intense demand across every South African metro.',
@@ -488,13 +449,14 @@ export const SEO_GUIDES: SeoGuide[] = [
     regionLabel: 'Dubai & UAE',
     category: 'Cloud Architecture',
     title: 'Cloud Computing Courses in Dubai & UAE: Comparing AWS (SAA-C03), Azure (AZ-104), Cloud+ & Kubernetes',
-    seoTitle: 'Cloud Computing Courses in Dubai & UAE (AWS, Azure, Kubernetes) | Learnify',
+    seoTitle: 'Cloud Computing Courses in Dubai & UAE (AWS, Azure, Kubernetes) | Learnify Blogs',
     seoDescription:
       'Compare the top cloud computing courses in Dubai, Abu Dhabi & Sharjah: AWS Solutions Architect SAA-C03, Microsoft Azure AZ-104, CompTIA Cloud+, and Kubernetes CKA in GST.',
     seoKeywords:
       'cloud computing courses in Dubai, cloud computing training UAE, AWS Solutions Architect Dubai, Azure vs AWS course Abu Dhabi, Kubernetes CKA training Dubai, CompTIA Cloud+ Sharjah',
     readTime: '6 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah'],
     intro:
       'With dedicated hyper-scale cloud regions operating inside the UAE—including AWS Middle East (me-central-1) and Microsoft Azure UAE North & Central—cloud computing courses in Dubai, Abu Dhabi, and Sharjah have shifted toward hands-on multi-cloud architecture, security, and Kubernetes orchestration.',
@@ -582,13 +544,14 @@ export const SEO_GUIDES: SeoGuide[] = [
     regionLabel: 'South Africa',
     category: 'Cloud & Security Roadmap',
     title: 'AWS, Azure & Cybersecurity Training Pathways Across Johannesburg, Cape Town & Durban',
-    seoTitle: 'AWS, Azure & Cybersecurity Courses in South Africa (JHB, CPT, DBN) | Learnify',
+    seoTitle: 'AWS, Azure & Cybersecurity Courses in South Africa (JHB, CPT, DBN) | Learnify Blogs',
     seoDescription:
       'Build a high-growth cloud or cybersecurity career in South Africa with AWS Solutions Architect SAA-C03, AWS Security SCS-C02, Azure AZ-104, Security+ SY0-701, and Kubernetes CKA.',
     seoKeywords:
       'AWS training South Africa Cape Town, cloud computing courses Johannesburg, cybersecurity courses South Africa POPIA FSCA, Kubernetes CKA South Africa, AWS Security SCS-C02 South Africa',
     readTime: '6 min read',
     updatedDate: 'November 2026',
+    publishedIso: '2026-11-17',
     citiesCovered: ['Johannesburg', 'Cape Town', 'Pretoria', 'Durban', 'Sandton', 'Midrand', 'Stellenbosch'],
     intro:
       'With AWS Africa (Cape Town) af-south-1 and Microsoft Azure South Africa North (Johannesburg) anchoring regional enterprise workloads, organizations across Gauteng, the Western Cape, and KwaZulu-Natal are competing fiercely for certified cloud architects, Kubernetes engineers, and POPIA/FSCA cybersecurity specialists.',
@@ -666,25 +629,137 @@ export const SEO_GUIDES: SeoGuide[] = [
   },
 ];
 
-export type GuideRouteMatch =
-  | { type: 'hub' }
-  | { type: 'detail'; guide: SeoGuide };
+export type BlogRouteMatch =
+  | { type: 'hub'; isLegacyGuidesRedirect?: boolean }
+  | { type: 'detail'; post: BlogPost; isLegacyGuidesRedirect?: boolean };
 
-export function resolveGuideRoute(pathname: string): GuideRouteMatch | null {
+export function getMergedBlogs(customBlogs?: BlogPost[]): BlogPost[] {
+  if (!Array.isArray(customBlogs) || customBlogs.length === 0) {
+    return SEO_BLOGS;
+  }
+  const seenSlugs = new Set<string>();
+  const merged: BlogPost[] = [];
+
+  for (const post of customBlogs) {
+    if (!post || !post.slug) continue;
+    const key = post.slug.toLowerCase();
+    if (!seenSlugs.has(key)) {
+      seenSlugs.add(key);
+      merged.push(post);
+    }
+  }
+
+  for (const builtin of SEO_BLOGS) {
+    const key = builtin.slug.toLowerCase();
+    if (!seenSlugs.has(key)) {
+      seenSlugs.add(key);
+      merged.push(builtin);
+    }
+  }
+
+  return merged;
+}
+
+export function slugifyBlogTitle(title: string): string {
+  return String(title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || `blog-${Date.now()}`;
+}
+
+export function resolveBlogRoute(
+  pathname: string,
+  customBlogs?: BlogPost[]
+): BlogRouteMatch | null {
   const clean = pathname.split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase() || '/';
-  if (clean === '/guides') {
+  const allPosts = getMergedBlogs(customBlogs);
+
+  if (clean === '/blogs') {
     return { type: 'hub' };
+  }
+  if (clean.startsWith('/blogs/')) {
+    const slug = clean.slice(7);
+    const matched = allPosts.find((g) => g.slug.toLowerCase() === slug);
+    if (matched) {
+      return { type: 'detail', post: matched };
+    }
+  }
+
+  // Legacy /guides -> /blogs graceful resolution
+  if (clean === '/guides') {
+    return { type: 'hub', isLegacyGuidesRedirect: true };
   }
   if (clean.startsWith('/guides/')) {
     const slug = clean.slice(8);
-    const matched = SEO_GUIDES.find((g) => g.slug.toLowerCase() === slug);
+    const matched = allPosts.find((g) => g.slug.toLowerCase() === slug);
     if (matched) {
-      return { type: 'detail', guide: matched };
+      return { type: 'detail', post: matched, isLegacyGuidesRedirect: true };
     }
   }
+
   return null;
 }
 
-export function getAllGuideCanonicalUrls(): string[] {
-  return [`${SITE_BASE_URL}/guides`, ...SEO_GUIDES.map((g) => `${SITE_BASE_URL}/guides/${g.slug}`)];
+export function getAllBlogCanonicalUrls(customBlogs?: BlogPost[]): string[] {
+  const allPosts = getMergedBlogs(customBlogs);
+  return [`${SITE_BASE_URL}/blogs`, ...allPosts.map((g) => `${SITE_BASE_URL}/blogs/${g.slug}`)];
+}
+
+export function getDefaultRegionalLinksForRegion(region: RegionCode | 'global') {
+  if (region === 'ae') {
+    return [
+      {
+        label: 'CompTIA Security+ (SY0-701) Dubai & UAE',
+        href: '/ae/comptia-security-plus-training-dubai-uae',
+        subtitle: 'Live GST bootcamps & 24/7 cloud labs across all 7 Emirates',
+      },
+      {
+        label: 'Microsoft Azure AZ-104 Dubai & UAE',
+        href: '/ae/microsoft-azure-az-104-training-dubai-uae',
+        subtitle: 'Hands-on Azure UAE North/Central infrastructure training',
+      },
+      {
+        label: 'Microsoft Power BI PL-300 Dubai & UAE',
+        href: '/ae/microsoft-power-bi-pl-300-training-dubai-uae',
+        subtitle: 'Executive BI reporting & DAX modeling in AED/GST',
+      },
+    ];
+  }
+  if (region === 'za') {
+    return [
+      {
+        label: 'CompTIA A+ Certification South Africa',
+        href: '/za/comptia-a-plus-training-south-africa',
+        subtitle: 'Core 1 & Core 2 live SAST cohort across Gauteng & SA',
+      },
+      {
+        label: 'CompTIA Security+ (SY0-701) South Africa',
+        href: '/za/comptia-security-plus-training-south-africa',
+        subtitle: 'POPIA & FSCA cybersecurity bootcamp in ZAR/SAST',
+      },
+      {
+        label: 'Microsoft Power BI PL-300 South Africa',
+        href: '/za/microsoft-power-bi-pl-300-training-south-africa',
+        subtitle: 'Enterprise analytics & DAX dashboards in Johannesburg & CPT',
+      },
+    ];
+  }
+  return [
+    {
+      label: 'Dubai & UAE IT Training Hub',
+      href: '/ae',
+      subtitle: 'All 22 UAE certification bootcamps in GST / AED',
+    },
+    {
+      label: 'South Africa & Gauteng Training Hub',
+      href: '/za',
+      subtitle: 'All 22 South Africa certification bootcamps in SAST / ZAR',
+    },
+    {
+      label: 'All Global IT Courses',
+      href: '/courses',
+      subtitle: 'Explore Microsoft, CompTIA, AWS & Kubernetes programs',
+    },
+  ];
 }
