@@ -17,6 +17,7 @@ import {
   getRegionalAlternatesForCourse,
   resolveRegionalRoute,
 } from './src/data/regionalSeoData';
+import { SEO_GUIDES, resolveGuideRoute } from './src/data/guidesData';
 import { CmsData, LeadSubmission, Course } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -547,6 +548,12 @@ async function startServer() {
       { loc: '/courses', priority: '0.98', changefreq: 'daily' },
       { loc: '/corporate-training', priority: '0.95', changefreq: 'weekly' },
       { loc: '/cisco-training', priority: '0.95', changefreq: 'weekly' },
+      { loc: '/guides', priority: '0.95', changefreq: 'weekly' },
+      ...SEO_GUIDES.map((g) => ({
+        loc: `/guides/${g.slug}`,
+        priority: '0.92',
+        changefreq: 'weekly',
+      })),
       { loc: '/about', priority: '0.85', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.90', changefreq: 'monthly' },
       { loc: '/privacy', priority: '0.50', changefreq: 'monthly' },
@@ -694,12 +701,17 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
         {
           "path": "/ae",
           "method": "GET",
-          "description": "UAE & Dubai CompTIA and Microsoft certification training hub."
+          "description": "UAE & Dubai CompTIA, Microsoft, AWS & Kubernetes certification training hub."
         },
         {
           "path": "/za",
           "method": "GET",
-          "description": "South Africa CompTIA and Microsoft certification training hub."
+          "description": "South Africa CompTIA, Microsoft, AWS & Kubernetes certification training hub."
+        },
+        {
+          "path": "/guides",
+          "method": "GET",
+          "description": "UAE (AED) and South Africa / Gauteng (ZAR) exam center and certification cost guides."
         },
         {
           "path": "/corporate-training",
@@ -735,6 +747,7 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
 - [Course Catalog](${SITE_BASE_URL}/courses)
 - [UAE & Dubai Training Hub](${SITE_BASE_URL}/ae)
 - [South Africa Training Hub](${SITE_BASE_URL}/za)
+- [Exam Center & Regional Cost Guides](${SITE_BASE_URL}/guides)
 - [Corporate Training Solutions](${SITE_BASE_URL}/corporate-training)
 - [Contact & Corporate Admissions](${SITE_BASE_URL}/contact)
 `;
@@ -1650,9 +1663,168 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       try {
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
         const regionalMatch = resolveRegionalRoute(cleanPath);
+        const guideMatch = resolveGuideRoute(cleanPath);
 
-        // 1. Dedicated Regional SEO Routes (/ae, /za, /ae/:slug, /za/:slug)
-        if (regionalMatch && regionalMatch.type === 'hub') {
+        // 0. Dedicated Exam-Center & Cost SEO Guides (/guides & /guides/:slug)
+        if (guideMatch && guideMatch.type === 'hub') {
+          const canonicalUrl = `${SITE_BASE_URL}/guides`;
+          const title = 'Exam Centers, Costs & Certification Guides (UAE & South Africa) | Learnify Solutions';
+          const desc =
+            '2026 city-by-city guides for Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, plus AED and ZAR course costs.';
+          const keywords =
+            'where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai, Learnify guides';
+          const schemaObj = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'CollectionPage',
+                '@id': `${canonicalUrl}#collection`,
+                name: 'UAE & South Africa IT Exam Center and Cost Guides',
+                mainEntity: {
+                  '@type': 'ItemList',
+                  numberOfItems: SEO_GUIDES.length,
+                  itemListElement: SEO_GUIDES.map((g, idx) => ({
+                    '@type': 'ListItem',
+                    position: idx + 1,
+                    name: g.title,
+                    url: `${SITE_BASE_URL}/guides/${g.slug}`,
+                  })),
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE_URL}/` },
+                  { '@type': 'ListItem', position: 2, name: 'Guides', item: canonicalUrl },
+                ],
+              },
+            ],
+          };
+
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+            <nav><a href="/">Home</a> &gt; <span>Exam Center &amp; Cost Guides</span></nav>
+            <h1>Exam Centers, Fees &amp; Certification Roadmaps for UAE &amp; South Africa</h1>
+            <p>${escapeHtml(desc)}</p>
+            <p><a href="/ae">UAE &amp; Dubai Hub (AED / GST)</a> | <a href="/za">South Africa Hub (ZAR / SAST)</a></p>
+            <ul>${SEO_GUIDES.map(
+              (g) =>
+                `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.regionLabel)} (${escapeHtml(g.citiesCovered.join(', '))})</li>`
+            ).join('')}</ul>
+          </main>`;
+
+          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+            .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(title)}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(desc)}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${escapeHtml(keywords)}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(title)}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(desc)}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(title)}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(desc)}" />`)
+            .replace(
+              /<\/head>/,
+              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+            )
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+        } else if (guideMatch && guideMatch.type === 'detail') {
+          const g = guideMatch.guide;
+          const canonicalUrl = `${SITE_BASE_URL}/guides/${g.slug}`;
+          const schemaObj = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'Article',
+                '@id': `${canonicalUrl}#article`,
+                headline: g.title,
+                description: g.seoDescription,
+                inLanguage: 'en',
+                author: {
+                  '@type': 'Organization',
+                  name: 'Learnify Solutions',
+                  url: SITE_BASE_URL,
+                },
+                publisher: {
+                  '@type': 'EducationalOrganization',
+                  name: 'Learnify Solutions',
+                  url: SITE_BASE_URL,
+                },
+                mainEntityOfPage: canonicalUrl,
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_BASE_URL}/` },
+                  { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE_BASE_URL}/guides` },
+                  { '@type': 'ListItem', position: 3, name: g.regionLabel, item: canonicalUrl },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                mainEntity: g.faqs.map((f) => ({
+                  '@type': 'Question',
+                  name: f.q,
+                  acceptedAnswer: { '@type': 'Answer', text: f.a },
+                })),
+              },
+            ],
+          };
+
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
+            <nav><a href="/">Home</a> &gt; <a href="/guides">Guides</a> &gt; <span>${escapeHtml(g.regionLabel)}</span></nav>
+            <h1>${escapeHtml(g.title)}</h1>
+            <p>${escapeHtml(g.intro)}</p>
+            <p><strong>Cities Covered:</strong> ${escapeHtml(g.citiesCovered.join(', '))}</p>
+            <h2>Key Takeaways</h2>
+            <ul>${g.keyTakeaways.map((k) => `<li>${escapeHtml(k)}</li>`).join('')}</ul>
+            ${g.sections
+              .map(
+                (sec) => `<section>
+                  <h2>${escapeHtml(sec.heading)}</h2>
+                  ${sec.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
+                  ${
+                    sec.table
+                      ? `<table><caption>${escapeHtml(sec.table.caption)}</caption><thead><tr>${sec.table.headers
+                          .map((h) => `<th>${escapeHtml(h)}</th>`)
+                          .join('')}</tr></thead><tbody>${sec.table.rows
+                          .map(
+                            (r) =>
+                              `<tr><td>${escapeHtml(r.label)}</td><td>${escapeHtml(r.col2)}</td><td>${escapeHtml(r.col3)}</td><td>${escapeHtml(r.col4)}</td></tr>`
+                          )
+                          .join('')}</tbody></table>`
+                      : ''
+                  }
+                </section>`
+              )
+              .join('')}
+            <h2>Recommended Certification Bootcamps</h2>
+            <ul>${g.relatedRegionalLinks
+              .map((l) => `<li><a href="${escapeHtml(l.href)}">${escapeHtml(l.label)}</a> — ${escapeHtml(l.subtitle)}</li>`)
+              .join('')}</ul>
+            <h2>Frequently Asked Questions</h2>
+            ${g.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}
+          </main>`;
+
+          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+            .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(g.seoTitle)}</title>`)
+            .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(g.seoTitle)}" />`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(g.seoDescription)}" />`)
+            .replace(/<meta name="keywords" content=".*?" \/>/, `<meta name="keywords" content="${escapeHtml(g.seoKeywords)}" />`)
+            .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(g.seoTitle)}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(g.seoDescription)}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(g.seoTitle)}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(g.seoDescription)}" />`)
+            .replace(/<meta name="geo.region" content=".*?" \/>/, `<meta name="geo.region" content="${g.region.toUpperCase()}" />`)
+            .replace(/<meta name="geo.placename" content=".*?" \/>/, `<meta name="geo.placename" content="${escapeHtml(g.citiesCovered.join(', '))}" />`)
+            .replace(
+              /<\/head>/,
+              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+            )
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+        } else if (regionalMatch && regionalMatch.type === 'hub') {
           const region = regionalMatch.region;
           const hubPages = getRegionalCoursePages(region.code);
           const canonicalUrl = `${SITE_BASE_URL}${region.hubPath}`;
@@ -1668,7 +1840,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               {
                 '@type': 'ItemList',
                 '@id': `${canonicalUrl}#course-list`,
-                name: `CompTIA & Microsoft Certification Training in ${region.countryName}`,
+                name: `CompTIA, Microsoft & AWS Certification Training in ${region.countryName}`,
                 numberOfItems: hubPages.length,
                 itemListElement: hubPages.map((p, idx) => ({
                   '@type': 'ListItem',
@@ -1696,8 +1868,8 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           };
 
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
-            <nav><a href="/">Home</a> &gt; <span>${escapeHtml(region.shortName)} Training</span></nav>
-            <h1>CompTIA &amp; Microsoft Certification Training in ${escapeHtml(region.countryName)}</h1>
+            <nav><a href="/">Home</a> &gt; <span>${escapeHtml(region.shortName)} Training</span> | <a href="/guides">Exam Center &amp; Cost Guides</a></nav>
+            <h1>CompTIA, Microsoft &amp; AWS Certification Training in ${escapeHtml(region.countryName)}</h1>
             <p>${escapeHtml(region.hubDescription)}</p>
             <p><strong>Cities Served:</strong> ${escapeHtml(region.cities.join(', '))} | <strong>Timezone:</strong> ${escapeHtml(region.timezone)} | <strong>Currency:</strong> ${escapeHtml(region.currency)}</p>
             <h2>Certified Programs in ${escapeHtml(region.countryName)}</h2>
@@ -2091,18 +2263,20 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const flagship = flagshipIds
             .map((id) => coursesStore.find((c) => c.id === id))
             .filter((c): c is Course => Boolean(c));
-          const aeLinks = getRegionalCoursePages('ae').slice(0, 6);
-          const zaLinks = getRegionalCoursePages('za').slice(0, 6);
+          const aeLinks = getRegionalCoursePages('ae').slice(0, 8);
+          const zaLinks = getRegionalCoursePages('za').slice(0, 8);
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
-            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, Power BI, CompTIA, Cisco, AWS, and Cybersecurity across UAE (Dubai, Abu Dhabi), South Africa (Johannesburg, Cape Town, Gauteng), USA, UK, and India.</p>
-            <nav><a href="/courses">All Courses</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
+            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, Power BI, CompTIA, Cisco, AWS, and Cybersecurity across UAE (Dubai, Abu Dhabi, Sharjah, Al Ain, Ajman), South Africa (Johannesburg, Sandton, Midrand, Pretoria, Gauteng, Cape Town, Durban), USA, UK, and India.</p>
+            <nav><a href="/courses">All Courses</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/guides">Exam Centers &amp; Cost Guides</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
             <h2>Featured Global Certification Courses</h2>
             <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
             <h2>Dubai &amp; UAE Training Editions</h2>
-            <ul><li><a href="/ae">All UAE CompTIA &amp; Microsoft Courses</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
-            <h2>South Africa Training Editions</h2>
-            <ul><li><a href="/za">All South Africa CompTIA &amp; Microsoft Courses</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/ae">All UAE CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <h2>South Africa &amp; Gauteng Training Editions</h2>
+            <ul><li><a href="/za">All South Africa CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <h2>UAE &amp; South Africa Exam-Center &amp; Fee Guides</h2>
+            <ul>${SEO_GUIDES.map((g) => `<li><a href="/guides/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
           </main>`;
           html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {

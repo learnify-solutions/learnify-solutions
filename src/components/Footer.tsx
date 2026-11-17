@@ -141,6 +141,17 @@ export const Footer: React.FC<FooterProps> = ({
               >
                 South Africa Training
               </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/guides"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Guides & Exam Centers', href: '/guides' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Guides &amp; Exam Centers
+              </a>
             </div>
           </div>
 

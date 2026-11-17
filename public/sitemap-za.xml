@@ -201,4 +201,52 @@
     <xhtml:link rel="alternate" hreflang="en-AE" href="https://www.learnify-solutions.com/ae/microsoft-365-copilot-ms-4018-training-dubai-uae" />
     <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.learnify-solutions.com/za/microsoft-365-copilot-ms-4018-training-south-africa" />
   </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/za/aws-solutions-architect-saa-c03-training-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.learnify-solutions.com/course/course-aws-solutions" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.learnify-solutions.com/course/course-aws-solutions" />
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://www.learnify-solutions.com/ae/aws-solutions-architect-saa-c03-training-dubai-uae" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.learnify-solutions.com/za/aws-solutions-architect-saa-c03-training-south-africa" />
+  </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/za/aws-security-specialty-scs-c02-training-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.learnify-solutions.com/course/course-aws-security" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.learnify-solutions.com/course/course-aws-security" />
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://www.learnify-solutions.com/ae/aws-security-specialty-scs-c02-training-dubai-uae" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.learnify-solutions.com/za/aws-security-specialty-scs-c02-training-south-africa" />
+  </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/za/kubernetes-cka-cks-training-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.learnify-solutions.com/course/course-kubernetes-cka" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.learnify-solutions.com/course/course-kubernetes-cka" />
+    <xhtml:link rel="alternate" hreflang="en-AE" href="https://www.learnify-solutions.com/ae/kubernetes-cka-cks-training-dubai-uae" />
+    <xhtml:link rel="alternate" hreflang="en-ZA" href="https://www.learnify-solutions.com/za/kubernetes-cka-cks-training-south-africa" />
+  </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/guides/where-to-write-comptia-exams-gauteng-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.92</priority>
+  </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/guides/microsoft-azure-power-bi-training-cost-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.92</priority>
+  </url>
+  <url>
+    <loc>https://www.learnify-solutions.com/guides/aws-azure-cloud-cybersecurity-careers-south-africa</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.92</priority>
+  </url>
 </urlset>

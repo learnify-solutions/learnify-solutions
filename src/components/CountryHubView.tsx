@@ -22,6 +22,7 @@ interface CountryHubViewProps {
   onNavigateRegionalCourse: (page: ResolvedRegionalCoursePage) => void;
   onSwitchRegion: (region: RegionCode) => void;
   onNavigateHome: () => void;
+  onNavigateGuides: () => void;
   onOpenAdvisorModal: (
     type: 'advisor' | 'corporate_quote' | 'demo' | 'course_info',
     domain?: string
@@ -33,13 +34,14 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
   onNavigateRegionalCourse,
   onSwitchRegion,
   onNavigateHome,
+  onNavigateGuides,
   onOpenAdvisorModal,
 }) => {
   const region = REGION_CONFIGS[regionCode];
   const otherRegionCode: RegionCode = regionCode === 'ae' ? 'za' : 'ae';
   const otherRegion = REGION_CONFIGS[otherRegionCode];
 
-  const [vendorFilter, setVendorFilter] = useState<'all' | 'CompTIA' | 'Microsoft'>('all');
+  const [vendorFilter, setVendorFilter] = useState<'all' | 'CompTIA' | 'Microsoft' | 'AWS' | 'Cloud Native'>('all');
 
   const regionalPages = useMemo(() => getRegionalCoursePages(regionCode), [regionCode]);
 
@@ -48,14 +50,18 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
     return regionalPages.filter((p) => p.course.certificationVendor === vendorFilter);
   }, [regionalPages, vendorFilter]);
 
-  const { comptiaCount, msCount } = useMemo(() => {
+  const { comptiaCount, msCount, awsCount, cloudNativeCount } = useMemo(() => {
     let comptia = 0;
     let ms = 0;
+    let aws = 0;
+    let cloudNative = 0;
     for (const p of regionalPages) {
       if (p.course.certificationVendor === 'CompTIA') comptia++;
       else if (p.course.certificationVendor === 'Microsoft') ms++;
+      else if (p.course.certificationVendor === 'AWS') aws++;
+      else if (p.course.certificationVendor === 'Cloud Native') cloudNative++;
     }
-    return { comptiaCount: comptia, msCount: ms };
+    return { comptiaCount: comptia, msCount: ms, awsCount: aws, cloudNativeCount: cloudNative };
   }, [regionalPages]);
 
   return (
@@ -113,7 +119,7 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
               </p>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#152e4d] leading-tight tracking-tight [text-wrap:balance]">
-                CompTIA &amp; Microsoft Certification Training in {region.countryName}
+                CompTIA, Microsoft &amp; AWS Certification Training in {region.countryName}
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
@@ -123,7 +129,7 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
               </p>
 
               <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600 pt-1">
-                <span>19 Official CompTIA &amp; Microsoft Tracks</span>
+                <span>{regionalPages.length} Official CompTIA, Microsoft, AWS &amp; Cloud Tracks</span>
                 <span aria-hidden="true">·</span>
                 <span>98.4% First-Attempt Pass Rate</span>
                 <span aria-hidden="true">·</span>
@@ -207,7 +213,7 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
           </div>
 
           {/* Interactive Vendor Filter Tabs */}
-          <div className="inline-flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg self-start sm:self-auto">
+          <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-slate-200/70 rounded-lg self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setVendorFilter('all')}
@@ -240,6 +246,28 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
               }`}
             >
               Microsoft ({msCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setVendorFilter('AWS')}
+              className={`px-3.5 py-2 text-xs font-semibold rounded-md transition-colors cursor-pointer min-h-[38px] ${
+                vendorFilter === 'AWS'
+                  ? 'bg-white text-[#152e4d] shadow-xs'
+                  : 'text-slate-700 hover:text-[#152e4d]'
+              }`}
+            >
+              AWS ({awsCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setVendorFilter('Cloud Native')}
+              className={`px-3.5 py-2 text-xs font-semibold rounded-md transition-colors cursor-pointer min-h-[38px] ${
+                vendorFilter === 'Cloud Native'
+                  ? 'bg-white text-[#152e4d] shadow-xs'
+                  : 'text-slate-700 hover:text-[#152e4d]'
+              }`}
+            >
+              Kubernetes ({cloudNativeCount})
             </button>
           </div>
         </div>
@@ -383,7 +411,19 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
                 </li>
               ))}
             </ul>
-            <div className="pt-2">
+            <div className="pt-2 flex flex-col gap-2.5">
+              <a
+                href="/guides"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateGuides();
+                }}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#ea6d24] hover:text-[#c95716] transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Read {region.shortName} Exam Center &amp; {region.currency} Cost Guides</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
               <a
                 href={`/${otherRegion.code}`}
                 onClick={(e) => {

@@ -27,6 +27,7 @@ interface RegionalCourseViewProps {
   page: ResolvedRegionalCoursePage;
   onNavigateHome: () => void;
   onNavigateHub: (region: RegionCode) => void;
+  onNavigateGuides?: () => void;
   onNavigateGlobalCourse: (courseId: string) => void;
   onSwitchCourseRegion: (targetRegion: RegionCode, courseId: string) => void;
   onNavigateRegionalCourse: (page: ResolvedRegionalCoursePage) => void;
@@ -37,6 +38,7 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
   page,
   onNavigateHome,
   onNavigateHub,
+  onNavigateGuides,
   onNavigateGlobalCourse,
   onSwitchCourseRegion,
   onNavigateRegionalCourse,
@@ -506,6 +508,21 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                   <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   <span>24/7 Browser Cloud Labs + HD Replays</span>
                 </p>
+                <div className="pt-2">
+                  <a
+                    href="/guides"
+                    onClick={(e) => {
+                      if (onNavigateGuides) {
+                        e.preventDefault();
+                        onNavigateGuides();
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#ea6d24] hover:underline"
+                  >
+                    <span>View {region.shortName} Exam Centers &amp; {region.currency} Cost Guides</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             </div>
           </aside>

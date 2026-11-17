@@ -11,6 +11,11 @@ import {
   getRegionalCoursePages,
   resolveRegionalRoute,
 } from './data/regionalSeoData';
+import {
+  SEO_GUIDES,
+  SeoGuide,
+  resolveGuideRoute,
+} from './data/guidesData';
 import { CmsData, Course, TechDomain, LeadSubmission } from './types';
 import {
   fetchCmsData,
@@ -90,6 +95,12 @@ const CountryHubView = lazy(() =>
 const RegionalCourseView = lazy(() =>
   import('./components/RegionalCourseView').then((m) => ({ default: m.RegionalCourseView }))
 );
+const GuidesHubView = lazy(() =>
+  import('./components/GuidesHubView').then((m) => ({ default: m.GuidesHubView }))
+);
+const GuideDetailView = lazy(() =>
+  import('./components/GuideDetailView').then((m) => ({ default: m.GuideDetailView }))
+);
 const AdvisorModal = lazy(() =>
   import('./components/AdvisorModal').then((m) => ({ default: m.AdvisorModal }))
 );
@@ -155,12 +166,19 @@ export default function App() {
     | 'cisco_training'
     | 'country_hub'
     | 'regional_course'
+    | 'guides_hub'
+    | 'guide_detail'
   >(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
       const params = new URLSearchParams(window.location.search);
       const catalog = params.get('catalog');
+
+      const guideMatch = resolveGuideRoute(path);
+      if (guideMatch) {
+        return guideMatch.type === 'hub' ? 'guides_hub' : 'guide_detail';
+      }
 
       const regionalMatch = resolveRegionalRoute(path);
       if (regionalMatch) {
@@ -213,6 +231,14 @@ export default function App() {
     if (typeof window !== 'undefined') {
       const match = resolveRegionalRoute(window.location.pathname);
       if (match && match.type === 'course') return match.page;
+    }
+    return null;
+  });
+
+  const [selectedGuide, setSelectedGuide] = useState<SeoGuide | null>(() => {
+    if (typeof window !== 'undefined') {
+      const match = resolveGuideRoute(window.location.pathname);
+      if (match && match.type === 'detail') return match.guide;
     }
     return null;
   });
@@ -441,7 +467,7 @@ export default function App() {
               {
                 '@type': 'ItemList',
                 '@id': `https://www.learnify-solutions.com${region.hubPath}#course-list`,
-                'name': `CompTIA & Microsoft Certification Training in ${region.countryName}`,
+                'name': `CompTIA, Microsoft & AWS Certification Training in ${region.countryName}`,
                 'numberOfItems': hubPages.length,
                 'itemListElement': hubPages.map((p, idx) => ({
                   '@type': 'ListItem',
@@ -465,6 +491,100 @@ export default function App() {
               {
                 '@type': 'FAQPage',
                 'mainEntity': region.hubFaqs.map((f) => ({
+                  '@type': 'Question',
+                  'name': f.q,
+                  'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+                })),
+              },
+            ],
+          },
+        };
+      }
+      case 'guides_hub':
+        return {
+          title: 'Exam Centers, Costs & Certification Guides (UAE & South Africa) | Learnify Solutions',
+          description:
+            '2026 city-by-city guides for Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, plus AED and ZAR course costs.',
+          keywords:
+            'where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai, Learnify guides',
+          canonicalUrl: 'https://www.learnify-solutions.com/guides',
+          ogUrl: 'https://www.learnify-solutions.com/guides',
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'CollectionPage',
+                '@id': 'https://www.learnify-solutions.com/guides#collection',
+                'name': 'UAE & South Africa IT Exam Center and Cost Guides',
+                'mainEntity': {
+                  '@type': 'ItemList',
+                  'numberOfItems': SEO_GUIDES.length,
+                  'itemListElement': SEO_GUIDES.map((g, idx) => ({
+                    '@type': 'ListItem',
+                    'position': idx + 1,
+                    'name': g.title,
+                    'url': `https://www.learnify-solutions.com/guides/${g.slug}`,
+                  })),
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                  { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.learnify-solutions.com/' },
+                  { '@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': 'https://www.learnify-solutions.com/guides' },
+                ],
+              },
+            ],
+          },
+        };
+      case 'guide_detail': {
+        if (!selectedGuide) {
+          return {
+            title: 'IT Certification Guides | Learnify Solutions',
+            description: 'Exam center and regional certification cost guides for UAE & South Africa.',
+            canonicalUrl: 'https://www.learnify-solutions.com/guides',
+            ogUrl: 'https://www.learnify-solutions.com/guides',
+          };
+        }
+        const canonical = `https://www.learnify-solutions.com/guides/${selectedGuide.slug}`;
+        return {
+          title: selectedGuide.seoTitle,
+          description: selectedGuide.seoDescription,
+          keywords: selectedGuide.seoKeywords,
+          canonicalUrl: canonical,
+          ogUrl: canonical,
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'Article',
+                '@id': `${canonical}#article`,
+                'headline': selectedGuide.title,
+                'description': selectedGuide.seoDescription,
+                'inLanguage': 'en',
+                'author': {
+                  '@type': 'Organization',
+                  'name': 'Learnify Solutions',
+                  'url': 'https://www.learnify-solutions.com',
+                },
+                'publisher': {
+                  '@type': 'EducationalOrganization',
+                  'name': 'Learnify Solutions',
+                  'url': 'https://www.learnify-solutions.com',
+                },
+                'mainEntityOfPage': canonical,
+              },
+              {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                  { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://www.learnify-solutions.com/' },
+                  { '@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': 'https://www.learnify-solutions.com/guides' },
+                  { '@type': 'ListItem', 'position': 3, 'name': selectedGuide.regionLabel, 'item': canonical },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                'mainEntity': selectedGuide.faqs.map((f) => ({
                   '@type': 'Question',
                   'name': f.q,
                   'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
@@ -707,7 +827,7 @@ export default function App() {
           ogUrl: 'https://www.learnify-solutions.com/',
         };
     }
-  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse]);
+  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedGuide]);
 
   useSEO(seoConfig);
 
@@ -750,6 +870,19 @@ export default function App() {
       // Check Enterprise / Cisco authorization from URL (No persistent storage)
       const isEnterprise = checkIsEnterpriseUrl();
       setIsCiscoAuthorized(isEnterprise);
+
+      const guideMatch = resolveGuideRoute(pathname);
+      if (guideMatch) {
+        if (guideMatch.type === 'hub') {
+          setSelectedGuide(null);
+          setActivePage('guides_hub');
+        } else {
+          setSelectedGuide(guideMatch.guide);
+          setActivePage('guide_detail');
+        }
+        setActiveNavId('nav-courses');
+        return;
+      }
 
       const regionalMatch = resolveRegionalRoute(pathname);
       if (regionalMatch) {
@@ -873,7 +1006,7 @@ export default function App() {
       cancelAnimationFrame(frameId);
       clearTimeout(timer);
     };
-  }, [activePage, selectedCourse?.id, selectedRegionalCourse?.slug, regionalRegion]);
+  }, [activePage, selectedCourse?.id, selectedRegionalCourse?.slug, regionalRegion, selectedGuide?.slug]);
 
   const handleAdminLoginSuccess = () => {
     setIsAdminLoginModalOpen(false);
@@ -1120,6 +1253,22 @@ export default function App() {
     }
   };
 
+  const navigateToGuidesHub = () => {
+    setSelectedGuide(null);
+    setActivePage('guides_hub');
+    setActiveNavId('nav-courses');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', '/guides');
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
+  const navigateToGuide = (guide: SeoGuide) => {
+    setSelectedGuide(guide);
+    setActivePage('guide_detail');
+    setActiveNavId('nav-courses');
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/guides/${guide.slug}`);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
   return (
     <div id="top" className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-orange-200 selection:text-[#152e4d]">
       <header className="sticky top-0 z-50 flex flex-col w-full shadow-xs">
@@ -1195,6 +1344,36 @@ export default function App() {
                 if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
+              onNavigateGuides={navigateToGuidesHub}
+              onOpenAdvisorModal={handleOpenAdvisorModal}
+            />
+          ) : activePage === 'guides_hub' ? (
+            /* Dedicated UAE & South Africa Exam-Center & Cost Guides Hub (/guides) */
+            <GuidesHubView
+              onSelectGuide={navigateToGuide}
+              onNavigateHub={navigateToRegionalHub}
+              onNavigateHome={() => {
+                setActivePage('home');
+                setActiveNavId('nav-home');
+                if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onOpenAdvisorModal={handleOpenAdvisorModal}
+            />
+          ) : activePage === 'guide_detail' && selectedGuide ? (
+            /* Dedicated High-Intent SEO Guide (/guides/:slug) */
+            <GuideDetailView
+              guide={selectedGuide}
+              onNavigateHome={() => {
+                setActivePage('home');
+                setActiveNavId('nav-home');
+                if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onNavigateGuides={navigateToGuidesHub}
+              onSelectGuide={navigateToGuide}
+              onNavigateHub={navigateToRegionalHub}
+              onNavigateRegionalPath={navigateToRegionalPath}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
           ) : activePage === 'regional_course' && selectedRegionalCourse ? (
@@ -1208,6 +1387,7 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onNavigateHub={navigateToRegionalHub}
+              onNavigateGuides={navigateToGuidesHub}
               onNavigateGlobalCourse={(courseId) => {
                 const matched = sampleCourses.find((c) => c.id === courseId);
                 if (matched) handleSelectCourse(matched);
@@ -1435,6 +1615,8 @@ export default function App() {
               navigateToRegionalHub('ae');
             } else if (link.href === '/za' || link.label === 'South Africa Training') {
               navigateToRegionalHub('za');
+            } else if (link.href === '/guides' || link.label === 'Guides & Exam Centers') {
+              navigateToGuidesHub();
             } else if (link.href === '#privacy' || link.label === 'Privacy Policy') {
               setActivePage('privacy');
               setActiveNavId('');

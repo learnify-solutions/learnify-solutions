@@ -41,14 +41,14 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     shortName: 'UAE',
     hreflang: 'en-AE',
     hubPath: '/ae',
-    hubTitle: 'CompTIA & Microsoft Certification Training in Dubai & UAE | Learnify Solutions',
+    hubTitle: 'CompTIA, Microsoft & AWS Certification Training in Dubai & UAE | Learnify Solutions',
     hubDescription:
-      'Authorized live online & corporate CompTIA and Microsoft Azure certification bootcamps in Dubai, Abu Dhabi & Sharjah. GST timezones, AED corporate invoicing & 24/7 cloud labs.',
+      'Authorized live online & corporate CompTIA, Microsoft Azure, Power BI, AWS & Kubernetes certification bootcamps in Dubai, Abu Dhabi, Sharjah, Al Ain & Ajman. GST timezones, AED corporate POs & 24/7 cloud labs.',
     hubKeywords:
-      'IT certification training Dubai, Cloud computing courses in Dubai, CompTIA training UAE, Microsoft Azure training Dubai, corporate IT training Abu Dhabi, AZ-104 Dubai, Power BI training Dubai, Power BI course in Dubai, CompTIA Security+ UAE, Learnify Solutions UAE',
-    cities: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah'],
-    primaryCitiesLabel: 'Dubai, Abu Dhabi & Sharjah',
-    businessDistricts: 'Dubai Internet City, DIFC, Abu Dhabi Global Market (ADGM), Media City & Sharjah Research Park',
+      'IT certification training Dubai, Cloud computing courses in Dubai, CompTIA training UAE, Microsoft Azure training Dubai, AWS training Dubai, corporate IT training Abu Dhabi, AZ-104 Dubai, Power BI training Dubai, Power BI course in Dubai, CompTIA Security+ UAE, Sharjah IT certification, Learnify Solutions UAE',
+    cities: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah'],
+    primaryCitiesLabel: 'Dubai, Abu Dhabi, Sharjah, Al Ain & Ajman',
+    businessDistricts: 'Dubai Internet City, Dubai Knowledge Park, DIFC, Abu Dhabi Global Market (ADGM), Media City & Sharjah Research Park',
     timezone: 'GST (UTC+4)',
     currency: 'AED',
     complianceContext: 'UAE NESA, TDRA, ADHICS & Federal PDPL cybersecurity and cloud governance standards',
@@ -62,7 +62,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     invoicingNote:
       'Supports corporate Purchase Orders (POs), multi-seat enterprise licensing, and VAT-compliant invoicing in AED or USD for UAE organizations.',
     examCenterNote:
-      'Full exam readiness for Pearson VUE authorized testing centers in Dubai (Dubai Knowledge Park / DIAC), Abu Dhabi & Sharjah, plus OnVUE online proctored exams.',
+      'Full exam readiness for Pearson VUE authorized testing centers in Dubai (Dubai Knowledge Park / DIAC), Abu Dhabi, Sharjah & Al Ain, plus OnVUE online proctored exams.',
     schedules: [
       {
         name: 'UAE Weekday Intensive (Fast-Track)',
@@ -85,12 +85,12 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     ],
     hubFaqs: [
       {
-        q: 'Are CompTIA and Microsoft classes scheduled in UAE Gulf Standard Time (GST)?',
-        a: 'Yes. All UAE cohorts run on Gulf Standard Time (UTC+4) with morning executive sessions, evening flex tracks after work hours in Dubai and Abu Dhabi, and weekend options.',
+        q: 'Are CompTIA, Microsoft, and AWS classes scheduled in UAE Gulf Standard Time (GST)?',
+        a: 'Yes. All UAE cohorts run on Gulf Standard Time (UTC+4) with morning executive sessions, evening flex tracks after work hours across Dubai, Abu Dhabi, Sharjah, Al Ain & Ajman, and weekend options.',
       },
       {
         q: 'Can UAE companies pay in AED via Corporate Purchase Orders?',
-        a: 'Yes. Learnify Solutions supports corporate Purchase Orders (POs), multi-seat enterprise vouchers, and corporate invoicing in AED or USD for teams in Dubai, Abu Dhabi, and across the Emirates.',
+        a: 'Yes. Learnify Solutions supports corporate Purchase Orders (POs), multi-seat enterprise vouchers, and corporate invoicing in AED or USD for teams in Dubai, Abu Dhabi, and across all Emirates.',
       },
       {
         q: 'Do you deliver dedicated onsite corporate training in Dubai and Abu Dhabi?',
@@ -108,19 +108,19 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     shortName: 'South Africa',
     hreflang: 'en-ZA',
     hubPath: '/za',
-    hubTitle: 'CompTIA & Microsoft Certification Training in South Africa | Learnify Solutions',
+    hubTitle: 'CompTIA, Microsoft & AWS Certification Training in South Africa | Learnify Solutions',
     hubDescription:
-      'Live instructor-led CompTIA and Microsoft Azure certification bootcamps in Johannesburg, Cape Town, Pretoria & Durban. SAST timezones, ZAR corporate POs & 24/7 cloud labs.',
+      'Live instructor-led CompTIA, Microsoft Azure, Power BI, AWS & Kubernetes certification bootcamps across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Durban & Gqeberha. SAST timezones, ZAR corporate POs & 24/7 cloud labs.',
     hubKeywords:
-      'CompTIA training South Africa, where to write CompTIA A+ in Gauteng, Microsoft Azure training Johannesburg, IT certification courses Cape Town, CompTIA Security+ South Africa, AZ-104 Pretoria, DP-900 South Africa, Power BI course South Africa, corporate IT training Sandton',
-    cities: ['Johannesburg', 'Cape Town', 'Pretoria', 'Durban', 'Sandton'],
-    primaryCitiesLabel: 'Johannesburg, Cape Town, Pretoria & Durban',
-    businessDistricts: 'Sandton, Midrand, Rosebank, Century City (Cape Town), Menlyn (Pretoria) & Umhlanga Ridge',
+      'CompTIA training South Africa, where to write CompTIA A+ in Gauteng, Microsoft Azure training Johannesburg, AWS training South Africa, IT certification courses Cape Town, CompTIA Security+ South Africa, AZ-104 Pretoria, DP-900 South Africa, Power BI course South Africa, corporate IT training Sandton Midrand',
+    cities: ['Johannesburg', 'Sandton', 'Midrand', 'Pretoria', 'Centurion', 'Cape Town', 'Durban', 'Gqeberha', 'Stellenbosch'],
+    primaryCitiesLabel: 'Johannesburg, Pretoria (Gauteng), Cape Town & Durban',
+    businessDistricts: 'Sandton, Midrand, Rosebank, Centurion, Menlyn (Pretoria), Century City (Cape Town) & Umhlanga Ridge (Durban)',
     timezone: 'SAST (UTC+2)',
     currency: 'ZAR',
     complianceContext: 'POPIA data protection, FSCA cyber resilience & South African corporate Workplace Skills Plan (WSP) readiness',
     keyIndustries: [
-      'Banking, Insurance & FinTech (Sandton/Cape Town)',
+      'Banking, Insurance & FinTech (Sandton / Cape Town)',
       'Telecommunications & ISP Networks',
       'Mining, Manufacturing & Supply Chain',
       'Managed IT Services & BPO Centers',
@@ -129,7 +129,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     invoicingNote:
       'Supports corporate Purchase Orders (POs), bulk team seat packages, and streamlined enterprise invoicing in ZAR or USD for South African businesses.',
     examCenterNote:
-      'Structured preparation for where to write your exam at Pearson VUE testing centers across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town & Durban, plus flexible OnVUE online proctoring.',
+      'Structured preparation for where to write your exam at Pearson VUE testing centers across Gauteng (Johannesburg, Sandton, Midrand, Pretoria, Centurion), Cape Town, Durban & Gqeberha, plus flexible OnVUE online proctoring.',
     schedules: [
       {
         name: 'SA Weekday Bootcamp (Full-Time)',
@@ -152,8 +152,8 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     ],
     hubFaqs: [
       {
-        q: 'Do live CompTIA and Microsoft sessions run in South Africa Standard Time (SAST)?',
-        a: 'Yes. All South Africa batches are scheduled in SAST (UTC+2), with daytime corporate bootcamps and evening/weekend options designed for working IT professionals in Johannesburg, Cape Town, Pretoria, and Durban.',
+        q: 'Do live CompTIA, Microsoft, and AWS sessions run in South Africa Standard Time (SAST)?',
+        a: 'Yes. All South Africa batches are scheduled in SAST (UTC+2), with daytime corporate bootcamps and evening/weekend options designed for working IT professionals across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Durban, and Gqeberha.',
       },
       {
         q: 'Can South African companies request corporate quotes and pay in ZAR?',
@@ -473,6 +473,53 @@ export const TARGET_REGIONAL_COURSES: RegionalCourseMeta[] = [
       'Hands-on corporate enablement program for South African knowledge workers and executives adopting Microsoft 365 Copilot with secure data boundaries.',
     aeRoleDemand: 'Enterprise Workforce, Executive Leadership, Finance/HR/Ops Teams (Dubai & Abu Dhabi)',
     zaRoleDemand: 'Corporate Knowledge Workers, Operations Managers, FinTech & Enterprise Teams (South Africa)',
+  },
+
+  // ===================== AWS & CLOUD NATIVE (3 COURSES — NO CISCO) =====================
+  {
+    courseId: 'course-aws-solutions',
+    shortName: 'AWS Solutions Architect (SAA-C03)',
+    categoryTag: 'AWS Cloud',
+    aeSlug: 'aws-solutions-architect-saa-c03-training-dubai-uae',
+    zaSlug: 'aws-solutions-architect-saa-c03-training-south-africa',
+    aeFocusKeyword: 'AWS Solutions Architect SAA-C03 Training Dubai & UAE',
+    zaFocusKeyword: 'AWS Solutions Architect SAA-C03 Training South Africa',
+    aeIndustryAngle:
+      'Built for cloud teams deploying resilient workloads on the AWS Middle East (UAE) me-central-1 region—mastering Multi-AZ VPC networking, IAM governance, serverless compute, and UAE PDPL/NESA encryption controls.',
+    zaIndustryAngle:
+      'Engineered for South African cloud architects operating on the AWS Africa (Cape Town) af-south-1 region—covering multi-AZ resilience, POPIA data residency, KMS encryption, and FinOps cost optimization.',
+    aeRoleDemand: 'AWS Solutions Architect, Cloud Infrastructure Engineer, Platform Lead (Dubai / Abu Dhabi / Sharjah)',
+    zaRoleDemand: 'AWS Cloud Architect, DevOps Engineer, Cloud Systems Specialist (Johannesburg / Cape Town / Pretoria)',
+  },
+  {
+    courseId: 'course-aws-security',
+    shortName: 'AWS Certified Security - Specialty (SCS-C02)',
+    categoryTag: 'AWS Security',
+    aeSlug: 'aws-security-specialty-scs-c02-training-dubai-uae',
+    zaSlug: 'aws-security-specialty-scs-c02-training-south-africa',
+    aeFocusKeyword: 'AWS Security Specialty SCS-C02 Training Dubai & UAE',
+    zaFocusKeyword: 'AWS Security Specialty SCS-C02 Training South Africa',
+    aeIndustryAngle:
+      'Equips UAE cloud security specialists in banking (DIFC/ADGM), energy, and smart government with hands-on GuardDuty, Security Hub, AWS KMS CMK encryption, Organizations SCPs, and automated IR pipelines.',
+    zaIndustryAngle:
+      'Prepares South African security architects in financial services and enterprise MSPs to safeguard AWS af-south-1 workloads using IAM boundaries, CloudTrail forensics, WAF/Shield, and automated compliance auditing.',
+    aeRoleDemand: 'AWS Cloud Security Architect, DevSecOps Engineer, Cloud Governance Lead (Dubai / Abu Dhabi)',
+    zaRoleDemand: 'Cloud Security Engineer, Senior DevSecOps Specialist, Security Architect (Sandton / Cape Town)',
+  },
+  {
+    courseId: 'course-kubernetes-cka',
+    shortName: 'Kubernetes & Cloud-Native (CKA & CKS)',
+    categoryTag: 'Kubernetes & DevOps',
+    aeSlug: 'kubernetes-cka-cks-training-dubai-uae',
+    zaSlug: 'kubernetes-cka-cks-training-south-africa',
+    aeFocusKeyword: 'Kubernetes CKA Training Dubai & UAE',
+    zaFocusKeyword: 'Kubernetes CKA Training South Africa',
+    aeIndustryAngle:
+      'Trains UAE platform and SRE teams to bootstrap, network, secure, and troubleshoot production Kubernetes clusters (kubeadm, EKS, AKS) with RBAC, NetworkPolicies, etcd recovery, and CKS hardening.',
+    zaIndustryAngle:
+      'Delivers 100% performance-based terminal mastery for South African DevOps, fintech, and telecom engineering teams running containerized microservices across hybrid and cloud environments.',
+    aeRoleDemand: 'Kubernetes Platform Engineer, Site Reliability Engineer (SRE), Senior DevOps Engineer (UAE)',
+    zaRoleDemand: 'DevOps Engineer, Kubernetes Administrator, Cloud Platform Engineer (Johannesburg / Cape Town)',
   },
 ];
 
