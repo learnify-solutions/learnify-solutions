@@ -1856,6 +1856,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
+    const safeJsonForScript = (obj: unknown) =>
+      JSON.stringify(obj)
+        .replace(/</g, '\\u003c')
+        .replace(/>/g, '\\u003e')
+        .replace(/&/g, '\\u0026')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029');
+
     const replaceHreflangBlock = (
       htmlInput: string,
       alternates: Array<{ hreflang: string; href: string }>
@@ -1942,6 +1950,8 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             ).join('')}</ul>
           </main>`;
 
+          const blogSummariesPayload = allBlogs.map(toBlogSummary);
+
           html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
             .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(title)}" />`)
@@ -1955,18 +1965,23 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(desc)}" />`)
             .replace(
               /<\/head>/,
-              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+              `    <script type="application/ld+json">${safeJsonForScript(schemaObj)}</script>\n    <script>window.__INITIAL_BLOG_SUMMARIES__=${safeJsonForScript(blogSummariesPayload)};</script>\n  </head>`
             )
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (blogMatch && blogMatch.type === 'detail') {
-          const g = blogMatch.post;
+          const g = normalizeBlogPost(blogMatch.post);
           const canonicalUrl = `${SITE_BASE_URL}/blogs/${g.slug}`;
+          const ogImageUrl = g.coverImage
+            ? (g.coverImage.startsWith('http') ? g.coverImage : `${SITE_BASE_URL}${g.coverImage}`)
+            : `${SITE_BASE_URL}/hero.webp`;
+          const blogSummariesPayload = allBlogs.map(toBlogSummary);
           const graphNodes: Record<string, any>[] = [
             {
               '@type': 'BlogPosting',
               '@id': `${canonicalUrl}#blogposting`,
               headline: g.title,
               description: g.seoDescription,
+              image: ogImageUrl,
               datePublished: g.publishedIso || '2026-11-17',
               dateModified: g.publishedIso || '2026-11-17',
               inLanguage: 'en',
@@ -2010,7 +2025,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <nav><a href="/">Home</a> &gt; <a href="/blogs">Blogs</a> &gt; <span>${escapeHtml(g.regionLabel)}</span></nav>
             <h1>${escapeHtml(g.title)}</h1>
             <p>${escapeHtml(g.intro)}</p>
-            <p><strong>Cities Covered:</strong> ${escapeHtml(g.citiesCovered.join(', '))}</p>
+            <p><strong>Regions &amp; Audiences Covered:</strong> ${escapeHtml(g.citiesCovered.join(', '))}</p>
             <h2>Key Takeaways</h2>
             <ul>${g.keyTakeaways.map((k) => `<li>${escapeHtml(k)}</li>`).join('')}</ul>
             ${g.sections
@@ -2018,6 +2033,11 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                 (sec) => `<section>
                   <h2>${escapeHtml(sec.heading)}</h2>
                   ${sec.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
+                  ${
+                    sec.bullets && sec.bullets.length > 0
+                      ? `<ul>${sec.bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`
+                      : ''
+                  }
                   ${
                     sec.table
                       ? `<table><caption>${escapeHtml(sec.table.caption)}</caption><thead><tr>${sec.table.headers
@@ -2049,13 +2069,15 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${escapeHtml(g.seoTitle)}" />`)
             .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${escapeHtml(g.seoDescription)}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
+            .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${escapeHtml(ogImageUrl)}" />`)
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${escapeHtml(g.seoTitle)}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(g.seoDescription)}" />`)
+            .replace(/<meta name="twitter:image" content=".*?" \/>/, `<meta name="twitter:image" content="${escapeHtml(ogImageUrl)}" />`)
             .replace(/<meta name="geo.region" content=".*?" \/>/, `<meta name="geo.region" content="${g.region.toUpperCase()}" />`)
             .replace(/<meta name="geo.placename" content=".*?" \/>/, `<meta name="geo.placename" content="${escapeHtml(g.citiesCovered.join(', '))}" />`)
             .replace(
               /<\/head>/,
-              `    <script type="application/ld+json">${JSON.stringify(schemaObj)}</script>\n  </head>`
+              `    <script type="application/ld+json">${safeJsonForScript(schemaObj)}</script>\n    <script>window.__INITIAL_BLOG__=${safeJsonForScript(g)};window.__INITIAL_BLOG_SUMMARIES__=${safeJsonForScript(blogSummariesPayload)};</script>\n  </head>`
             )
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (regionalMatch && regionalMatch.type === 'hub') {
@@ -2511,7 +2533,13 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <ul><li><a href="/ae">UAE &amp; Dubai Certification Training</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/za">South Africa Certification Training</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
           </main>`;
-          html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
+          const blogSummariesPayload = allBlogs.map(toBlogSummary);
+          html = html
+            .replace(
+              /<\/head>/,
+              `    <script>window.__INITIAL_BLOG_SUMMARIES__=${safeJsonForScript(blogSummariesPayload)};</script>\n  </head>`
+            )
+            .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {
           res.status(404);
           html = stripHomeHeroPreloads(html)

@@ -31,6 +31,8 @@ import { HeroSection } from './components/HeroSection';
 import { StatsBar } from './components/StatsBar';
 import { TrainingProofSection } from './components/TrainingProofSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
+import { BlogsHubView } from './components/BlogsHubView';
+import { BlogDetailView } from './components/BlogDetailView';
 import { LoadingFallback } from './components/LoadingFallback';
 import { Settings, Database } from 'lucide-react';
 
@@ -98,12 +100,6 @@ const RegionalCourseView = lazy(() =>
 const BlogSection = lazy(() =>
   import('./components/BlogSection').then((m) => ({ default: m.BlogSection }))
 );
-const BlogsHubView = lazy(() =>
-  import('./components/BlogsHubView').then((m) => ({ default: m.BlogsHubView }))
-);
-const BlogDetailView = lazy(() =>
-  import('./components/BlogDetailView').then((m) => ({ default: m.BlogDetailView }))
-);
 const AdvisorModal = lazy(() =>
   import('./components/AdvisorModal').then((m) => ({ default: m.AdvisorModal }))
 );
@@ -123,6 +119,23 @@ const AdminLoginModal = lazy(() =>
     default: m.AdminLoginModal,
   }))
 );
+
+function getHydratedBlogForCurrentPath(): BlogPost | null {
+  if (typeof window === 'undefined') return null;
+  const initialBlog = (window as any).__INITIAL_BLOG__ as BlogPost | undefined;
+  if (!initialBlog || !initialBlog.slug) return null;
+  const match = parseBlogRoutePath(window.location.pathname);
+  if (match && match.type === 'detail' && initialBlog.slug.toLowerCase() === match.slug.toLowerCase()) {
+    return initialBlog;
+  }
+  return null;
+}
+
+function getHydratedBlogSummaries(): BlogSummary[] {
+  if (typeof window === 'undefined') return [];
+  const raw = (window as any).__INITIAL_BLOG_SUMMARIES__;
+  return Array.isArray(raw) ? (raw as BlogSummary[]) : [];
+}
 
 export default function App() {
   const [cmsData, setCmsData] = useState<CmsData>(initialCmsData);
@@ -238,10 +251,20 @@ export default function App() {
     return null;
   });
 
-  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
-  const [blogSummaries, setBlogSummaries] = useState<BlogSummary[]>([]);
-  const [isLoadingBlogs, setIsLoadingBlogs] = useState<boolean>(true);
-  const [isLoadingBlogDetail, setIsLoadingBlogDetail] = useState<boolean>(false);
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(() =>
+    getHydratedBlogForCurrentPath()
+  );
+  const [blogSummaries, setBlogSummaries] = useState<BlogSummary[]>(() =>
+    getHydratedBlogSummaries()
+  );
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState<boolean>(
+    () => getHydratedBlogSummaries().length === 0
+  );
+  const [isLoadingBlogDetail, setIsLoadingBlogDetail] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const match = parseBlogRoutePath(window.location.pathname);
+    return Boolean(match && match.type === 'detail' && !getHydratedBlogForCurrentPath());
+  });
 
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(() => {
     if (typeof window !== 'undefined') {
@@ -571,20 +594,32 @@ export default function App() {
       }
       case 'blog_detail': {
         if (!selectedBlog) {
+          const fallbackMatch =
+            typeof window !== 'undefined' ? parseBlogRoutePath(window.location.pathname) : null;
+          const fallbackSlug = fallbackMatch && fallbackMatch.type === 'detail' ? fallbackMatch.slug : '';
+          const fallbackCanonical = fallbackSlug
+            ? `https://www.learnify-solutions.com/blogs/${fallbackSlug}`
+            : 'https://www.learnify-solutions.com/blogs';
           return {
             title: 'IT Certification Blogs & Roadmaps | Learnify Solutions',
             description: 'Cloud architecture comparisons, cybersecurity preparation guides, and exam insights from Learnify Solutions.',
-            canonicalUrl: 'https://www.learnify-solutions.com/blogs',
-            ogUrl: 'https://www.learnify-solutions.com/blogs',
+            canonicalUrl: fallbackCanonical,
+            ogUrl: fallbackCanonical,
           };
         }
         const canonical = `https://www.learnify-solutions.com/blogs/${selectedBlog.slug}`;
+        const blogImageUrl = selectedBlog.coverImage
+          ? selectedBlog.coverImage.startsWith('http')
+            ? selectedBlog.coverImage
+            : `https://www.learnify-solutions.com${selectedBlog.coverImage}`
+          : 'https://www.learnify-solutions.com/hero.webp';
         const graphNodes: Record<string, any>[] = [
           {
             '@type': 'BlogPosting',
             '@id': `${canonical}#blogposting`,
             'headline': selectedBlog.title,
             'description': selectedBlog.seoDescription,
+            'image': blogImageUrl,
             'datePublished': selectedBlog.publishedIso || '2026-11-17',
             'dateModified': selectedBlog.publishedIso || '2026-11-17',
             'inLanguage': 'en',
@@ -625,6 +660,7 @@ export default function App() {
           keywords: selectedBlog.seoKeywords,
           canonicalUrl: canonical,
           ogUrl: canonical,
+          ogImage: blogImageUrl,
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': graphNodes,
@@ -919,7 +955,18 @@ export default function App() {
           setActivePage('blogs_hub');
         } else {
           setActivePage('blog_detail');
-          loadBlogBySlug(blogMatch.slug);
+          const hydrated = getHydratedBlogForCurrentPath();
+          if (
+            hydrated &&
+            hydrated.slug.toLowerCase() === blogMatch.slug.toLowerCase() &&
+            !(window as any).__INITIAL_BLOG_CONSUMED__
+          ) {
+            (window as any).__INITIAL_BLOG_CONSUMED__ = true;
+            setSelectedBlog(hydrated);
+            setIsLoadingBlogDetail(false);
+          } else {
+            loadBlogBySlug(blogMatch.slug);
+          }
         }
         setActiveNavId('nav-blogs');
         return;
@@ -1102,10 +1149,12 @@ export default function App() {
       }).catch(() => {});
 
       // 1b. Lightweight Blog Metadata Index (~2KB, full articles load on-demand)
-      setIsLoadingBlogs(true);
+      if (getHydratedBlogSummaries().length === 0) {
+        setIsLoadingBlogs(true);
+      }
       fetchBlogSummaries()
         .then((summariesRes) => {
-          if (Array.isArray(summariesRes)) {
+          if (Array.isArray(summariesRes) && summariesRes.length > 0) {
             setBlogSummaries(summariesRes);
           }
         })
