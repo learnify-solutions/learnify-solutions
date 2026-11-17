@@ -669,11 +669,14 @@ export default function App() {
       }
       case 'regional_course': {
         if (!selectedRegionalCourse) {
+          const fallbackPath =
+            typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '') : '/courses';
+          const fallbackCanonical = `https://www.learnify-solutions.com${fallbackPath || '/courses'}`;
           return {
             title: 'Regional IT Certification Training | Learnify Solutions',
             description: 'Authorized CompTIA & Microsoft live certification bootcamps across UAE and South Africa.',
-            canonicalUrl: 'https://www.learnify-solutions.com/courses',
-            ogUrl: 'https://www.learnify-solutions.com/courses',
+            canonicalUrl: fallbackCanonical,
+            ogUrl: fallbackCanonical,
           };
         }
         const p = selectedRegionalCourse;
@@ -827,12 +830,17 @@ export default function App() {
                 ]
               }
             }
-          : {
-              title: 'IT Certification Courses | Learnify Solutions',
-              description: 'Comprehensive IT training course overview, learning objectives, and curriculum syllabus.',
-              canonicalUrl: 'https://www.learnify-solutions.com/courses',
-              ogUrl: 'https://www.learnify-solutions.com/courses',
-            };
+          : (() => {
+              const fallbackPath =
+                typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '') : '/courses';
+              const fallbackCanonical = `https://www.learnify-solutions.com${fallbackPath || '/courses'}`;
+              return {
+                title: 'IT Certification Courses | Learnify Solutions',
+                description: 'Comprehensive IT training course overview, learning objectives, and curriculum syllabus.',
+                canonicalUrl: fallbackCanonical,
+                ogUrl: fallbackCanonical,
+              };
+            })();
       }
       case 'corporate_training':
         return {
@@ -1063,9 +1071,14 @@ export default function App() {
     }
   }, [isCiscoAuthorized, activePage]);
 
-  // Safety guard: if user is not Cisco authorized, prevent viewing Cisco course detail directly
+  // Safety guard: allow direct /course/course-cisco-* URLs for SEO/sitemap, only block accidental non-enterprise modal selection
   useEffect(() => {
     if (!isCiscoAuthorized && selectedCourse) {
+      const isDirectCiscoUrl =
+        typeof window !== 'undefined' &&
+        (window.location.pathname.toLowerCase().startsWith('/course/course-cisco') ||
+          window.location.hash.toLowerCase().startsWith('#course-course-cisco'));
+      if (isDirectCiscoUrl) return;
       const isCisco =
         (selectedCourse.certificationVendor || '').toLowerCase() === 'cisco' ||
         (selectedCourse.domain || '').toLowerCase() === 'cisco networking' ||
