@@ -1,14 +1,12 @@
-import { CmsData, LeadSubmission, Course } from '../types';
+import { CmsData, LeadSubmission, Course, BlogSummary, BlogPost } from '../types';
 import { initialCmsData } from '../data/defaultCmsData';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export async function fetchCmsData(): Promise<CmsData> {
-  // If Supabase is configured on client side, try reading from Supabase table
   if (isSupabaseConfigured) {
     try {
       const supabase = await getSupabase();
       if (supabase) {
-        // Check singleton (primary) or main (legacy)
         const { data, error } = await supabase
           .from('learnify_cms')
           .select('*')
@@ -31,7 +29,6 @@ export async function fetchCmsData(): Promise<CmsData> {
     }
   }
 
-  // Otherwise, use our Express backend CMS API (which also queries Supabase server-side)
   try {
     const res = await fetch('/api/cms');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -50,18 +47,15 @@ export async function fetchCmsData(): Promise<CmsData> {
 }
 
 export async function updateCmsData(updates: Partial<CmsData>): Promise<CmsData> {
-  // If Supabase is configured on client side
   if (isSupabaseConfigured) {
     try {
       const supabase = await getSupabase();
       if (supabase) {
-        const { error } = await supabase
-          .from('learnify_cms')
-          .upsert({
-            id: 'singleton',
-            data: updates,
-            updated_at: new Date().toISOString()
-          });
+        const { error } = await supabase.from('learnify_cms').upsert({
+          id: 'singleton',
+          data: updates,
+          updated_at: new Date().toISOString(),
+        });
         if (error) console.warn('Supabase direct update notice:', error.message);
       }
     } catch (err) {
@@ -69,13 +63,12 @@ export async function updateCmsData(updates: Partial<CmsData>): Promise<CmsData>
     }
   }
 
-  // Always update the backend Express API store (which also persists to Supabase server-side)
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch('/api/cms', {
     method: 'PUT',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(updates),
   });
@@ -90,19 +83,105 @@ export async function updateCmsData(updates: Partial<CmsData>): Promise<CmsData>
 
 export async function resetCmsData(): Promise<CmsData> {
   const token = localStorage.getItem('learnify_admin_token');
-  const res = await fetch('/api/cms/reset', { 
+  const res = await fetch('/api/cms/reset', {
     method: 'POST',
     headers: {
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    }
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!res.ok) throw new Error('Failed to reset CMS');
   const json = await res.json();
   return json.data;
 }
 
-export async function submitLead(lead: Omit<LeadSubmission, 'id' | 'createdAt'>): Promise<{ success: boolean; message: string }> {
-  // If Supabase is configured, also insert to Supabase
+// Lightweight Blog Index & On-Demand Detail API (keeps frontend bundle fast)
+export async function fetchBlogSummaries(params?: {
+  region?: string;
+  topic?: string;
+  search?: string;
+  limit?: number;
+}): Promise<BlogSummary[]> {
+  try {
+    const qs = new URLSearchParams();
+    if (params?.region && params.region !== 'all') qs.set('region', params.region);
+    if (params?.topic && params.topic !== 'all') qs.set('topic', params.topic);
+    if (params?.search) qs.set('search', params.search);
+    if (params?.limit) qs.set('limit', String(params.limit));
+
+    const url = `/api/blogs${qs.toString() ? `?${qs.toString()}` : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (json.success && Array.isArray(json.summaries)) {
+      return json.summaries as BlogSummary[];
+    }
+  } catch (err) {
+    console.warn('Blog summaries API notice:', err);
+  }
+  return [];
+}
+
+export async function fetchBlogDetail(slug: string): Promise<BlogPost | null> {
+  try {
+    const res = await fetch(`/api/blogs/${encodeURIComponent(slug)}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json.success && json.post) {
+      return json.post as BlogPost;
+    }
+  } catch (err) {
+    console.warn('Blog detail API notice:', err);
+  }
+  return null;
+}
+
+export async function saveBlogPost(
+  post: BlogPost,
+  isUpdate: boolean = false
+): Promise<{ post: BlogPost; summaries: BlogSummary[] }> {
+  const token = localStorage.getItem('learnify_admin_token');
+  const endpoint = isUpdate ? `/api/blogs/${encodeURIComponent(post.slug)}` : '/api/blogs';
+  const method = isUpdate ? 'PUT' : 'POST';
+
+  const res = await fetch(endpoint, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(post),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to save blog post');
+  }
+  const json = await res.json();
+  return {
+    post: json.post,
+    summaries: json.summaries || [],
+  };
+}
+
+export async function deleteBlogPost(slug: string): Promise<BlogSummary[]> {
+  const token = localStorage.getItem('learnify_admin_token');
+  const res = await fetch(`/api/blogs/${encodeURIComponent(slug)}`, {
+    method: 'DELETE',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to delete blog post');
+  }
+  const json = await res.json();
+  return json.summaries || [];
+}
+
+export async function submitLead(
+  lead: Omit<LeadSubmission, 'id' | 'createdAt'>
+): Promise<{ success: boolean; message: string }> {
   if (isSupabaseConfigured) {
     try {
       const supabase = await getSupabase();
@@ -141,12 +220,12 @@ export async function submitLead(lead: Omit<LeadSubmission, 'id' | 'createdAt'>)
 export async function fetchLeads(): Promise<LeadSubmission[]> {
   try {
     const token = localStorage.getItem('learnify_admin_token');
-    if (!token) return []; // Only fetch leads if logged in as admin
+    if (!token) return [];
 
     const res = await fetch('/api/leads', {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!res.ok) throw new Error('Failed to fetch leads');
     const json = await res.json();
@@ -157,7 +236,11 @@ export async function fetchLeads(): Promise<LeadSubmission[]> {
   }
 }
 
-export async function fetchCourses(domain?: string, search?: string, isCiscoAuthorized?: boolean): Promise<Course[]> {
+export async function fetchCourses(
+  domain?: string,
+  search?: string,
+  isCiscoAuthorized?: boolean
+): Promise<Course[]> {
   try {
     const params = new URLSearchParams();
     if (domain) params.set('domain', domain);
@@ -174,7 +257,6 @@ export async function fetchCourses(domain?: string, search?: string, isCiscoAuth
     console.warn('Courses API notice:', err);
   }
 
-  // Fallback to local courses data loaded asynchronously
   try {
     const mod = await import('../data/coursesData');
     return mod.sampleCourses;
@@ -183,13 +265,15 @@ export async function fetchCourses(domain?: string, search?: string, isCiscoAuth
   }
 }
 
-export async function createCourse(courseData: Partial<Course>): Promise<{ success: boolean; course: Course; courses: Course[] }> {
+export async function createCourse(
+  courseData: Partial<Course>
+): Promise<{ success: boolean; course: Course; courses: Course[] }> {
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch('/api/courses', {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(courseData),
   });
@@ -200,13 +284,16 @@ export async function createCourse(courseData: Partial<Course>): Promise<{ succe
   return res.json();
 }
 
-export async function updateCourse(id: string, updates: Partial<Course>): Promise<{ success: boolean; course: Course; courses: Course[] }> {
+export async function updateCourse(
+  id: string,
+  updates: Partial<Course>
+): Promise<{ success: boolean; course: Course; courses: Course[] }> {
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch(`/api/courses/${id}`, {
     method: 'PUT',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(updates),
   });
@@ -217,13 +304,15 @@ export async function updateCourse(id: string, updates: Partial<Course>): Promis
   return res.json();
 }
 
-export async function deleteCourse(id: string): Promise<{ success: boolean; courses: Course[] }> {
+export async function deleteCourse(
+  id: string
+): Promise<{ success: boolean; courses: Course[] }> {
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch(`/api/courses/${id}`, {
     method: 'DELETE',
     headers: {
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    }
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -232,13 +321,17 @@ export async function deleteCourse(id: string): Promise<{ success: boolean; cour
   return res.json();
 }
 
-export async function uploadCourseImage(payload: { imageUrl?: string; base64Data?: string; fileName?: string }): Promise<string> {
+export async function uploadCourseImage(payload: {
+  imageUrl?: string;
+  base64Data?: string;
+  fileName?: string;
+}): Promise<string> {
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch('/api/upload-image', {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(payload),
   });
@@ -256,9 +349,9 @@ export async function uploadSyllabusPdf(payload: {
   const token = localStorage.getItem('learnify_admin_token');
   const res = await fetch('/api/upload-syllabus', {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(payload),
   });
@@ -274,13 +367,17 @@ export async function uploadSyllabusPdf(payload: {
   };
 }
 
-export async function getSupabaseStatus(): Promise<{ configured: boolean; supabaseUrl: string | null; sqlSchema: string }> {
+export async function getSupabaseStatus(): Promise<{
+  configured: boolean;
+  supabaseUrl: string | null;
+  sqlSchema: string;
+}> {
   try {
     const token = localStorage.getItem('learnify_admin_token');
     const res = await fetch('/api/supabase/status', {
       headers: {
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      }
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
     if (!res.ok) throw new Error('Failed to get status');
     return res.json();

@@ -12,17 +12,17 @@ import {
   resolveRegionalRoute,
 } from './data/regionalSeoData';
 import {
-  SEO_BLOGS,
-  getMergedBlogs,
-  resolveBlogRoute,
+  parseBlogRoutePath,
 } from './data/blogsData';
-import { CmsData, Course, TechDomain, LeadSubmission, BlogPost } from './types';
+import { CmsData, Course, TechDomain, LeadSubmission, BlogPost, BlogSummary } from './types';
 import {
   fetchCmsData,
   fetchCourses,
   fetchLeads,
   submitLead,
   getSupabaseStatus,
+  fetchBlogSummaries,
+  fetchBlogDetail,
 } from './services/cmsService';
 import { useSEO } from './lib/useSEO';
 import { TopBanner } from './components/TopBanner';
@@ -178,7 +178,7 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const catalog = params.get('catalog');
 
-      const blogMatch = resolveBlogRoute(path);
+      const blogMatch = parseBlogRoutePath(path);
       if (blogMatch) {
         return blogMatch.type === 'hub' ? 'blogs_hub' : 'blog_detail';
       }
@@ -238,13 +238,10 @@ export default function App() {
     return null;
   });
 
-  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(() => {
-    if (typeof window !== 'undefined') {
-      const match = resolveBlogRoute(window.location.pathname);
-      if (match && match.type === 'detail') return match.post;
-    }
-    return null;
-  });
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
+  const [blogSummaries, setBlogSummaries] = useState<BlogSummary[]>([]);
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState<boolean>(true);
+  const [isLoadingBlogDetail, setIsLoadingBlogDetail] = useState<boolean>(false);
 
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(() => {
     if (typeof window !== 'undefined') {
@@ -285,7 +282,7 @@ export default function App() {
       ) {
         return 'nav-cisco';
       }
-      if (resolveBlogRoute(path)) {
+      if (parseBlogRoutePath(path)) {
         return 'nav-blogs';
       }
       if (path === '/courses' || hash === '#courses') {
@@ -535,13 +532,12 @@ export default function App() {
         };
       }
       case 'blogs_hub': {
-        const allBlogs = getMergedBlogs(cmsData.blogs);
         return {
-          title: 'IT Certification Blogs, Exam Centers & Fee Guides (UAE & SA) | Learnify Solutions',
+          title: 'IT Certification Blogs, Cloud Strategy & Exam Roadmaps | Learnify Solutions',
           description:
-            'Daily-updated IT certification blogs covering Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, AED & ZAR course costs, and CompTIA, Microsoft & AWS roadmaps.',
+            'Explore cloud architecture comparisons, cybersecurity study blueprints, Power BI & AI analytics workflows, and regional exam center & fee guides from Learnify Solutions.',
           keywords:
-            'Learnify blogs, where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai',
+            'Learnify blogs, Azure AZ-104 vs AWS SAA-C03, CompTIA Security+ SY0-701 roadmap, Power BI PL-300 guide, IT certification cost, Pearson VUE exam centers',
           canonicalUrl: 'https://www.learnify-solutions.com/blogs',
           ogUrl: 'https://www.learnify-solutions.com/blogs',
           jsonLd: {
@@ -550,11 +546,11 @@ export default function App() {
               {
                 '@type': 'CollectionPage',
                 '@id': 'https://www.learnify-solutions.com/blogs#collection',
-                'name': 'Learnify IT Certification Blogs, Exam Centers & Fee Guides',
+                'name': 'Learnify Solutions IT Certification Blogs & Architecture Guides',
                 'mainEntity': {
                   '@type': 'ItemList',
-                  'numberOfItems': allBlogs.length,
-                  'itemListElement': allBlogs.map((g, idx) => ({
+                  'numberOfItems': blogSummaries.length,
+                  'itemListElement': blogSummaries.map((g, idx) => ({
                     '@type': 'ListItem',
                     'position': idx + 1,
                     'name': g.title,
@@ -576,8 +572,8 @@ export default function App() {
       case 'blog_detail': {
         if (!selectedBlog) {
           return {
-            title: 'IT Certification Blogs | Learnify Solutions',
-            description: 'Exam center, certification cost, and regional IT career blogs for UAE & South Africa.',
+            title: 'IT Certification Blogs & Roadmaps | Learnify Solutions',
+            description: 'Cloud architecture comparisons, cybersecurity preparation guides, and exam insights from Learnify Solutions.',
             canonicalUrl: 'https://www.learnify-solutions.com/blogs',
             ogUrl: 'https://www.learnify-solutions.com/blogs',
           };
@@ -857,18 +853,18 @@ export default function App() {
         return {
           title: isCiscoAuthorized
             ? 'Learnify Solutions | Authorized Global IT Training Partner & Corporate Bootcamps'
-            : 'Learnify Solutions | Authorized Microsoft & CompTIA Global IT Training Partner',
+            : 'Learnify Solutions | Authorized Microsoft, AWS & CompTIA Global IT Training Partner',
           description: isCiscoAuthorized
-            ? 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Oman & India.'
-            : 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification exams & 24/7 cloud labs across USA, UK, UAE (Dubai), Oman & India.',
+            ? 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification labs & corporate cohorts across North America, UK, Europe, UAE, Africa & APAC.'
+            : 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification labs & corporate cohorts across North America, UK, Europe, UAE, Africa & APAC.',
           keywords: isCiscoAuthorized
-            ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Koenig Solutions alternative, enterprise IT workforce upskilling, Learnify Solutions'
+            ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, enterprise IT workforce upskilling, Learnify Solutions'
             : 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+, CompTIA Cloud+, AWS certification courses, AWS Solutions Architect SAA-C03, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Learnify Solutions',
           canonicalUrl: 'https://www.learnify-solutions.com/',
           ogUrl: 'https://www.learnify-solutions.com/',
         };
     }
-  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, cmsData.blogs]);
+  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, blogSummaries]);
 
   useSEO(seoConfig);
 
@@ -912,18 +908,18 @@ export default function App() {
       const isEnterprise = checkIsEnterpriseUrl();
       setIsCiscoAuthorized(isEnterprise);
 
-      const blogMatch = resolveBlogRoute(pathname, cmsData.blogs);
+      const blogMatch = parseBlogRoutePath(pathname);
       if (blogMatch) {
         if (blogMatch.isLegacyGuidesRedirect && typeof window !== 'undefined') {
-          const newUrl = blogMatch.type === 'hub' ? '/blogs' : `/blogs/${blogMatch.post.slug}`;
+          const newUrl = blogMatch.type === 'hub' ? '/blogs' : `/blogs/${blogMatch.slug}`;
           window.history.replaceState(null, '', newUrl);
         }
         if (blogMatch.type === 'hub') {
           setSelectedBlog(null);
           setActivePage('blogs_hub');
         } else {
-          setSelectedBlog(blogMatch.post);
           setActivePage('blog_detail');
+          loadBlogBySlug(blogMatch.slug);
         }
         setActiveNavId('nav-blogs');
         return;
@@ -1083,22 +1079,38 @@ export default function App() {
     }
   };
 
+  const loadBlogBySlug = React.useCallback(async (slug: string) => {
+    setIsLoadingBlogDetail(true);
+    try {
+      const detail = await fetchBlogDetail(slug);
+      setSelectedBlog(detail);
+    } catch (err) {
+      console.warn('Blog detail load warning:', err);
+      setSelectedBlog(null);
+    } finally {
+      setIsLoadingBlogDetail(false);
+    }
+  }, []);
+
   const loadAllData = async () => {
     try {
       // 1. Non-blocking background CMS sync (page is already rendered with initialCmsData)
       fetchCmsData().then((cmsRes) => {
         if (cmsRes) {
           setCmsData(cmsRes);
-          if (typeof window !== 'undefined' && Array.isArray(cmsRes.blogs) && cmsRes.blogs.length > 0) {
-            const blogMatch = resolveBlogRoute(window.location.pathname, cmsRes.blogs);
-            if (blogMatch && blogMatch.type === 'detail') {
-              setSelectedBlog(blogMatch.post);
-              setActivePage('blog_detail');
-              setActiveNavId('nav-blogs');
-            }
-          }
         }
       }).catch(() => {});
+
+      // 1b. Lightweight Blog Metadata Index (~2KB, full articles load on-demand)
+      setIsLoadingBlogs(true);
+      fetchBlogSummaries()
+        .then((summariesRes) => {
+          if (Array.isArray(summariesRes)) {
+            setBlogSummaries(summariesRes);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingBlogs(false));
 
       // 2. Only fetch admin leads and Supabase status if administrator is authenticated
       const isAdminAuth = typeof window !== 'undefined' && localStorage.getItem('learnify_admin_authenticated') === 'true';
@@ -1326,12 +1338,49 @@ export default function App() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
-  const navigateToBlog = (post: BlogPost) => {
-    setSelectedBlog(post);
+  const navigateToBlogSlug = (slug: string) => {
+    setSelectedBlog(null);
     setActivePage('blog_detail');
     setActiveNavId('nav-blogs');
-    if (typeof window !== 'undefined') window.history.pushState(null, '', `/blogs/${post.slug}`);
+    if (typeof window !== 'undefined') window.history.pushState(null, '', `/blogs/${slug}`);
+    loadBlogBySlug(slug);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
+  const navigateToInternalHref = (href: string) => {
+    const cleanHref = (href || '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/';
+    if (cleanHref.startsWith('/course/')) {
+      const courseId = cleanHref.slice('/course/'.length);
+      const list = courses.length > 0 ? courses : sampleCourses;
+      const matched =
+        list.find((c) => c.id.toLowerCase() === courseId.toLowerCase()) ||
+        sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase());
+      if (matched) {
+        ensureCoursesLoaded();
+        handleSelectCourse(matched);
+        return;
+      }
+      handleOpenCoursesModal('all');
+      return;
+    }
+    if (cleanHref === '/courses') {
+      ensureCoursesLoaded();
+      setActivePage('courses');
+      setActiveNavId('nav-courses');
+      if (typeof window !== 'undefined') window.history.pushState(null, '', '/courses');
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      return;
+    }
+    if (cleanHref.startsWith('/blogs/')) {
+      const slug = cleanHref.slice('/blogs/'.length);
+      if (slug) navigateToBlogSlug(slug);
+      return;
+    }
+    if (cleanHref === '/blogs') {
+      navigateToBlogsHub();
+      return;
+    }
+    navigateToRegionalPath(cleanHref);
   };
 
   return (
@@ -1415,13 +1464,14 @@ export default function App() {
           ) : activePage === 'blogs_hub' ? (
             /* Dedicated High-Demand Blogs Hub (/blogs) */
             <BlogsHubView
-              customBlogs={cmsData.blogs}
+              summaries={blogSummaries}
+              isLoading={isLoadingBlogs}
               isAdminAuthenticated={isAdminAuthenticated}
               onOpenBlogPublisher={() => {
                 setCmsDrawerInitialTab('blogs');
                 setIsCmsDrawerOpen(true);
               }}
-              onSelectBlog={navigateToBlog}
+              onSelectBlog={navigateToBlogSlug}
               onNavigateHub={navigateToRegionalHub}
               onNavigateHome={() => {
                 setActivePage('home');
@@ -1431,11 +1481,12 @@ export default function App() {
               }}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
-          ) : activePage === 'blog_detail' && selectedBlog ? (
-            /* Dedicated High-Demand Blog Post (/blogs/:slug) */
+          ) : activePage === 'blog_detail' ? (
+            /* Dedicated Blog Post (/blogs/:slug) */
             <BlogDetailView
               post={selectedBlog}
-              customBlogs={cmsData.blogs}
+              isLoading={isLoadingBlogDetail}
+              summaries={blogSummaries}
               onNavigateHome={() => {
                 setActivePage('home');
                 setActiveNavId('nav-home');
@@ -1443,9 +1494,9 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               onNavigateBlogs={navigateToBlogsHub}
-              onSelectBlog={navigateToBlog}
+              onSelectBlog={navigateToBlogSlug}
               onNavigateHub={navigateToRegionalHub}
-              onNavigateRegionalPath={navigateToRegionalPath}
+              onNavigateLink={navigateToInternalHref}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
           ) : activePage === 'regional_course' && selectedRegionalCourse ? (
@@ -1634,10 +1685,11 @@ export default function App() {
                 steps={cmsData.pathwaySection.steps}
               />
 
-              {/* 10b. Homepage High-Demand Certification Blogs Section */}
+              {/* 10b. Homepage Editorial Certification Blogs Section */}
               <BlogSection
-                customBlogs={cmsData.blogs}
-                onSelectBlog={navigateToBlog}
+                summaries={blogSummaries}
+                isLoading={isLoadingBlogs}
+                onSelectBlog={navigateToBlogSlug}
                 onViewAllBlogs={navigateToBlogsHub}
               />
 
@@ -1773,6 +1825,8 @@ export default function App() {
             leads={leads}
             supabaseStatus={supabaseStatus}
             initialTab={cmsDrawerInitialTab}
+            blogSummaries={blogSummaries}
+            onBlogsUpdated={(newSummaries) => setBlogSummaries(newSummaries)}
             onRefreshLeads={() => {
               fetchLeads().then((res) => setLeads(res));
             }}

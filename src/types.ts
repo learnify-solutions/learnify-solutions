@@ -241,12 +241,39 @@ export interface BlogRelatedLink {
   subtitle: string;
 }
 
+export type BlogTopicTrack =
+  | 'Cloud & DevOps'
+  | 'Cybersecurity'
+  | 'Data & AI'
+  | 'Exam & Fee Guides';
+
+export interface BlogSummary {
+  slug: string;
+  region: 'ae' | 'za' | 'global';
+  regionLabel: string;
+  topicTrack: BlogTopicTrack;
+  category: string;
+  title: string;
+  excerpt: string;
+  coverImage: string;
+  readTime: string;
+  updatedDate: string;
+  publishedIso?: string;
+  citiesCovered: string[];
+  featured?: boolean;
+  isCustom?: boolean;
+}
+
 export interface BlogPost {
   slug: string;
   region: 'ae' | 'za' | 'global';
   regionLabel: string;
+  topicTrack?: BlogTopicTrack;
   category: string;
   title: string;
+  excerpt?: string;
+  coverImage?: string;
+  featured?: boolean;
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;

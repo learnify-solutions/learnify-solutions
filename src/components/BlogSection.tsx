@@ -1,176 +1,297 @@
 import React, { useMemo, useState } from 'react';
-import { BlogPost } from '../types';
-import { getMergedBlogs } from '../data/blogsData';
-import { ArrowRight, BookOpen, MapPin } from 'lucide-react';
+import { BlogSummary, BlogTopicTrack } from '../types';
+import { ArrowRight, BookOpen, Clock, Globe2, Sparkles } from 'lucide-react';
 
 interface BlogSectionProps {
-  customBlogs?: BlogPost[];
-  onSelectBlog: (post: BlogPost) => void;
+  summaries: BlogSummary[];
+  isLoading?: boolean;
+  onSelectBlog: (slug: string) => void;
   onViewAllBlogs: () => void;
 }
 
+const TOPIC_TABS: Array<'all' | BlogTopicTrack> = [
+  'all',
+  'Cloud & DevOps',
+  'Cybersecurity',
+  'Data & AI',
+  'Exam & Fee Guides',
+];
+
 export const BlogSection: React.FC<BlogSectionProps> = ({
-  customBlogs,
+  summaries,
+  isLoading = false,
   onSelectBlog,
   onViewAllBlogs,
 }) => {
-  const [regionFilter, setRegionFilter] = useState<'all' | 'ae' | 'za'>('all');
+  const [topicFilter, setTopicFilter] = useState<'all' | BlogTopicTrack>('all');
 
-  const allBlogs = useMemo(() => getMergedBlogs(customBlogs), [customBlogs]);
+  const filteredSummaries = useMemo(() => {
+    if (topicFilter === 'all') return summaries;
+    return summaries.filter((item) => item.topicTrack === topicFilter);
+  }, [summaries, topicFilter]);
 
-  const { aeCount, zaCount } = useMemo(() => {
-    let ae = 0;
-    let za = 0;
-    for (const post of allBlogs) {
-      if (post.region === 'ae') ae++;
-      else if (post.region === 'za') za++;
-    }
-    return { aeCount: ae, zaCount: za };
-  }, [allBlogs]);
+  const spotlightPost = useMemo(() => {
+    if (filteredSummaries.length === 0) return null;
+    return filteredSummaries.find((b) => b.featured) || filteredSummaries[0];
+  }, [filteredSummaries]);
 
-  const visibleBlogs = useMemo(() => {
-    const list =
-      regionFilter === 'all' ? allBlogs : allBlogs.filter((p) => p.region === regionFilter);
-    return list.slice(0, 6);
-  }, [allBlogs, regionFilter]);
+  const secondaryPosts = useMemo(() => {
+    if (!spotlightPost) return [];
+    return filteredSummaries.filter((b) => b.slug !== spotlightPost.slug).slice(0, 4);
+  }, [filteredSummaries, spotlightPost]);
 
   return (
     <section
       id="blogs"
-      className="w-full bg-white py-16 md:py-20 border-t border-slate-200"
+      className="w-full bg-[#f8fafc] py-16 md:py-24 border-t border-slate-200"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Header Row */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <p className="text-sm font-semibold text-[#ea6d24] tracking-wide">
-              Certification Insights &amp; Exam Guides
+          <div className="space-y-2.5 max-w-2xl">
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#ea6d24]">
+              Enterprise Learning Insights
             </p>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#152e4d] tracking-tight [text-wrap:balance]">
-              Latest High-Demand IT Certification Blogs
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#152e4d] tracking-tight [text-wrap:balance]">
+              IT Certification Roadmaps, Cloud Strategy &amp; Exam Guides
             </h2>
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Daily-updated exam center directories, AED &amp; ZAR fee breakdowns, and career roadmaps
-              for Dubai, UAE, Gauteng, Johannesburg, Cape Town &amp; global learners.
+              Practical architecture comparisons, cybersecurity study blueprints, data analytics workflows,
+              and certification exam insights for engineering teams worldwide.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto">
-            {/* Functional Region Filter Tabs */}
-            <div className="inline-flex items-center gap-1 p-1 bg-slate-100 border border-slate-200 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setRegionFilter('all')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap min-h-[36px] ${
-                  regionFilter === 'all'
-                    ? 'bg-white text-[#152e4d] shadow-xs'
-                    : 'text-slate-600 hover:text-[#152e4d]'
-                }`}
-              >
-                All ({allBlogs.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setRegionFilter('ae')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap min-h-[36px] ${
-                  regionFilter === 'ae'
-                    ? 'bg-white text-[#152e4d] shadow-xs'
-                    : 'text-slate-600 hover:text-[#152e4d]'
-                }`}
-              >
-                UAE ({aeCount})
-              </button>
-              <button
-                type="button"
-                onClick={() => setRegionFilter('za')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap min-h-[36px] ${
-                  regionFilter === 'za'
-                    ? 'bg-white text-[#152e4d] shadow-xs'
-                    : 'text-slate-600 hover:text-[#152e4d]'
-                }`}
-              >
-                South Africa ({zaCount})
-              </button>
-            </div>
-
-            <a
-              id="home-view-all-blogs-btn"
-              href="/blogs"
-              onClick={(e) => {
-                e.preventDefault();
-                onViewAllBlogs();
-              }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-semibold text-sm transition-colors whitespace-nowrap shrink-0 min-h-[40px]"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>View All Blogs</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
+          <a
+            id="home-view-all-blogs-btn"
+            href="/blogs"
+            onClick={(e) => {
+              e.preventDefault();
+              onViewAllBlogs();
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#152e4d] hover:bg-[#0f223b] text-white font-semibold text-sm transition-colors whitespace-nowrap shrink-0 self-start lg:self-auto min-h-[42px]"
+          >
+            <BookOpen className="w-4 h-4 text-[#ea6d24]" />
+            <span>Explore All Articles ({summaries.length || 9})</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
 
-        {/* 3-Column Editorial Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleBlogs.map((post) => {
-            const href = `/blogs/${post.slug}`;
+        {/* Interactive Topic Track Bar */}
+        <div
+          role="tablist"
+          aria-label="Filter articles by technology track"
+          className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200"
+        >
+          {TOPIC_TABS.map((tab) => {
+            const isActive = topicFilter === tab;
+            const count =
+              tab === 'all'
+                ? summaries.length
+                : summaries.filter((s) => s.topicTrack === tab).length;
+            if (tab !== 'all' && count === 0) return null;
             return (
-              <article
-                key={post.slug}
-                className="bg-[#fcfdfe] border border-slate-200 rounded-2xl p-6 flex flex-col justify-between hover:border-[#ea6d24]/60 transition-colors"
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setTopicFilter(tab)}
+                className={`px-3.5 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer min-h-[40px] ${
+                  isActive
+                    ? 'border-[#ea6d24] text-[#152e4d]'
+                    : 'border-transparent text-slate-500 hover:text-[#152e4d]'
+                }`}
               >
-                <div className="space-y-3">
-                  {/* Unboxed Typographic Metadata */}
+                {tab === 'all' ? `All Insights (${count})` : `${tab} (${count})`}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Asymmetric Editorial Showcase */}
+        {isLoading && summaries.length === 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
+            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl h-[440px]" />
+            <div className="lg:col-span-7 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
+              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
+              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
+            </div>
+          </div>
+        ) : spotlightPost ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left Spotlight Hero Card */}
+            <article className="lg:col-span-5 group bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-[#ea6d24]/70 hover:shadow-md transition-all duration-200">
+              <div>
+                <a
+                  href={`/blogs/${spotlightPost.slug}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectBlog(spotlightPost.slug);
+                  }}
+                  className="block relative aspect-video bg-[#152e4d] overflow-hidden"
+                >
+                  <img
+                    src={spotlightPost.coverImage}
+                    alt={spotlightPost.title}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#152e4d]/75 via-[#152e4d]/15 to-transparent pointer-events-none" />
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs font-semibold text-white">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#ea6d24]" />
+                      <span>Featured Guide</span>
+                    </span>
+                    <span className="text-slate-200">{spotlightPost.readTime}</span>
+                  </div>
+                </a>
+
+                <div className="p-6 space-y-3">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                    <span className="text-[#ea6d24]">{post.regionLabel}</span>
+                    <span className="text-[#ea6d24]">{spotlightPost.topicTrack}</span>
                     <span aria-hidden="true">·</span>
-                    <span>{post.category}</span>
+                    <span>{spotlightPost.regionLabel}</span>
                     <span aria-hidden="true">·</span>
-                    <span>{post.readTime}</span>
+                    <span>{spotlightPost.updatedDate}</span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-[#152e4d] leading-snug">
+                  <h3 className="text-xl font-bold text-[#152e4d] leading-snug">
+                    <a
+                      href={`/blogs/${spotlightPost.slug}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onSelectBlog(spotlightPost.slug);
+                      }}
+                      className="hover:text-[#ea6d24] transition-colors"
+                    >
+                      {spotlightPost.title}
+                    </a>
+                  </h3>
+
+                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-4">
+                    {spotlightPost.excerpt}
+                  </p>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-[#fcfdfe]">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                  <Globe2 className="w-3.5 h-3.5 text-[#152e4d]" />
+                  <span>{spotlightPost.category}</span>
+                </span>
+                <a
+                  href={`/blogs/${spotlightPost.slug}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectBlog(spotlightPost.slug);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#ea6d24] hover:text-[#c95716] transition-colors whitespace-nowrap"
+                >
+                  <span>Read Full Article</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                </a>
+              </div>
+            </article>
+
+            {/* Right Interactive Editorial List */}
+            <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+              {secondaryPosts.map((post) => {
+                const href = `/blogs/${post.slug}`;
+                return (
+                  <article
+                    key={post.slug}
+                    className="group bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:items-center hover:border-[#ea6d24]/70 hover:shadow-sm transition-all duration-200"
+                  >
                     <a
                       href={href}
                       onClick={(e) => {
                         e.preventDefault();
-                        onSelectBlog(post);
+                        onSelectBlog(post.slug);
                       }}
-                      className="hover:text-[#ea6d24] transition-colors"
+                      className="sm:w-44 md:w-48 aspect-video sm:aspect-[4/3] rounded-xl overflow-hidden bg-[#152e4d] shrink-0 block"
                     >
-                      {post.title}
+                      <img
+                        src={post.coverImage}
+                        alt={post.title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                     </a>
-                  </h3>
 
-                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
-                    {post.intro}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
+                        <span className="text-[#ea6d24]">{post.topicTrack}</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{post.regionLabel}</span>
+                        <span aria-hidden="true">·</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {post.readTime}
+                        </span>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg font-bold text-[#152e4d] leading-snug line-clamp-2">
+                        <a
+                          href={href}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onSelectBlog(post.slug);
+                          }}
+                          className="hover:text-[#ea6d24] transition-colors"
+                        >
+                          {post.title}
+                        </a>
+                      </h3>
+
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="hidden sm:flex items-center justify-center shrink-0 pl-2">
+                      <a
+                        href={href}
+                        aria-label={`Read ${post.title}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onSelectBlog(post.slug);
+                        }}
+                        className="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-[#152e4d] group-hover:bg-[#ea6d24] group-hover:border-[#ea6d24] group-hover:text-white transition-colors duration-200"
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </a>
+                    </div>
+                  </article>
+                );
+              })}
+
+              {secondaryPosts.length === 0 && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center flex-1 flex flex-col items-center justify-center gap-3">
+                  <p className="text-sm text-slate-600">
+                    More articles in this track are available in the full editorial library.
                   </p>
-
-                  {post.citiesCovered && post.citiesCovered.length > 0 && (
-                    <p className="text-xs text-slate-500 pt-1 flex items-start gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#ea6d24] shrink-0 mt-0.5" />
-                      <span>{post.citiesCovered.slice(0, 5).join(' · ')}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div className="pt-5 mt-5 border-t border-slate-200/80 flex items-center justify-between">
-                  <span className="text-xs text-slate-500">{post.updatedDate}</span>
-                  <a
-                    href={href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onSelectBlog(post);
-                    }}
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#ea6d24] hover:text-[#c95716] transition-colors whitespace-nowrap"
+                  <button
+                    type="button"
+                    onClick={onViewAllBlogs}
+                    className="inline-flex items-center gap-1.5 text-sm font-bold text-[#ea6d24] hover:underline cursor-pointer"
                   >
-                    <span>Read Blog</span>
+                    <span>Browse All Blogs</span>
                     <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </button>
                 </div>
-              </article>
-            );
-          })}
-        </div>
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );

@@ -118,8 +118,19 @@ export const Footer: React.FC<FooterProps> = ({
               </span>
             </div>
 
-            <div className="pt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300">
-              <span className="text-slate-400 font-semibold">Regional Hubs:</span>
+            <div className="pt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300">
+              <span className="text-slate-400 font-semibold">Directories:</span>
+              <a
+                href="/blogs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Blogs', href: '/blogs' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Editorial Blogs
+              </a>
+              <span aria-hidden="true">·</span>
               <a
                 href="/ae"
                 onClick={(e) => {
@@ -128,7 +139,7 @@ export const Footer: React.FC<FooterProps> = ({
                 }}
                 className="hover:text-orange-300 underline underline-offset-4 transition-colors"
               >
-                UAE &amp; Dubai Training
+                UAE Hub
               </a>
               <span aria-hidden="true">·</span>
               <a
@@ -139,18 +150,7 @@ export const Footer: React.FC<FooterProps> = ({
                 }}
                 className="hover:text-orange-300 underline underline-offset-4 transition-colors"
               >
-                South Africa Training
-              </a>
-              <span aria-hidden="true">·</span>
-              <a
-                href="/blogs"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onLinkClick && onLinkClick({ label: 'Blogs', href: '/blogs' });
-                }}
-                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
-              >
-                Blogs &amp; Exam Centers
+                South Africa Hub
               </a>
             </div>
           </div>

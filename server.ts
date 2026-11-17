@@ -17,8 +17,14 @@ import {
   getRegionalAlternatesForCourse,
   resolveRegionalRoute,
 } from './src/data/regionalSeoData';
-import { getMergedBlogs, resolveBlogRoute } from './src/data/blogsData';
-import { CmsData, LeadSubmission, Course } from './src/types';
+import {
+  SEED_BLOGS,
+  getMergedBlogs,
+  toBlogSummary,
+  normalizeBlogPost,
+  resolveServerBlogRoute,
+} from './server/blogsStore';
+import { CmsData, LeadSubmission, Course, BlogPost } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://zqilnxxgmctpclfqjevx.supabase.co';
@@ -71,6 +77,36 @@ let leadsStore: LeadSubmission[] = [
 ];
 
 let coursesStore: Course[] = JSON.parse(JSON.stringify(sampleCourses));
+let customBlogsStore: BlogPost[] = [];
+
+function getAllBlogsList(): BlogPost[] {
+  const legacyCmsBlogs = Array.isArray(currentCmsData.blogs) ? currentCmsData.blogs : [];
+  return getMergedBlogs([...customBlogsStore, ...legacyCmsBlogs]);
+}
+
+async function syncBlogsFromSupabase(): Promise<void> {
+  if (!supabase) return;
+  try {
+    const { data, error } = await supabase
+      .from('learnify_blogs')
+      .select('slug, data, region, topic_track, published_at, updated_at')
+      .order('updated_at', { ascending: false });
+
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const parsed: BlogPost[] = [];
+      for (const row of data) {
+        if (row?.data && typeof row.data === 'object' && row.data.slug) {
+          parsed.push(normalizeBlogPost(row.data as BlogPost));
+        }
+      }
+      if (parsed.length > 0) {
+        customBlogsStore = parsed;
+      }
+    }
+  } catch (err: any) {
+    console.warn('[Supabase] Blogs fetch notice (table may not exist yet):', err?.message || err);
+  }
+}
 
 // Enhanced Multi-Channel Email Engine:
 // 1. Resend HTTPS API (Port 443 - 100% reliable on Railway / Cloud Run without SMTP port blocks)
@@ -549,7 +585,7 @@ async function startServer() {
   app.get('/sitemap.xml', (req, res) => {
     const today = new Date().toISOString().split('T')[0];
 
-    const allBlogs = getMergedBlogs(currentCmsData.blogs);
+    const allBlogs = getAllBlogsList();
 
     const staticRoutes = [
       { loc: '', priority: '1.0', changefreq: 'daily' },
@@ -559,7 +595,7 @@ async function startServer() {
       { loc: '/blogs', priority: '0.96', changefreq: 'daily' },
       ...allBlogs.map((g) => ({
         loc: `/blogs/${g.slug}`,
-        priority: '0.92',
+        priority: g.region === 'global' ? '0.94' : '0.92',
         changefreq: 'weekly',
         lastmod: g.publishedIso || today,
       })),
@@ -720,7 +756,7 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
         {
           "path": "/blogs",
           "method": "GET",
-          "description": "Learnify IT Certification Blogs covering UAE (AED) and South Africa / Gauteng (ZAR) exam centers, fees, and career roadmaps."
+          "description": "Global IT certification insights, cloud architecture comparisons, cybersecurity roadmaps, and regional exam center & fee guides."
         },
         {
           "path": "/corporate-training",
@@ -743,20 +779,20 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
   app.get('/llms.txt', (req, res) => {
     const llmsText = `# Learnify Solutions
 
-> Learnify Solutions is an authorized global IT training and workforce upskilling partner delivering live virtual instructor-led training, 1-on-1 personalized bootcamps, and corporate cohort programs across USA, UK, UAE, Africa (Nigeria, Kenya, South Africa, Egypt, Ghana), and India.
+> Learnify Solutions is an authorized global IT training and workforce upskilling partner delivering live virtual instructor-led training, 1-on-1 personalized bootcamps, and corporate cohort programs across North America, UK & Europe, Middle East & UAE, Africa (South Africa, Nigeria, Kenya, Egypt, Ghana), and Asia-Pacific.
 
 ## Key Offerings & Certification Tracks
-- **Microsoft Azure**: Azure Administrator (AZ-104), Azure Fundamentals (AZ-900), Azure Solutions Architect (AZ-305), AI Engineer (AI-102), Data Fundamentals (DP-900).
-- **CompTIA Cybersecurity & Infrastructure**: Security+ (SY0-701), Network+ (N10-009), A+ (220-1101/1102), Cloud+, Linux+, CySA+.
-- **AWS Cloud**: AWS Certified Solutions Architect (SAA-C03), AWS Cloud Practitioner, AWS Security Specialty.
-- **DevOps & Security**: Certified Kubernetes Administrator (CKA), Certified Ethical Hacker (CEH v12), CISSP.
+- **Microsoft Azure**: Azure Administrator (AZ-104), Azure Fundamentals (AZ-900), Azure Solutions Architect (AZ-305), AI Engineer (AI-102), Data Fundamentals (DP-900), Power BI (PL-300), M365 Copilot (MS-4018).
+- **CompTIA Cybersecurity & Infrastructure**: Security+ (SY0-701), Network+ (N10-009), A+ (220-1101/1102), Cloud+, Linux+, PenTest+.
+- **AWS Cloud**: AWS Certified Solutions Architect (SAA-C03), AWS Security Specialty (SCS-C02).
+- **DevOps & Security**: Certified Kubernetes Administrator (CKA & CKS), Certified Ethical Hacker (CEH v12), CISSP.
 
 ## Official Resources
 - [Website Home](${SITE_BASE_URL}/)
 - [Course Catalog](${SITE_BASE_URL}/courses)
+- [Global IT Certification Blogs & Roadmaps](${SITE_BASE_URL}/blogs)
 - [UAE & Dubai Training Hub](${SITE_BASE_URL}/ae)
 - [South Africa Training Hub](${SITE_BASE_URL}/za)
-- [Exam Center, Cost & IT Certification Blogs](${SITE_BASE_URL}/blogs)
 - [Corporate Training Solutions](${SITE_BASE_URL}/corporate-training)
 - [Contact & Corporate Admissions](${SITE_BASE_URL}/contact)
 `;
@@ -924,6 +960,179 @@ Sitemap: ${SITE_BASE_URL}/sitemap-za.xml
         success: true,
         message: 'CMS configuration updated and saved to database successfully',
         data: currentCmsData,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // 4b. Lightweight Blogs Index & On-Demand Full Article Endpoints
+  app.get('/api/blogs', async (req, res) => {
+    await syncBlogsFromSupabase();
+    let list = getAllBlogsList().map(toBlogSummary);
+
+    const region = typeof req.query.region === 'string' ? req.query.region.toLowerCase() : '';
+    const topic = typeof req.query.topic === 'string' ? req.query.topic.toLowerCase() : '';
+    const search = typeof req.query.search === 'string' ? req.query.search.trim().toLowerCase() : '';
+    const limitRaw = typeof req.query.limit === 'string' ? parseInt(req.query.limit, 10) : 0;
+
+    if (region && region !== 'all') {
+      list = list.filter((b) => b.region.toLowerCase() === region);
+    }
+    if (topic && topic !== 'all') {
+      list = list.filter((b) => b.topicTrack.toLowerCase() === topic);
+    }
+    if (search) {
+      list = list.filter(
+        (b) =>
+          b.title.toLowerCase().includes(search) ||
+          b.excerpt.toLowerCase().includes(search) ||
+          b.category.toLowerCase().includes(search) ||
+          b.topicTrack.toLowerCase().includes(search) ||
+          b.citiesCovered.some((c) => c.toLowerCase().includes(search))
+      );
+    }
+
+    const total = list.length;
+    if (limitRaw > 0) {
+      list = list.slice(0, limitRaw);
+    }
+
+    res.json({
+      success: true,
+      total,
+      summaries: list,
+    });
+  });
+
+  app.get('/api/blogs/:slug', async (req, res) => {
+    await syncBlogsFromSupabase();
+    const cleanSlug = decodeURIComponent(String(req.params.slug || '')).toLowerCase();
+    const matched = getAllBlogsList().find((b) => b.slug.toLowerCase() === cleanSlug);
+    if (!matched) {
+      return res.status(404).json({ success: false, error: 'Blog article not found' });
+    }
+    res.json({
+      success: true,
+      post: normalizeBlogPost(matched),
+    });
+  });
+
+  app.post('/api/blogs', authenticateAdminToken, async (req, res) => {
+    try {
+      const incoming = req.body as BlogPost;
+      if (!incoming || !incoming.slug || !incoming.title) {
+        return res.status(400).json({ success: false, error: 'Slug and title are required' });
+      }
+      const normalized = normalizeBlogPost({
+        ...incoming,
+        slug: incoming.slug.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''),
+        isCustom: true,
+      });
+
+      customBlogsStore = [
+        normalized,
+        ...customBlogsStore.filter((b) => b.slug.toLowerCase() !== normalized.slug.toLowerCase()),
+      ];
+
+      if (supabase) {
+        const { error } = await supabase.from('learnify_blogs').upsert({
+          slug: normalized.slug,
+          region: normalized.region,
+          topic_track: normalized.topicTrack,
+          data: normalized,
+          published_at: normalized.publishedIso ? new Date(normalized.publishedIso).toISOString() : new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        if (error) {
+          console.warn('[Supabase] Blog upsert notice:', error.message);
+        }
+      }
+
+      res.status(201).json({
+        success: true,
+        post: normalized,
+        summaries: getAllBlogsList().map(toBlogSummary),
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.put('/api/blogs/:slug', authenticateAdminToken, async (req, res) => {
+    try {
+      const targetSlug = decodeURIComponent(String(req.params.slug || '')).toLowerCase();
+      const incoming = req.body as BlogPost;
+      if (!incoming || !incoming.title) {
+        return res.status(400).json({ success: false, error: 'Title is required' });
+      }
+      const finalSlug = (incoming.slug || targetSlug)
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      const isBuiltIn = SEED_BLOGS.some((s) => s.slug.toLowerCase() === finalSlug);
+      const normalized = normalizeBlogPost({
+        ...incoming,
+        slug: finalSlug,
+        isCustom: !isBuiltIn,
+      });
+
+      customBlogsStore = [
+        normalized,
+        ...customBlogsStore.filter(
+          (b) => b.slug.toLowerCase() !== targetSlug && b.slug.toLowerCase() !== finalSlug
+        ),
+      ];
+
+      if (Array.isArray(currentCmsData.blogs)) {
+        currentCmsData.blogs = currentCmsData.blogs.filter(
+          (b) => b.slug.toLowerCase() !== targetSlug && b.slug.toLowerCase() !== finalSlug
+        );
+      }
+
+      if (supabase) {
+        const { error } = await supabase.from('learnify_blogs').upsert({
+          slug: normalized.slug,
+          region: normalized.region,
+          topic_track: normalized.topicTrack,
+          data: normalized,
+          updated_at: new Date().toISOString(),
+        });
+        if (error) {
+          console.warn('[Supabase] Blog update notice:', error.message);
+        }
+      }
+
+      res.json({
+        success: true,
+        post: normalized,
+        summaries: getAllBlogsList().map(toBlogSummary),
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.delete('/api/blogs/:slug', authenticateAdminToken, async (req, res) => {
+    try {
+      const targetSlug = decodeURIComponent(String(req.params.slug || '')).toLowerCase();
+      customBlogsStore = customBlogsStore.filter((b) => b.slug.toLowerCase() !== targetSlug);
+
+      if (Array.isArray(currentCmsData.blogs)) {
+        currentCmsData.blogs = currentCmsData.blogs.filter((b) => b.slug.toLowerCase() !== targetSlug);
+      }
+
+      if (supabase) {
+        const { error } = await supabase.from('learnify_blogs').delete().eq('slug', targetSlug);
+        if (error) {
+          console.warn('[Supabase] Blog delete notice:', error.message);
+        }
+      }
+
+      res.json({
+        success: true,
+        summaries: getAllBlogsList().map(toBlogSummary),
       });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message });
@@ -1506,13 +1715,24 @@ CREATE TABLE IF NOT EXISTS public.learnify_courses (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS public.learnify_blogs (
+  slug TEXT PRIMARY KEY,
+  region TEXT NOT NULL DEFAULT 'global',
+  topic_track TEXT NOT NULL DEFAULT 'Cloud & DevOps',
+  data JSONB NOT NULL,
+  published_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- Enable Row Level Security (RLS) & Allow public read access
 ALTER TABLE public.learnify_cms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.learnify_leads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.learnify_courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.learnify_blogs ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow public read CMS" ON public.learnify_cms FOR SELECT USING (true);
 CREATE POLICY "Allow public read courses" ON public.learnify_courses FOR SELECT USING (true);
+CREATE POLICY "Allow public read blogs" ON public.learnify_blogs FOR SELECT USING (true);
 CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WITH CHECK (true);
 `;
 
@@ -1672,24 +1892,24 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       try {
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
         const regionalMatch = resolveRegionalRoute(cleanPath);
-        const blogMatch = resolveBlogRoute(cleanPath, currentCmsData.blogs);
-        const allBlogs = getMergedBlogs(currentCmsData.blogs);
+        const allBlogs = getAllBlogsList();
+        const blogMatch = resolveServerBlogRoute(cleanPath, allBlogs);
 
         // 0. Dedicated High-Demand Blogs Hub & Detail (/blogs & /blogs/:slug)
         if (blogMatch && blogMatch.type === 'hub') {
           const canonicalUrl = `${SITE_BASE_URL}/blogs`;
-          const title = 'IT Certification Blogs, Exam Centers & Fee Guides (UAE & SA) | Learnify Solutions';
+          const title = 'Global IT Certification Blogs, Cloud & Cybersecurity Roadmaps | Learnify Solutions';
           const desc =
-            'Daily-updated IT certification blogs covering Pearson VUE exam centers in Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town, Dubai & Abu Dhabi, AED & ZAR course costs, and CompTIA, Microsoft & AWS roadmaps.';
+            'Practical certification guides, Azure vs AWS architecture comparisons, CompTIA Security+ (SY0-701) roadmaps, Power BI analytics blueprints, plus regional Pearson VUE exam center & fee breakdowns.';
           const keywords =
-            'Learnify blogs, where to write CompTIA A+ in Gauteng, Pearson VUE Dubai Knowledge Park, Power BI PL-300 cost Dubai, Azure AZ-104 South Africa cost ZAR, cloud computing courses in Dubai';
+            'IT certification blogs, Azure AZ-104 vs AWS SAA-C03, CompTIA Security+ SY0-701 study plan, Power BI PL-300 guide, Pearson VUE exam centers, Learnify Solutions blogs';
           const schemaObj = {
             '@context': 'https://schema.org',
             '@graph': [
               {
                 '@type': 'CollectionPage',
                 '@id': `${canonicalUrl}#collection`,
-                name: 'Learnify IT Certification Blogs, Exam Centers & Fee Guides',
+                name: 'Learnify Global IT Certification Blogs & Study Roadmaps',
                 mainEntity: {
                   '@type': 'ItemList',
                   numberOfItems: allBlogs.length,
@@ -1713,12 +1933,12 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
 
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <nav><a href="/">Home</a> &gt; <span>Blogs</span></nav>
-            <h1>IT Certification Blogs, Exam Centers &amp; Fee Guides</h1>
+            <h1>Global IT Certification Blogs, Roadmaps &amp; Exam Insights</h1>
             <p>${escapeHtml(desc)}</p>
-            <p><a href="/ae">UAE &amp; Dubai Hub (AED / GST)</a> | <a href="/za">South Africa Hub (ZAR / SAST)</a></p>
+            <p><a href="/courses">All Certification Courses</a> | <a href="/ae">UAE &amp; Dubai Hub (AED / GST)</a> | <a href="/za">South Africa Hub (ZAR / SAST)</a></p>
             <ul>${allBlogs.map(
               (g) =>
-                `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.regionLabel)} (${escapeHtml(g.citiesCovered.join(', '))})</li>`
+                `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.topicTrack || g.category)} (${escapeHtml(g.regionLabel)})</li>`
             ).join('')}</ul>
           </main>`;
 
@@ -2281,16 +2501,15 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const zaLinks = getRegionalCoursePages('za').slice(0, 8);
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
-            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, Power BI, CompTIA, Cisco, AWS, and Cybersecurity across UAE (Dubai, Abu Dhabi, Sharjah, Al Ain, Ajman), South Africa (Johannesburg, Sandton, Midrand, Pretoria, Gauteng, Cape Town, Durban), USA, UK, and India.</p>
-            <nav><a href="/courses">All Courses</a> | <a href="/blogs">Blogs</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
+            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on cloud labs for Microsoft Azure, Power BI, CompTIA, AWS, Kubernetes, and Cybersecurity across North America, Europe &amp; UK, UAE &amp; Middle East, Africa (including South Africa, Nigeria &amp; Kenya), and Asia-Pacific.</p>
+            <nav><a href="/courses">All Courses</a> | <a href="/blogs">Blogs &amp; Roadmaps</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/ae">UAE Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/contact">Contact</a></nav>
             <h2>Featured Global Certification Courses</h2>
             <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
-            <h2>Dubai &amp; UAE Training Editions</h2>
-            <ul><li><a href="/ae">All UAE CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
-            <h2>South Africa &amp; Gauteng Training Editions</h2>
-            <ul><li><a href="/za">All South Africa CompTIA, Microsoft, AWS &amp; Kubernetes Courses</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
-            <h2>Latest High-Demand IT Certification Blogs</h2>
+            <h2>Latest Global &amp; Regional IT Certification Blogs</h2>
             <ul>${allBlogs.map((g) => `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
+            <h2>Regional Training Hubs (AED / ZAR)</h2>
+            <ul><li><a href="/ae">UAE &amp; Dubai Certification Training</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/za">South Africa Certification Training</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
           </main>`;
           html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {
@@ -2310,7 +2529,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     });
   }
 
-  // Preload latest CMS data on server boot
+  // Preload latest CMS & Blogs data on server boot
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -2330,6 +2549,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           console.log('[Supabase] Initialized server CMS with live Supabase data.');
         }
       }
+      await syncBlogsFromSupabase();
     } catch (err: any) {
       console.warn('[Supabase] Startup CMS fetch notice:', err.message);
     }

@@ -31,7 +31,7 @@ import {
   PenSquare,
   Globe2,
 } from 'lucide-react';
-import { CmsData, LeadSubmission, Course, BlogPost } from '../types';
+import { CmsData, LeadSubmission, Course, BlogPost, BlogSummary, BlogTopicTrack } from '../types';
 import {
   updateCmsData,
   resetCmsData,
@@ -39,11 +39,14 @@ import {
   updateCourse,
   deleteCourse,
   uploadSyllabusPdf,
+  fetchBlogSummaries,
+  fetchBlogDetail,
+  saveBlogPost,
+  deleteBlogPost,
 } from '../services/cmsService';
 import { downloadCourseSyllabus } from '../utils/syllabusPdf';
 import {
-  SEO_BLOGS,
-  getMergedBlogs,
+  BLOG_TOPIC_COVERS,
   slugifyBlogTitle,
   getDefaultRegionalLinksForRegion,
 } from '../data/blogsData';
@@ -63,6 +66,8 @@ interface BackendCmsDrawerProps {
   };
   onRefreshLeads: () => void;
   initialTab?: 'visual' | 'courses' | 'blogs' | 'json' | 'supabase' | 'leads' | 'email' | 'docs';
+  blogSummaries?: BlogSummary[];
+  onBlogsUpdated?: (summaries: BlogSummary[]) => void;
 }
 
 export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
@@ -76,12 +81,20 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   supabaseStatus,
   onRefreshLeads,
   initialTab = 'visual',
+  blogSummaries = [],
+  onBlogsUpdated,
 }) => {
   const [activeTab, setActiveTab] = useState<
     'visual' | 'courses' | 'blogs' | 'json' | 'supabase' | 'leads' | 'email' | 'docs'
   >(initialTab);
   const [formData, setFormData] = useState<CmsData>(JSON.parse(JSON.stringify(cmsData)));
   const [jsonText, setJsonText] = useState(JSON.stringify(cmsData, null, 2));
+  const [drawerBlogs, setDrawerBlogs] = useState<BlogSummary[]>(blogSummaries);
+  const [isLoadingBlogsList, setIsLoadingBlogsList] = useState(false);
+
+  useEffect(() => {
+    setDrawerBlogs(blogSummaries);
+  }, [blogSummaries]);
 
   useEffect(() => {
     if (isOpen && initialTab) {
@@ -96,6 +109,8 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     title: string;
     slug: string;
     region: 'ae' | 'za' | 'global';
+    topicTrack: BlogTopicTrack;
+    coverImage: string;
     category: string;
     citiesCovered: string;
     readTime: string;
@@ -110,10 +125,12 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   }>({
     title: '',
     slug: '',
-    region: 'ae',
-    category: 'Exam Centers & Vouchers',
-    citiesCovered: 'Dubai, Abu Dhabi, Sharjah',
-    readTime: '5 min read',
+    region: 'global',
+    topicTrack: 'Cloud & DevOps',
+    coverImage: BLOG_TOPIC_COVERS['Cloud & DevOps'],
+    category: 'Cloud Architecture',
+    citiesCovered: 'Global Remote, North America, Europe, UAE, South Africa',
+    readTime: '6 min read',
     seoDescription: '',
     seoKeywords: '',
     intro: '',
@@ -202,11 +219,26 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     }
   };
 
+  const refreshDrawerBlogs = async () => {
+    setIsLoadingBlogsList(true);
+    try {
+      const list = await fetchBlogSummaries();
+      if (Array.isArray(list)) {
+        setDrawerBlogs(list);
+        onBlogsUpdated?.(list);
+      }
+    } finally {
+      setIsLoadingBlogsList(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'email') {
       fetchEmailDiagnostics();
     } else if (activeTab === 'docs') {
       fetchDocumentation();
+    } else if (activeTab === 'blogs') {
+      refreshDrawerBlogs();
     }
   }, [activeTab]);
 
@@ -236,7 +268,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     skillLevel: 'Intermediate',
     format: 'Live Online',
     fastTrack: false,
-    imageUrl: '/src/assets/images/azure_cloud_infra_1787771504293.webp',
+    imageUrl: '/images/azure_cloud_infra_1787771504293.webp',
     duration: '40 Hours',
     summary: '',
     overview: '',
@@ -299,18 +331,18 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   };
 
   const presetImages = [
-    { label: 'Cloud+ Multi-Cloud', url: '/src/assets/images/comptia_cloud_multicloud_1788294616227.jpg' },
-    { label: 'Cloud Essentials & ROI', url: '/src/assets/images/cloud_essentials_business_1788294640468.jpg' },
-    { label: 'Azure Cloud', url: '/src/assets/images/azure_cloud_infra_1787771504293.webp' },
-    { label: 'AWS Architecture', url: '/src/assets/images/aws_architecture_diagram_1787771528914.webp' },
-    { label: 'Power BI & Data', url: '/src/assets/images/powerbi_data_analytics_1788294280157.jpg' },
-    { label: 'Copilot & GenAI', url: '/src/assets/images/copilot_genai_workspace_1788294313357.jpg' },
-    { label: 'Kubernetes & DevOps', url: '/src/assets/images/kubernetes_devops_cluster_1788294296039.jpg' },
-    { label: 'Cisco Routing', url: '/src/assets/images/cisco_network_map_1787771488810.webp' },
-    { label: 'CompTIA Security SOC', url: '/src/assets/images/comptia_security_soc_1787771516564.webp' },
-    { label: 'PenTest & Ethical Hack', url: '/src/assets/images/ethical_hacking_pentest_1788294329039.jpg' },
-    { label: 'Linux & Datacenter', url: '/src/assets/images/linux_datacenter_admin_1788294344630.jpg' },
-    { label: 'PC Hardware & A+', url: '/src/assets/images/pc_hardware_workbench_1788294359055.jpg' },
+    { label: 'Cloud+ Multi-Cloud', url: '/images/comptia_cloud_multicloud_1788294616227.webp' },
+    { label: 'Cloud Essentials & ROI', url: '/images/cloud_essentials_business_1788294640468.webp' },
+    { label: 'Azure Cloud', url: '/images/azure_cloud_infra_1787771504293.webp' },
+    { label: 'AWS Architecture', url: '/images/aws_architecture_diagram_1787771528914.webp' },
+    { label: 'Power BI & Data', url: '/images/powerbi_data_analytics_1788294280157.webp' },
+    { label: 'Copilot & GenAI', url: '/images/copilot_genai_workspace_1788294313357.webp' },
+    { label: 'Kubernetes & DevOps', url: '/images/kubernetes_devops_cluster_1788294296039.webp' },
+    { label: 'Cisco Routing', url: '/images/cisco_network_map_1787771488810.webp' },
+    { label: 'CompTIA Security SOC', url: '/images/comptia_security_soc_1787771516564.webp' },
+    { label: 'PenTest & Ethical Hack', url: '/images/ethical_hacking_pentest_1788294329039.webp' },
+    { label: 'Linux & Datacenter', url: '/images/linux_datacenter_admin_1788294344630.webp' },
+    { label: 'PC Hardware & A+', url: '/images/pc_hardware_workbench_1788294359055.webp' },
   ];
 
   if (!isOpen) return null;
@@ -377,7 +409,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
         skillLevel: 'Intermediate',
         format: 'Live Online',
         fastTrack: false,
-        imageUrl: '/src/assets/images/azure_cloud_infra_1787771504293.webp',
+        imageUrl: '/images/azure_cloud_infra_1787771504293.webp',
         duration: '40 Hours',
         summary: '',
         overview: '',
@@ -405,7 +437,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
       skillLevel: (course.skillLevel || course.level || 'Intermediate') as any,
       format: (course.format || 'Live Online') as any,
       fastTrack: Boolean(course.fastTrack),
-      imageUrl: course.imageUrl || '/src/assets/images/azure_cloud_infra_1787771504293.webp',
+      imageUrl: course.imageUrl || '/images/azure_cloud_infra_1787771504293.webp',
       duration: course.duration || '40 Hours',
       summary: course.summary || '',
       overview: course.overview || course.summary || '',
@@ -484,10 +516,12 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     setBlogForm({
       title: '',
       slug: '',
-      region: 'ae',
-      category: 'Exam Centers & Vouchers',
-      citiesCovered: 'Dubai, Abu Dhabi, Sharjah',
-      readTime: '5 min read',
+      region: 'global',
+      topicTrack: 'Cloud & DevOps',
+      coverImage: BLOG_TOPIC_COVERS['Cloud & DevOps'],
+      category: 'Cloud Architecture',
+      citiesCovered: 'Global Remote, North America, Europe, UAE, South Africa',
+      readTime: '6 min read',
       seoDescription: '',
       seoKeywords: '',
       intro: '',
@@ -521,7 +555,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     const regionLabelMap: Record<'ae' | 'za' | 'global', string> = {
       ae: 'Dubai & UAE',
       za: 'South Africa & Gauteng',
-      global: 'Global & Cloud',
+      global: 'Global Enterprise',
     };
 
     const now = new Date();
@@ -557,17 +591,20 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
       .filter((f) => f.q && f.a);
 
     const newPost: BlogPost = {
-      slug: computedSlug,
+      slug: editingBlogSlug || computedSlug,
       region: blogForm.region,
       regionLabel: regionLabelMap[blogForm.region],
+      topicTrack: blogForm.topicTrack,
       category: blogForm.category.trim() || 'Certification Insights',
       title: cleanTitle,
+      excerpt: cleanIntro.length > 175 ? `${cleanIntro.slice(0, 172).trim()}...` : cleanIntro,
+      coverImage: blogForm.coverImage || BLOG_TOPIC_COVERS[blogForm.topicTrack],
       seoTitle: `${cleanTitle} | Learnify Blogs`,
       seoDescription: (blogForm.seoDescription.trim() || cleanIntro).slice(0, 160),
       seoKeywords:
         blogForm.seoKeywords.trim() ||
         `${cleanTitle}, ${regionLabelMap[blogForm.region]}, IT certification training, Learnify Solutions`,
-      readTime: blogForm.readTime.trim() || '5 min read',
+      readTime: blogForm.readTime.trim() || '6 min read',
       updatedDate: monthYear,
       publishedIso,
       citiesCovered:
@@ -577,7 +614,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
             ? ['Dubai', 'Abu Dhabi', 'Sharjah']
             : blogForm.region === 'za'
               ? ['Johannesburg', 'Sandton', 'Pretoria', 'Cape Town']
-              : ['Global', 'UAE', 'South Africa'],
+              : ['Global Remote', 'North America', 'Europe', 'UAE'],
       intro: cleanIntro,
       keyTakeaways: takeawaysArr.length > 0 ? takeawaysArr : [cleanIntro],
       sections: [
@@ -593,24 +630,13 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
       isCustom: true,
     };
 
-    const existingCustom = Array.isArray(formData.blogs) ? formData.blogs : [];
-    const filteredCustom = existingCustom.filter(
-      (b) => b.slug.toLowerCase() !== (editingBlogSlug || computedSlug).toLowerCase()
-    );
-    const updatedBlogs = [newPost, ...filteredCustom];
-    const updatedCms: CmsData = {
-      ...formData,
-      blogs: updatedBlogs,
-    };
-
     setIsSaving(true);
     setSaveNotification('');
     try {
-      const result = await updateCmsData(updatedCms);
-      setFormData(result);
-      onCmsUpdated(result);
-      setJsonText(JSON.stringify(result, null, 2));
-      setSaveNotification(`Blog "${cleanTitle}" published live at /blogs/${computedSlug}`);
+      const res = await saveBlogPost(newPost, Boolean(editingBlogSlug));
+      setDrawerBlogs(res.summaries);
+      onBlogsUpdated?.(res.summaries);
+      setSaveNotification(`Blog "${cleanTitle}" saved live at /blogs/${res.post.slug}`);
       resetBlogForm();
       setTimeout(() => setSaveNotification(''), 4500);
     } catch (err: any) {
@@ -620,42 +646,46 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
     }
   };
 
-  const handleEditCustomBlog = (post: BlogPost) => {
-    setEditingBlogSlug(post.slug);
-    setSlugManuallyEdited(true);
-    const primarySection = post.sections?.[0];
-    setBlogForm({
-      title: post.title,
-      slug: post.slug,
-      region: post.region,
-      category: post.category,
-      citiesCovered: (post.citiesCovered || []).join(', '),
-      readTime: post.readTime || '5 min read',
-      seoDescription: post.seoDescription || '',
-      seoKeywords: post.seoKeywords || '',
-      intro: post.intro || '',
-      keyTakeaways: (post.keyTakeaways || []).join('\n'),
-      sectionHeading: primarySection?.heading || 'Key Insights & Practical Breakdown',
-      sectionParagraphs: (primarySection?.paragraphs || []).join('\n'),
-      sectionBullets: (primarySection?.bullets || []).join('\n'),
-      faqsText: (post.faqs || []).map((f) => `${f.q} | ${f.a}`).join('\n'),
-    });
+  const handleEditBlogClick = async (slug: string) => {
+    try {
+      const post = await fetchBlogDetail(slug);
+      if (!post) {
+        alert('Could not load full article details for editing.');
+        return;
+      }
+      setEditingBlogSlug(post.slug);
+      setSlugManuallyEdited(true);
+      const primarySection = post.sections?.[0];
+      setBlogForm({
+        title: post.title,
+        slug: post.slug,
+        region: post.region,
+        topicTrack: post.topicTrack || 'Cloud & DevOps',
+        coverImage: post.coverImage || BLOG_TOPIC_COVERS[post.topicTrack || 'Cloud & DevOps'],
+        category: post.category,
+        citiesCovered: (post.citiesCovered || []).join(', '),
+        readTime: post.readTime || '6 min read',
+        seoDescription: post.seoDescription || '',
+        seoKeywords: post.seoKeywords || '',
+        intro: post.intro || '',
+        keyTakeaways: (post.keyTakeaways || []).join('\n'),
+        sectionHeading: primarySection?.heading || 'Key Insights & Practical Breakdown',
+        sectionParagraphs: (primarySection?.paragraphs || []).join('\n'),
+        sectionBullets: (primarySection?.bullets || []).join('\n'),
+        faqsText: (post.faqs || []).map((f) => `${f.q} | ${f.a}`).join('\n'),
+      });
+    } catch (err: any) {
+      alert('Failed to load blog post: ' + err.message);
+    }
   };
 
-  const handleDeleteCustomBlog = async (slug: string, title: string) => {
+  const handleDeleteBlogClick = async (slug: string, title: string) => {
     if (!window.confirm(`Delete custom blog "${title}"?`)) return;
-    const existingCustom = Array.isArray(formData.blogs) ? formData.blogs : [];
-    const updatedCms: CmsData = {
-      ...formData,
-      blogs: existingCustom.filter((b) => b.slug.toLowerCase() !== slug.toLowerCase()),
-    };
-
     setIsSaving(true);
     try {
-      const result = await updateCmsData(updatedCms);
-      setFormData(result);
-      onCmsUpdated(result);
-      setJsonText(JSON.stringify(result, null, 2));
+      const updatedSummaries = await deleteBlogPost(slug);
+      setDrawerBlogs(updatedSummaries);
+      onBlogsUpdated?.(updatedSummaries);
       if (editingBlogSlug === slug) {
         resetBlogForm();
       }
@@ -667,8 +697,6 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
       setIsSaving(false);
     }
   };
-
-  const mergedBlogCount = getMergedBlogs(formData.blogs).length;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-xs flex justify-end">
@@ -759,7 +787,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
             }`}
           >
             <PenSquare className="w-3.5 h-3.5" />
-            <span>Blogs Publisher ({mergedBlogCount})</span>
+            <span>Blogs Publisher ({drawerBlogs.length})</span>
           </button>
 
           <button
@@ -1559,9 +1587,16 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                           skillLevel: 'Intermediate',
                           format: 'Live Online',
                           fastTrack: false,
-                          imageUrl: '/src/assets/images/azure_cloud_infra_1787771504293.webp',
+                          imageUrl: '/images/azure_cloud_infra_1787771504293.webp',
                           duration: '40 Hours',
                           summary: '',
+                          overview: '',
+                          learningObjectives: '',
+                          prerequisites: '',
+                          outline: '',
+                          syllabusUrl: '',
+                          syllabusFileName: '',
+                          syllabusFileSize: '',
                         });
                       }}
                       className="text-xs text-slate-500 hover:text-slate-800 underline cursor-pointer"
@@ -1943,7 +1978,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <img
-                          src={course.imageUrl || '/src/assets/images/azure_cloud_infra_1787771504293.webp'}
+                          src={course.imageUrl || '/images/azure_cloud_infra_1787771504293.webp'}
                           alt={course.title}
                           className="w-12 h-10 rounded-md object-cover border border-slate-100 shrink-0"
                         />
@@ -2071,7 +2106,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Target Region *
+                      Target Scope / Region *
                     </label>
                     <select
                       value={blogForm.region}
@@ -2082,7 +2117,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                             ? 'Dubai, Abu Dhabi, Sharjah'
                             : r === 'za'
                               ? 'Johannesburg, Sandton, Midrand, Pretoria, Cape Town'
-                              : 'Dubai, Johannesburg, London, New York';
+                              : 'Global Remote, North America, Europe, UAE, South Africa';
                         setBlogForm((prev) => ({
                           ...prev,
                           region: r,
@@ -2091,19 +2126,42 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                       }}
                       className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
                     >
+                      <option value="global">Global Enterprise (Recommended)</option>
                       <option value="ae">Dubai &amp; UAE (AED / GST)</option>
                       <option value="za">South Africa &amp; Gauteng (ZAR / SAST)</option>
-                      <option value="global">Global &amp; Cloud</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Category
+                      Topic Track *
+                    </label>
+                    <select
+                      value={blogForm.topicTrack}
+                      onChange={(e) => {
+                        const track = e.target.value as BlogTopicTrack;
+                        setBlogForm((prev) => ({
+                          ...prev,
+                          topicTrack: track,
+                          coverImage: BLOG_TOPIC_COVERS[track] || prev.coverImage,
+                        }));
+                      }}
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    >
+                      <option value="Cloud & DevOps">Cloud &amp; DevOps</option>
+                      <option value="Cybersecurity">Cybersecurity</option>
+                      <option value="Data & AI">Data &amp; AI</option>
+                      <option value="Exam & Fee Guides">Exam &amp; Fee Guides</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Category Label
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Exam Centers & Vouchers"
+                      placeholder="e.g. Cloud Architecture or Exam Centers"
                       value={blogForm.category}
                       onChange={(e) =>
                         setBlogForm((prev) => ({ ...prev, category: e.target.value }))
@@ -2118,7 +2176,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. 5 min read"
+                      placeholder="e.g. 6 min read"
                       value={blogForm.readTime}
                       onChange={(e) =>
                         setBlogForm((prev) => ({ ...prev, readTime: e.target.value }))
@@ -2127,19 +2185,51 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                     />
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Cities Covered (comma-separated)
+                      Cities / Markets Covered (comma-separated)
                     </label>
                     <input
                       type="text"
-                      placeholder="Dubai, Abu Dhabi, Sharjah"
+                      placeholder="Global Remote, Dubai, Johannesburg"
                       value={blogForm.citiesCovered}
                       onChange={(e) =>
                         setBlogForm((prev) => ({ ...prev, citiesCovered: e.target.value }))
                       }
                       className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
                     />
+                  </div>
+
+                  <div className="sm:col-span-2 space-y-2 pt-1">
+                    <label className="block text-xs font-semibold text-slate-700">
+                      Cover Visual Asset
+                    </label>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {presetImages.slice(0, 6).map((img) => {
+                        const selected = blogForm.coverImage === img.url;
+                        return (
+                          <button
+                            key={img.url}
+                            type="button"
+                            onClick={() => setBlogForm((prev) => ({ ...prev, coverImage: img.url }))}
+                            className={`relative rounded-lg overflow-hidden border-2 text-left transition-all cursor-pointer ${
+                              selected
+                                ? 'border-[#ea6d24] ring-2 ring-orange-200'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <img
+                              src={img.url}
+                              alt={img.label}
+                              className="w-full h-11 object-cover"
+                            />
+                            <div className="p-1 text-[9px] font-bold text-slate-700 truncate bg-white">
+                              {img.label}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 
@@ -2261,93 +2351,95 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                 </button>
               </form>
 
-              {/* Published Blogs List */}
+              {/* Published Blogs List (Backend-Driven Store) */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    All Live Blogs ({mergedBlogCount})
+                    All Live Blogs ({drawerBlogs.length})
                   </h4>
                   <span className="text-[11px] text-slate-400">
-                    Synced with Homepage, /blogs &amp; /sitemap.xml
+                    Backend Store (/api/blogs + Supabase learnify_blogs) &amp; /sitemap.xml
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  {(Array.isArray(formData.blogs) ? formData.blogs : []).map((post) => (
-                    <div
-                      key={post.slug}
-                      className="p-3 rounded-xl border border-orange-200 bg-orange-50/30 flex items-center justify-between gap-3"
-                    >
-                      <div className="min-w-0">
-                        <h5 className="text-xs font-bold text-[#152e4d] truncate">{post.title}</h5>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap mt-0.5">
-                          <span className="font-semibold text-[#ea6d24]">{post.regionLabel}</span>
-                          <span>·</span>
-                          <span>{post.updatedDate}</span>
-                          <span>·</span>
-                          <span className="font-mono text-slate-600">/blogs/{post.slug}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <a
-                          href={`/blogs/${post.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 text-slate-500 hover:text-[#152e4d] hover:bg-white rounded-md transition-colors"
-                          title="View live blog"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => handleEditCustomBlog(post)}
-                          className="p-1.5 text-slate-600 hover:text-[#152e4d] hover:bg-white rounded-md transition-colors cursor-pointer"
-                          title="Edit blog"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteCustomBlog(post.slug, post.title)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-                          title="Delete custom blog"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  {SEO_BLOGS.map((post) => (
-                    <div
-                      key={post.slug}
-                      className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3"
-                    >
-                      <div className="min-w-0">
-                        <h5 className="text-xs font-bold text-[#152e4d] truncate">{post.title}</h5>
-                        <div className="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap mt-0.5">
-                          <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
-                            <Globe2 className="w-3 h-3" />
-                            Built-in Core SEO Blog (Protected)
-                          </span>
-                          <span>·</span>
-                          <span>{post.regionLabel}</span>
-                          <span>·</span>
-                          <span className="font-mono text-slate-600">/blogs/{post.slug}</span>
-                        </div>
-                      </div>
-                      <a
-                        href={`/blogs/${post.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1 text-[11px] font-semibold text-[#152e4d] hover:text-[#ea6d24] bg-slate-50 hover:bg-slate-100 rounded-md flex items-center gap-1 shrink-0 transition-colors"
+                {isLoadingBlogsList ? (
+                  <div className="p-4 text-xs text-slate-500 bg-slate-50 rounded-xl border border-slate-200">
+                    Syncing blog index from backend...
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {drawerBlogs.map((post) => (
+                      <div
+                        key={post.slug}
+                        className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${
+                          post.isCustom
+                            ? 'border-orange-200 bg-orange-50/30'
+                            : 'border-slate-200 bg-white'
+                        }`}
                       >
-                        <span>View</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  ))}
-                </div>
+                        <div className="flex items-center gap-3 min-w-0">
+                          {post.coverImage && (
+                            <img
+                              src={post.coverImage}
+                              alt={post.title}
+                              className="w-12 h-10 rounded-md object-cover border border-slate-200 shrink-0"
+                            />
+                          )}
+                          <div className="min-w-0">
+                            <h5 className="text-xs font-bold text-[#152e4d] truncate">{post.title}</h5>
+                            <div className="flex items-center gap-2 text-[10px] text-slate-500 flex-wrap mt-0.5">
+                              {post.isCustom ? (
+                                <span className="font-semibold text-[#ea6d24]">Custom Blog</span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 font-semibold text-emerald-700">
+                                  <Globe2 className="w-3 h-3" />
+                                  Core SEO Editorial
+                                </span>
+                              )}
+                              <span>·</span>
+                              <span>{post.topicTrack}</span>
+                              <span>·</span>
+                              <span>{post.regionLabel}</span>
+                              <span>·</span>
+                              <span className="font-mono text-slate-600">/blogs/{post.slug}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <a
+                            href={`/blogs/${post.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 text-slate-500 hover:text-[#152e4d] hover:bg-slate-100 rounded-md transition-colors"
+                            title="View live blog"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                          {post.isCustom && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleEditBlogClick(post.slug)}
+                                className="p-1.5 text-slate-600 hover:text-[#152e4d] hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                                title="Edit custom blog"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteBlogClick(post.slug, post.title)}
+                                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                                title="Delete custom blog"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
