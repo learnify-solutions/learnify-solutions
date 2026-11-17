@@ -45,7 +45,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     hubDescription:
       'Authorized live online & corporate CompTIA and Microsoft Azure certification bootcamps in Dubai, Abu Dhabi & Sharjah. GST timezones, AED corporate invoicing & 24/7 cloud labs.',
     hubKeywords:
-      'IT certification training Dubai, CompTIA training UAE, Microsoft Azure training Dubai, corporate IT training Abu Dhabi, AZ-104 Dubai, CompTIA Security+ UAE, Power BI training Dubai, Learnify Solutions UAE',
+      'IT certification training Dubai, Cloud computing courses in Dubai, CompTIA training UAE, Microsoft Azure training Dubai, corporate IT training Abu Dhabi, AZ-104 Dubai, Power BI training Dubai, Power BI course in Dubai, CompTIA Security+ UAE, Learnify Solutions UAE',
     cities: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah'],
     primaryCitiesLabel: 'Dubai, Abu Dhabi & Sharjah',
     businessDistricts: 'Dubai Internet City, DIFC, Abu Dhabi Global Market (ADGM), Media City & Sharjah Research Park',
@@ -62,7 +62,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     invoicingNote:
       'Supports corporate Purchase Orders (POs), multi-seat enterprise licensing, and VAT-compliant invoicing in AED or USD for UAE organizations.',
     examCenterNote:
-      'Full exam readiness for Pearson VUE authorized testing centers across Dubai, Abu Dhabi & Sharjah as well as OnVUE online proctored exams.',
+      'Full exam readiness for Pearson VUE authorized testing centers in Dubai (Dubai Knowledge Park / DIAC), Abu Dhabi & Sharjah, plus OnVUE online proctored exams.',
     schedules: [
       {
         name: 'UAE Weekday Intensive (Fast-Track)',
@@ -112,7 +112,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     hubDescription:
       'Live instructor-led CompTIA and Microsoft Azure certification bootcamps in Johannesburg, Cape Town, Pretoria & Durban. SAST timezones, ZAR corporate POs & 24/7 cloud labs.',
     hubKeywords:
-      'CompTIA training South Africa, Microsoft Azure training Johannesburg, IT certification courses Cape Town, CompTIA Security+ South Africa, AZ-104 Pretoria, Power BI course South Africa, corporate IT training Sandton',
+      'CompTIA training South Africa, where to write CompTIA A+ in Gauteng, Microsoft Azure training Johannesburg, IT certification courses Cape Town, CompTIA Security+ South Africa, AZ-104 Pretoria, DP-900 South Africa, Power BI course South Africa, corporate IT training Sandton',
     cities: ['Johannesburg', 'Cape Town', 'Pretoria', 'Durban', 'Sandton'],
     primaryCitiesLabel: 'Johannesburg, Cape Town, Pretoria & Durban',
     businessDistricts: 'Sandton, Midrand, Rosebank, Century City (Cape Town), Menlyn (Pretoria) & Umhlanga Ridge',
@@ -129,7 +129,7 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     invoicingNote:
       'Supports corporate Purchase Orders (POs), bulk team seat packages, and streamlined enterprise invoicing in ZAR or USD for South African businesses.',
     examCenterNote:
-      'Structured preparation for Pearson VUE testing centers across Johannesburg, Pretoria, Cape Town & Durban, plus flexible OnVUE online proctoring.',
+      'Structured preparation for where to write your exam at Pearson VUE testing centers across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town & Durban, plus flexible OnVUE online proctoring.',
     schedules: [
       {
         name: 'SA Weekday Bootcamp (Full-Time)',
@@ -405,10 +405,10 @@ export const TARGET_REGIONAL_COURSES: RegionalCourseMeta[] = [
     categoryTag: 'BI & Analytics',
     aeSlug: 'microsoft-power-bi-pl-300-training-dubai-uae',
     zaSlug: 'microsoft-power-bi-pl-300-training-south-africa',
-    aeFocusKeyword: 'Microsoft Power BI PL-300 Training Dubai & UAE',
-    zaFocusKeyword: 'Microsoft Power BI PL-300 Training South Africa',
+    aeFocusKeyword: 'Power BI Training in Dubai & UAE (PL-300)',
+    zaFocusKeyword: 'Power BI Course & PL-300 Training South Africa',
     aeIndustryAngle:
-      'High-demand executive BI training for Dubai & Abu Dhabi finance, real estate, aviation, and operations teams—mastering Power Query, DAX modeling, and workspace governance.',
+      'Top-rated Power BI course in Dubai & UAE for finance, real estate, aviation, and operations teams—mastering Power Query, DAX modeling, and enterprise BI governance.',
     zaIndustryAngle:
       'Prepares South African data analysts, financial controllers, and BI developers to turn enterprise ERP/SQL data into executive Power BI dashboards and automated reports.',
     aeRoleDemand: 'Power BI Developer, Senior Business Intelligence Analyst, Data Reporting Lead (Dubai / UAE)',
@@ -559,6 +559,10 @@ export function buildRegionalCoursePage(
     {
       q: `What career roles and industries in ${region.shortName} value ${meta.shortName}?`,
       a: `High-demand roles include ${roleDemand}. Employers across ${region.businessDistricts} prioritize certified engineers who also understand ${region.complianceContext}.`,
+    },
+    {
+      q: `Where can I write the ${meta.shortName}${examCodeText} certification exam in ${region.shortName}?`,
+      a: `${region.examCenterNote} Our instructors also guide you step-by-step on exam voucher booking, scheduling, and mock exam readiness.`,
     },
   ];
 

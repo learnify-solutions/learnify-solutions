@@ -450,6 +450,14 @@ async function startServer() {
     '/course/ai-102-designing-and-implementing-an-azure-ai-solutions': '/course/course-ms-ai-102',
     '/course/comptia-server': '/course/course-comptia-server-plus',
     '/privacy-policy': '/privacy',
+    '/contact-us': '/contact',
+    '/about-us': '/about',
+    '/uae': '/ae',
+    '/dubai': '/ae',
+    '/south-africa': '/za',
+    '/johannesburg': '/za',
+    '/cape-town': '/za',
+    '/gauteng': '/za',
     '/cisco-certified-network-associate-and-ccna-the-essential-cisco-networking-certification': '/course/course-cisco-ccna',
   };
 
@@ -2066,13 +2074,35 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<title>.*?<\/title>/, `<title>Learnify Portal Administration</title>`)
             .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`);
         } else if (cleanPath === '/' || cleanPath === '') {
-          const flagship = coursesStore.slice(0, 12);
+          const flagshipIds = [
+            'course-cisco-ccna',
+            'course-cisco-ccnp-encor',
+            'course-comptia-security-plus',
+            'course-comptia-a-plus',
+            'course-comptia-network-plus',
+            'course-azure-104',
+            'course-ms-pl-300',
+            'course-ms-ai-102',
+            'course-ms-dp-900',
+            'course-ms-4018-copilot',
+            'course-aws-solutions',
+            'course-kubernetes-cka',
+          ];
+          const flagship = flagshipIds
+            .map((id) => coursesStore.find((c) => c.id === id))
+            .filter((c): c is Course => Boolean(c));
+          const aeLinks = getRegionalCoursePages('ae').slice(0, 6);
+          const zaLinks = getRegionalCoursePages('za').slice(0, 6);
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
-            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, CompTIA, Cisco, AWS, and Cybersecurity across USA, UK, UAE, South Africa, and India.</p>
+            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on labs for Microsoft Azure, Power BI, CompTIA, Cisco, AWS, and Cybersecurity across UAE (Dubai, Abu Dhabi), South Africa (Johannesburg, Cape Town, Gauteng), USA, UK, and India.</p>
             <nav><a href="/courses">All Courses</a> | <a href="/ae">Dubai &amp; UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/cisco-training">Cisco Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact</a></nav>
-            <h2>Featured Certification Courses</h2>
-            <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a></li>`).join('')}</ul>
+            <h2>Featured Global Certification Courses</h2>
+            <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
+            <h2>Dubai &amp; UAE Training Editions</h2>
+            <ul><li><a href="/ae">All UAE CompTIA &amp; Microsoft Courses</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <h2>South Africa Training Editions</h2>
+            <ul><li><a href="/za">All South Africa CompTIA &amp; Microsoft Courses</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
           </main>`;
           html = html.replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {
