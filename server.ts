@@ -1897,6 +1897,45 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       const url = req.originalUrl || req.url;
       const cleanPath = url.split('?')[0].split('#')[0];
 
+      // 1. Handle query params like nocache or search_term_string -> redirect to clean path
+      if (url.includes('?nocache') || url.includes('?=') || url.includes('?v=')) {
+        return res.redirect(301, cleanPath);
+      }
+
+      // 2. Normalize trailing slashes (except root '/')
+      if (cleanPath.length > 1 && cleanPath.endsWith('/')) {
+        const withoutSlash = cleanPath.slice(0, -1);
+        const queryPart = url.includes('?') ? url.slice(url.indexOf('?')) : '';
+        return res.redirect(301, withoutSlash + queryPart);
+      }
+
+      // 3. 301 Redirects for renamed / alternate paths from GSC
+      if (cleanPath === '/about-us' || cleanPath === '/career' || cleanPath === '/careers') {
+        return res.redirect(301, '/about');
+      }
+      if (cleanPath === '/course/comptia-pentest') {
+        return res.redirect(301, '/course/course-comptia-pentest-plus');
+      }
+
+      // 4. Strict HTTP 404 with noindex for legacy/dead paths (wp-admin, membership, lessons, stores, etc.)
+      if (
+        cleanPath.startsWith('/wp-admin') ||
+        cleanPath.startsWith('/wp-includes') ||
+        cleanPath.startsWith('/membership') ||
+        cleanPath.startsWith('/stores') ||
+        cleanPath.includes('/lessons/') ||
+        cleanPath.includes('/testimonial/')
+      ) {
+        let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
+        res.status(404);
+        html = stripHomeHeroPreloads(html)
+          .replace(/<title>.*?<\/title>/, `<title>Page Not Found | Learnify Solutions</title>`)
+          .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`)
+          .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Page Not Found</h1><p>The requested resource does not exist. Explore our <a href="/courses">IT Certification Courses</a> or <a href="/blogs">Certification Blogs</a>.</p></main></div>`);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.send(html);
+      }
+
       try {
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
         const regionalMatch = resolveRegionalRoute(cleanPath);
