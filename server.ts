@@ -1917,12 +1917,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
         return res.redirect(301, '/course/course-comptia-pentest-plus');
       }
 
-      // 4. Strict HTTP 404 with noindex for legacy/dead paths (wp-admin, membership, lessons, stores, etc.)
+      // 4. Strict HTTP 404 with noindex for legacy/dead paths (wp-admin, membership, lessons, stores, events, etc.)
       if (
         cleanPath.startsWith('/wp-admin') ||
         cleanPath.startsWith('/wp-includes') ||
         cleanPath.startsWith('/membership') ||
         cleanPath.startsWith('/stores') ||
+        cleanPath === '/events' ||
+        cleanPath.startsWith('/events/') ||
         cleanPath.includes('/lessons/') ||
         cleanPath.includes('/testimonial/')
       ) {
