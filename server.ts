@@ -523,6 +523,35 @@ async function startServer() {
     '/courses/comptia': '/courses',
     '/courses/aws': '/courses',
     '/courses/cisco': '/cisco-training',
+    '/events': '/blogs',
+    '/scor': '/course/course-cisco-scor',
+    '/spcor': '/course/course-cisco-spcor',
+    '/ccna': '/course/course-cisco-ccna',
+    '/cyberops': '/course/course-cisco-cyberops',
+    '/devasc': '/course/course-cisco-devasc',
+    '/encor': '/course/course-cisco-ccnp-encor',
+    '/enarsi': '/course/course-cisco-ccnp-enarsi',
+    '/sdwan': '/course/course-cisco-sdwan',
+    '/ensdwi': '/course/course-cisco-sdwan',
+    '/ensld': '/course/course-cisco-ensld',
+    '/enauto': '/course/course-cisco-enauto',
+    '/sncf': '/course/course-cisco-sncf',
+    '/sise': '/course/course-cisco-sise',
+    '/svpn': '/course/course-cisco-svpn',
+    '/sauto': '/course/course-cisco-sauto',
+    '/spri': '/course/course-cisco-spri',
+    '/spvi': '/course/course-cisco-spvi',
+    '/enwlsd': '/course/course-cisco-enwlsd',
+    '/enwlsi': '/course/course-cisco-enwlsi',
+    '/devcor': '/course/course-cisco-devcor',
+    '/clcor': '/course/course-cisco-clcor',
+    '/clica': '/course/course-cisco-clica',
+    '/claccm': '/course/course-cisco-claccm',
+    '/cbrcor': '/course/course-cisco-cbrcor',
+    '/cbrfir': '/course/course-cisco-cbrfir',
+    '/dccor': '/course/course-cisco-dccor',
+    '/dcid': '/course/course-cisco-dcid',
+    '/dcacio': '/course/course-cisco-dcacio',
     '/home': '/',
     '/privacy-policy': '/privacy',
     '/contact-us': '/contact',
@@ -558,14 +587,40 @@ async function startServer() {
       reqPath.startsWith('/api/') ||
       reqPath.startsWith('/assets/') ||
       reqPath.startsWith('/images/') ||
-      reqPath.startsWith('/src/')
+      reqPath.startsWith('/src/') ||
+      reqPath === '/healthz'
     ) {
       return next();
     }
 
+    // 0. Canonicalize bare apex domain (non-www) to https://www.learnify-solutions.com in single 301 hop
+    const rawHost = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
+    if (rawHost === 'learnify-solutions.com') {
+      return res.redirect(301, `${SITE_BASE_URL}${req.originalUrl || reqPath}`);
+    }
+
     const normalizedPath = reqPath.replace(/\/+$/, '').toLowerCase() || '/';
 
-    // 1. Strip WordPress legacy query params (?nocache, ?replytocom, ?redirect_to, ?preview) cleanly
+    // 1. Exact legacy WordPress / Cisco short-slug redirects -> new Learnify URLs (single hop, strips legacy query params)
+    if (LEGACY_301_REDIRECTS[normalizedPath]) {
+      return res.redirect(301, LEGACY_301_REDIRECTS[normalizedPath]);
+    }
+
+    // 2. Old LearnDash /courses/<slug> & /courses/<slug>/lessons/<lesson> & /events/* & WP category/tag/author archives (single hop)
+    if (/^\/courses\/.+/i.test(normalizedPath)) {
+      return res.redirect(301, '/courses');
+    }
+    if (normalizedPath.startsWith('/events/')) {
+      return res.redirect(301, '/blogs');
+    }
+    if (/^\/(category|tag|author|product-category)\//i.test(normalizedPath)) {
+      return res.redirect(301, '/blogs');
+    }
+    if (/^\/(product|shop)(\/|$)/i.test(normalizedPath)) {
+      return res.redirect(301, '/courses');
+    }
+
+    // 3. Strip WordPress legacy query params (?nocache, ?replytocom, ?redirect_to, ?preview) cleanly
     if (
       typeof req.query.nocache !== 'undefined' ||
       typeof req.query.replytocom !== 'undefined' ||
@@ -587,22 +642,6 @@ async function startServer() {
       const qs = remaining.toString();
       const target = `${reqPath === '/' ? '/' : normalizedPath}${qs ? `?${qs}` : ''}`;
       return res.redirect(301, target);
-    }
-
-    // 2. Exact legacy WordPress slug redirects -> new Learnify URLs
-    if (LEGACY_301_REDIRECTS[normalizedPath]) {
-      return res.redirect(301, LEGACY_301_REDIRECTS[normalizedPath]);
-    }
-
-    // 3. Old LearnDash /courses/<slug>/lessons/<lesson> & WP category/tag/author archives
-    if (/^\/courses\/[^/]+\/lessons(\/|$)/i.test(reqPath)) {
-      return res.redirect(301, '/courses');
-    }
-    if (/^\/(category|tag|author|product-category)\//i.test(normalizedPath)) {
-      return res.redirect(301, '/blogs');
-    }
-    if (/^\/(product|shop)(\/|$)/i.test(normalizedPath)) {
-      return res.redirect(301, '/courses');
     }
 
     // 3b. Legacy /guides routes -> consolidated /blogs section
@@ -2149,15 +2188,12 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
         return res.redirect(301, '/course/course-comptia-pentest-plus');
       }
 
-      // 4. Strict HTTP 404 with noindex for legacy/dead paths (wp-admin, membership, lessons, stores, events, etc.)
+      // 4. Strict HTTP 404 with noindex for remaining dead WP paths (wp-admin, membership, stores, etc.)
       if (
         cleanPath.startsWith('/wp-admin') ||
         cleanPath.startsWith('/wp-includes') ||
         cleanPath.startsWith('/membership') ||
         cleanPath.startsWith('/stores') ||
-        cleanPath === '/events' ||
-        cleanPath.startsWith('/events/') ||
-        cleanPath.includes('/lessons/') ||
         cleanPath.includes('/testimonial/')
       ) {
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
