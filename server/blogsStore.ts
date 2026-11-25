@@ -1777,6 +1777,14 @@ export function getMergedBlogs(customBlogs?: BlogPost[]): BlogPost[] {
     }
   }
 
+  for (const b of COMPARISON_BLOGS_PHASE2) {
+    const key = b.slug.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(normalizeBlogPost(b));
+    }
+  }
+
   for (const seed of SEED_BLOGS) {
     const key = seed.slug.toLowerCase();
     if (!seen.has(key)) {

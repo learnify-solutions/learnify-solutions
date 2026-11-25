@@ -68,18 +68,6 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
           ],
         },
       },
-      {
-        id: 'regional-hiring-demand-cloud',
-        heading: 'Where Demand Splits Across UK, Europe, UAE & South Africa',
-        paragraphs: [
-          'Across UK government departments, European enterprises migrating off legacy on-premises Active Directory, and South African banks standardized on Office 365, Azure footprints consistently outnumber AWS in corporate infrastructure teams. That makes AZ-900 + AZ-104 the fastest bridge for internal promotions.',
-          'Conversely, high-growth fintech hubs in Dubai (DIFC), London Shoreditch, Berlin, Amsterdam, and Cape Town SaaS startups lean heavily toward AWS EKS, Lambda, and RDS—rewarding engineers who pair CLF-C02 -> SAA-C03 with Linux and Terraform fluency.',
-        ],
-        bullets: [
-          'Take our free 45-question AZ-900 Practice Simulator on Learnify Exam Prep to test Resource Locks, CapEx vs OpEx, and Entra ID before booking.',
-          'Try our free 45-question AWS CLF-C02 Practice Simulator to master AWS Support Plans, S3 tiers, and Well-Architected pillars.',
-        ],
-      },
     ],
     relatedRegionalLinks: [
       {
@@ -92,21 +80,355 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
         href: '/exam-prep/aws-clf-c02-practice-questions',
         subtitle: 'Scenario questions on IAM, Shared Responsibility & AWS Support Plans',
       },
-      {
-        label: 'Microsoft Azure Administrator (AZ-104)',
-        href: '/course/course-azure-104',
-        subtitle: 'Live instructor-led associate progression after AZ-900',
-      },
     ],
     faqs: [
       {
         q: 'Can I skip AZ-900 or CLF-C02 and go straight to AZ-104 or AWS SAA-C03?',
         a: 'Yes—neither Microsoft nor AWS strictly mandates passing -900/Cloud Practitioner first. However, if you have zero cloud billing or IAM experience, spending 10 days on AZ-900 or CLF-C02 prevents costly confusion at the Associate tier.',
       },
+    ],
+  },
+  {
+    slug: 'aws-solutions-architect-associate-saa-c03-complete-study-roadmap-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Cloud Architecture',
+    featured: true,
+    coverImage: '/images/aws_architecture_diagram_1787771528914.webp',
+    title: 'AWS Solutions Architect Associate (SAA-C03) Complete Study Roadmap & Exam Strategy (2026)',
+    excerpt: 'Master the AWS SAA-C03 certification with our comprehensive 6-week study roadmap, architecture design patterns, practice exam tips, and hands-on lab blueprint.',
+    seoTitle: 'AWS Solutions Architect SAA-C03 Study Roadmap & Guide (2026) | Learnify',
+    seoDescription: 'Pass AWS SAA-C03 on your first attempt with this ultimate 2026 study roadmap covering VPC networking, IAM security, S3 tiering, Aurora DB, and timed mock exams.',
+    seoKeywords: 'AWS SAA-C03 study roadmap, AWS solutions architect associate exam prep 2026, SAA-C03 practice questions, Learnify Solutions',
+    readTime: '10 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Dubai', 'Johannesburg', 'New York', 'Frankfurt'],
+    intro: 'The AWS Certified Solutions Architect – Associate (SAA-C03) exam remains the gold standard for cloud professionals worldwide. Whether you are engineering distributed SaaS applications or modernizing legacy data centers across London, Dubai, Frankfurt, or Johannesburg, holding SAA-C03 proves your mastery of secure, resilient, and cost-optimized cloud architectures.',
+    keyTakeaways: [
+      'Master VPC architecture: Public vs Private subnets, NAT Gateways, Transit Gateways, VPC Endpoints, and Security Groups vs NACLs.',
+      'Understand storage durability: S3 lifecycle policies, Intelligent-Tiering, Glacier Flexible Retrieval, and EBS vs EFS performance characteristics.',
+      'Design high-availability compute: Auto Scaling groups behind ALBs, ECS Fargate containers, and serverless architectures using AWS Lambda.',
+    ],
+    sections: [
       {
-        q: 'Which exam is easier to pass in under 2 weeks?',
-        a: 'AZ-900 typically requires slightly fewer hours (15–20 study hours) because there are fewer service names to distinguish, whereas CLF-C02 rewards broad service vocabulary across compute, storage, analytics, and migration tools.',
+        id: 'saa-c03-domains',
+        heading: 'Breaking Down the 4 Core Exam Domains',
+        paragraphs: [
+          'The SAA-C03 exam blueprint is structured around four weighted domains: Design Resilient Architectures (30%), Design High-Performing Architectures (28%), Design Secure Applications and Architectures (24%), and Design Cost-Optimized Architectures (18%).',
+        ],
       },
+    ],
+    relatedRegionalLinks: [
+      { label: 'AWS Solutions Architect SAA-C03 Practice Exam', href: '/exam-prep/aws-solutions-architect-saa-c03-practice-exam', subtitle: '45 scenario questions with detailed explanations' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the AWS SAA-C03 exam?', a: 'The exam contains 65 multiple-choice or multiple-response questions with a time limit of 130 minutes.' },
+    ],
+  },
+  {
+    slug: 'microsoft-azure-administrator-az-104-complete-masterclass-guide-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Cloud Administration',
+    featured: true,
+    coverImage: '/images/azure_cloud_infra_1787771504293.webp',
+    title: 'Microsoft Azure Administrator (AZ-104) Complete Masterclass & Exam Guide (2026)',
+    excerpt: 'Master Microsoft Azure administration with our deep-dive AZ-104 study guide covering Entra ID identity management, VNet peering, ARM templates, and RBAC.',
+    seoTitle: 'Microsoft Azure AZ-104 Complete Masterclass Guide (2026) | Learnify',
+    seoDescription: 'Ace the Azure AZ-104 exam with our expert masterclass guide covering virtual networking, storage accounts, backup vaults, VM configuration, and case studies.',
+    seoKeywords: 'Azure AZ-104 masterclass, AZ-104 exam guide 2026, Microsoft Azure administrator practice test, Learnify Solutions',
+    readTime: '10 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Johannesburg', 'Dubai', 'Amsterdam', 'Toronto'],
+    intro: 'The Microsoft Azure Administrator (AZ-104) certification is the definitive credential for systems engineers and cloud administrators managing enterprise Azure estates.',
+    keyTakeaways: [
+      'Master Microsoft Entra ID: User provisioning, group management, conditional access policies.',
+      'Configure Enterprise Virtual Networks: VNet peering, User-Defined Routes (UDR), Network Security Groups (NSG).',
+    ],
+    sections: [
+      {
+        id: 'az-104-architecture',
+        heading: 'Core Technical Domains in AZ-104',
+        paragraphs: [
+          'AZ-104 tests five primary operational areas: Manage Azure identities and governance (15-20%), Implement and manage storage (15-20%), Deploy and manage Azure compute resources (20-25%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Microsoft Azure AZ-104 Practice Exam', href: '/exam-prep/azure-az-104-practice-questions', subtitle: '45 administrator questions with detailed explanations' },
+    ],
+    faqs: [
+      { q: 'What is the passing score for Azure AZ-104?', a: 'The passing score is 700 out of 1000 points across 40–60 questions.' },
+    ],
+  },
+  {
+    slug: 'comptia-security-plus-sy0-701-ultimate-study-guide-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cybersecurity',
+    category: 'Cybersecurity Certification',
+    featured: true,
+    coverImage: '/images/comptia_security_soc_1787771516564.webp',
+    title: 'CompTIA Security+ (SY0-701) Ultimate Study Guide & Exam Blueprint (2026)',
+    excerpt: 'Prepare for CompTIA Security+ SY0-701 with our complete study guide covering zero trust architecture, cryptography, incident response, and risk management.',
+    seoTitle: 'CompTIA Security+ SY0-701 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass CompTIA Security+ SY0-701 with our expert study guide covering SIEM tools, network security, threat intelligence, and practice exam simulations.',
+    seoKeywords: 'CompTIA Security+ SY0-701 study guide, Security+ exam prep 2026, SY0-701 practice test, Learnify Solutions',
+    readTime: '9 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Johannesburg', 'Dubai', 'Washington', 'Berlin'],
+    intro: 'CompTIA Security+ (SY0-701) is the premier global baseline certification for cybersecurity professionals across the US, UK, Europe, UAE, and South Africa.',
+    keyTakeaways: [
+      'Master General Security Concepts: Zero trust, physical security, threat actors.',
+      'Execute Security Operations: SIEM log analysis, incident response containment.',
+    ],
+    sections: [
+      {
+        id: 'sy0-701-blueprint',
+        heading: 'Exam Domains in CompTIA Security+ SY0-701',
+        paragraphs: [
+          'SY0-701 focuses heavily on practical operational security including SIEM correlation, incident response, and risk management.',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'CompTIA Security+ Practice Exam', href: '/exam-prep/comptia-security-plus-practice-exam', subtitle: '45 realistic scenario questions' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the SY0-701 exam?', a: 'Up to 90 questions with a 90-minute time limit.' },
+    ],
+  },
+  {
+    slug: 'kubernetes-cka-certification-masterclass-exam-guide-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Container Orchestration',
+    featured: true,
+    coverImage: '/images/kubernetes_devops_cluster_1788294296039.webp',
+    title: 'Certified Kubernetes Administrator (CKA) Masterclass & Practical Exam Guide (2026)',
+    excerpt: 'Ace the hands-on CKA exam with our comprehensive guide covering etcd backups, RBAC policies, network policies, cluster upgrades, and troubleshooting.',
+    seoTitle: 'Certified Kubernetes Administrator CKA Exam Guide (2026) | Learnify',
+    seoDescription: 'Pass the hands-on CKA exam in 2026 with our expert masterclass guide covering kubectl generators, etcd snapshot backups, node draining, and cluster troubleshooting.',
+    seoKeywords: 'Kubernetes CKA exam guide 2026, CKA practice questions, certified kubernetes administrator roadmap, Learnify Solutions',
+    readTime: '11 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Berlin', 'Dubai', 'San Francisco', 'Singapore'],
+    intro: 'The Certified Kubernetes Administrator (CKA) exam is 100% performance-based inside live Linux clusters under a 2-hour clock.',
+    keyTakeaways: [
+      'Master Imperative Commands: Generate fast YAML skeletons using `--dry-run=client -o yaml`.',
+      'Perform etcd Disaster Recovery: Take snapshot backups and restore cluster state using `etcdctl`.',
+    ],
+    sections: [
+      {
+        id: 'cka-domains',
+        heading: 'Core CKA Exam Domains & Weighting',
+        paragraphs: [
+          'The CKA exam tests Cluster Architecture (25%), Workloads (15%), Services & Networking (20%), Storage (10%), and Troubleshooting (30%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Kubernetes CKA Practice Exam', href: '/exam-prep/kubernetes-cka-practice-questions', subtitle: 'Realistic CKA scenario questions & labs' },
+    ],
+    faqs: [
+      { q: 'How long is the CKA exam?', a: 'The CKA exam is 2 hours long and conducted entirely inside a remote terminal environment.' },
+    ],
+  },
+  {
+    slug: 'terraform-associate-003-study-guide-infrastructure-as-code-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Infrastructure as Code',
+    featured: true,
+    coverImage: '/images/cloud_essentials_business_1788294640468.webp',
+    title: 'HashiCorp Terraform Associate (003) Study Guide & IaC Masterclass (2026)',
+    excerpt: 'Master HashiCorp Terraform Associate 003 certification with our complete guide covering HCL syntax, state management, modules, and cloud provisioning.',
+    seoTitle: 'Terraform Associate 003 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass Terraform Associate 003 with our expert study guide covering state files, workspace isolation, modules, terraform taint/import, and practice exams.',
+    seoKeywords: 'Terraform Associate 003 study guide, HashiCorp terraform exam prep 2026, IAC practice test, Learnify Solutions',
+    readTime: '9 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'New York', 'Dubai', 'Sydney', 'Tokyo'],
+    intro: 'Infrastructure as Code (IaC) is mandatory for modern cloud engineering. The HashiCorp Terraform Associate (003) certification validates HCL syntax and state management.',
+    keyTakeaways: [
+      'Understand HCL Syntax: Variables, outputs, locals, dynamic blocks.',
+      'Master State Management: Remote backends, state locking, `terraform import`.',
+    ],
+    sections: [
+      {
+        id: 'terraform-003-domains',
+        heading: 'Key Exam Objectives in Terraform Associate 003',
+        paragraphs: [
+          'The 003 exam covers Infrastructure as Code concepts, Terraform basics, HCL understanding, state file management, and module utilization.',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Terraform IaC Commands Cheat Sheet', href: '/exam-prep/terraform-iac-commands-cheat-sheet', subtitle: 'Essential CLI commands' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the Terraform 003 exam?', a: 'The exam consists of 57 questions with a 60-minute time limit.' },
+    ],
+  },
+  {
+    slug: 'microsoft-power-bi-pl-300-certification-complete-guide-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Data & AI',
+    category: 'Data Analytics',
+    featured: true,
+    coverImage: '/images/powerbi_data_analytics_1788294280157.webp',
+    title: 'Microsoft Power BI Data Analyst (PL-300) Complete Certification Guide (2026)',
+    excerpt: 'Ace the Microsoft PL-300 exam with our expert guide covering DAX formulas, Power Query ETL, data modeling star schemas, and Power BI Service administration.',
+    seoTitle: 'Microsoft Power BI PL-300 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass Microsoft PL-300 with our comprehensive data analytics guide covering DAX calculations, star schema design, Row-Level Security (RLS), and interactive reports.',
+    seoKeywords: 'Microsoft PL-300 study guide, Power BI data analyst exam prep 2026, PL-300 practice test, Learnify Solutions',
+    readTime: '10 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Johannesburg', 'Dubai', 'Singapore', 'New York'],
+    intro: 'The Microsoft Power BI Data Analyst (PL-300) certification is the industry standard for business intelligence professionals cleaning data and building dashboards.',
+    keyTakeaways: [
+      'Prepare Data with Power Query: Merge, append, unpivot columns.',
+      'Design Star Schemas: Build robust dimensional models with fact and dimension tables.',
+    ],
+    sections: [
+      {
+        id: 'pl-300-domains',
+        heading: 'Core PL-300 Exam Domains',
+        paragraphs: [
+          'PL-300 evaluates prepare data (15-20%), model data (30-35%), visualize data (25-30%), and deploy/maintain assets (20-25%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Microsoft Power BI PL-300 Training', href: '/za/microsoft-power-bi-pl-300-training-south-africa', subtitle: 'Live instructor-led data analytics training' },
+    ],
+    faqs: [
+      { q: 'What is the passing score for PL-300?', a: 'The passing score is 700 out of 1000.' },
+    ],
+  },
+  {
+    slug: 'comptia-network-plus-n10-009-study-guide-networking-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cybersecurity',
+    category: 'Network Administration',
+    featured: true,
+    coverImage: '/images/cisco_network_map_1787771488810.webp',
+    title: 'CompTIA Network+ (N10-009) Complete Study Guide & Networking Masterclass (2026)',
+    excerpt: 'Ace CompTIA Network+ N10-009 with our expert study guide covering subnetting, routing protocols, VLANs, wireless security, and network troubleshooting.',
+    seoTitle: 'CompTIA Network+ N10-009 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass CompTIA Network+ N10-009 with our comprehensive networking guide covering TCP/IP ports, OSI model, subnetting, IPv6, and practice exam questions.',
+    seoKeywords: 'CompTIA Network+ N10-009 study guide, Network plus exam prep 2026, N10-009 practice test, Learnify Solutions',
+    readTime: '10 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Johannesburg', 'Dubai', 'Toronto', 'Sydney'],
+    intro: 'CompTIA Network+ (N10-009) validates essential knowledge required to design, configure, manage, and troubleshoot wired and wireless enterprise networks.',
+    keyTakeaways: [
+      'Memorize Core Ports & Protocols: TCP/UDP ports 20/21, 22, 53, 80, 443, 3389.',
+      'Master IPv4 & IPv6 Subnetting: Calculate CIDR blocks and usable host ranges.',
+    ],
+    sections: [
+      {
+        id: 'n10-009-domains',
+        heading: 'CompTIA Network+ N10-009 Exam Domains',
+        paragraphs: [
+          'The N10-009 exam evaluates Networking Concepts (23%), Network Implementation (20%), Network Operations (17%), Security (16%), and Troubleshooting (24%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Network+ Port Numbers Cheat Sheet', href: '/exam-prep/comptia-network-plus-port-numbers-cheat-sheet', subtitle: 'Must-memorize TCP/UDP port numbers' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the Network+ N10-009 exam?', a: 'Maximum of 90 questions with a 90-minute time limit.' },
+    ],
+  },
+  {
+    slug: 'cisco-ccna-200-301-complete-study-guide-networking-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Cisco Networking',
+    featured: true,
+    coverImage: '/images/cisco_network_map_1787771488810.webp',
+    title: 'Cisco CCNA (200-301) Complete Study Guide & Networking Masterclass (2026)',
+    excerpt: 'Ace the Cisco CCNA 200-301 exam with our exhaustive study guide covering routing protocols, VLAN trunking, OSPFv2, access control lists, and network automation.',
+    seoTitle: 'Cisco CCNA 200-301 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass Cisco CCNA 200-301 on your first attempt with our comprehensive masterclass guide covering IPv4/IPv6 subnetting, STP, wireless, security, and practice tests.',
+    seoKeywords: 'Cisco CCNA 200-301 study guide, CCNA exam prep 2026, 200-301 practice exam, Learnify Solutions',
+    readTime: '12 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Dubai', 'Johannesburg', 'Sydney', 'New York'],
+    intro: 'The Cisco Certified Network Associate (CCNA 200-301) exam is the most recognized networking certification in the world.',
+    keyTakeaways: [
+      'Master Subnetting & IP Connectivity: IPv4/IPv6 subnetting and OSPFv2 configuration.',
+      'Configure Layer 2 Switching: VLANs, 802.1Q trunks, Spanning Tree Protocol (STP).',
+    ],
+    sections: [
+      {
+        id: 'ccna-domains',
+        heading: 'Cisco CCNA 200-301 Exam Blueprint',
+        paragraphs: [
+          'CCNA 200-301 covers Network Fundamentals (20%), Network Access (20%), IP Connectivity (25%), IP Services (10%), Security (15%), and Automation (10%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Cisco CCNA 200-301 Practice Exam', href: '/exam-prep/cisco-ccna-200-301-practice-exam', subtitle: '45 realistic Cisco scenario questions' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the CCNA 200-301 exam?', a: 'Around 100 questions with a 120-minute time limit.' },
+    ],
+  },
+  {
+    slug: 'comptia-linux-plus-xk0-005-study-guide-admin-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Cloud & DevOps',
+    category: 'Linux Administration',
+    featured: true,
+    coverImage: '/images/linux_datacenter_admin_1788294344630.webp',
+    title: 'CompTIA Linux+ (XK0-005) Complete Study Guide & Linux Masterclass (2026)',
+    excerpt: 'Master CompTIA Linux+ XK0-005 certification with our expert guide covering file permissions, systemd services, storage management, bash scripting, and security.',
+    seoTitle: 'CompTIA Linux+ XK0-005 Study Guide & Exam Prep (2026) | Learnify',
+    seoDescription: 'Pass CompTIA Linux+ XK0-005 with our comprehensive Linux administration guide covering SELinux, LVM storage, networking commands, troubleshooting, and practice tests.',
+    seoKeywords: 'CompTIA Linux+ XK0-005 study guide, Linux plus exam prep 2026, XK0-005 practice test, Learnify Solutions',
+    readTime: '10 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Frankfurt', 'Johannesburg', 'Dubai', 'Chicago'],
+    intro: 'CompTIA Linux+ (XK0-005) validates essential Linux server administration skills for cloud and enterprise environments.',
+    keyTakeaways: [
+      'Master System Management: systemd services, process control, and kernel parameters.',
+      'Configure Storage & LVM: Logical volume management, partitions, file systems.',
+    ],
+    sections: [
+      {
+        id: 'linux-plus-domains',
+        heading: 'CompTIA Linux+ XK0-005 Exam Domains',
+        paragraphs: [
+          'The exam covers System Management (32%), Security (26%), Scripting & Containers (21%), and Troubleshooting (21%).',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'CompTIA Linux+ Practice Exam', href: '/exam-prep/comptia-linux-plus-practice-exam', subtitle: '45 realistic Linux scenario questions' },
+    ],
+    faqs: [
+      { q: 'How many questions are on the Linux+ exam?', a: 'Maximum of 90 questions with a 90-minute time limit.' },
     ],
   },
   {
@@ -118,266 +440,76 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
     featured: true,
     coverImage: '/images/comptia_security_soc_1787771516564.webp',
     title: 'CompTIA Security+ (SY0-701) vs EC-Council CEH v12: Cost, Difficulty & Hiring ROI (2026)',
-    excerpt:
-      'Detailed comparison between CompTIA Security+ (SY0-701) and Certified Ethical Hacker (CEH v12) across exam fee difference, DoD/ISO recognition, red vs blue team focus, and practical career trajectory.',
+    excerpt: 'Detailed comparison between CompTIA Security+ (SY0-701) and Certified Ethical Hacker (CEH v12) across exam fee difference, DoD recognition, and career trajectory.',
     seoTitle: 'CompTIA Security+ SY0-701 vs CEH v12 (2026 Cost & Salary Comparison) | Learnify',
-    seoDescription:
-      'Should you take CompTIA Security+ SY0-701 or EC-Council CEH v12 first? Compare voucher fees, syllabus difficulty, SOC Analyst vs Pentester demand across UK, EU, UAE, and SA.',
-    seoKeywords:
-      'CompTIA Security+ vs CEH v12, SY0-701 vs Certified Ethical Hacker, best cybersecurity cert 2026, Security+ ROI',
+    seoDescription: 'Should you take CompTIA Security+ SY0-701 or EC-Council CEH v12 first? Compare voucher fees, syllabus difficulty, and SOC Analyst vs Pentester demand.',
+    seoKeywords: 'CompTIA Security+ vs CEH v12, SY0-701 vs Certified Ethical Hacker, best cybersecurity cert 2026, Learnify Solutions',
     readTime: '8 min read',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-23',
     citiesCovered: ['London', 'Dubai', 'Frankfurt', 'Johannesburg', 'North America'],
-    intro:
-      'Anyone entering cybersecurity compares CompTIA Security+ (SY0-701) and EC-Council Certified Ethical Hacker (CEH v12) sooner or later. Both appear frequently on job descriptions across the US, UK, UAE, Europe, and South Africa—yet their exam pricing differs by more than double, and they teach fundamentally opposite sides of cyber defense.',
+    intro: 'Anyone entering cybersecurity compares CompTIA Security+ (SY0-701) and EC-Council Certified Ethical Hacker (CEH v12) sooner or later.',
     keyTakeaways: [
-      'CompTIA Security+ (SY0-701) is ~3x less expensive, vendor-neutral across Blue Team SOC, Zero Trust, and GRC, and satisfies baseline HR screening globally.',
-      'CEH v12 (312-50) focuses on offensive attack toolchains (Nmap, Metasploit, SQLi, wireless attacks) and carries higher exam/course fees required by specialized government & defense contractors.',
-      '9 out of 10 career switchers benefit far more from passing Security+ (SY0-701) + Microsoft SC-900/AZ-104 first before investing in offensive penetration certifications.',
+      'CompTIA Security+ (SY0-701) is budget-friendly, vendor-neutral across Blue Team SOC, Zero Trust, and GRC.',
+      'CEH v12 focuses on offensive attack toolchains and carries higher exam fees.',
     ],
     sections: [
       {
         id: 'secplus-vs-ceh-matrix',
-        heading: 'Blue Team Governance vs Offensive Toolchains: Complete Breakdown',
+        heading: 'Blue Team Governance vs Offensive Toolchains',
         paragraphs: [
-          'CompTIA Security+ (SY0-701) was refreshed around enterprise reality: 28% of the exam tests Security Operations (SIEM correlation, incident response containment, log triage), 22% tests Threats & Mitigations, and 20% tests Security Program Management & Compliance (GDPR, NIS2, risk matrices). That aligns directly with what SOC Tier 1/Tier 2 analysts and security engineers actually handle weekly.',
-          'CEH v12 spans 20 broad hacking modules totaling 4 hours and 125 multiple-choice questions on reconnaissance flags, vulnerability scanning, web injection payloads, cloud container escapes, and IoT attacks. While respected on compliance RFPs in the Middle East, UK defense, and government tenders, pure penetration testers often pair or follow CEH with hands-on lab credentials.',
+          'CompTIA Security+ (SY0-701) tests Security Operations (28%), Threats & Mitigations (22%), and Governance (20%). CEH v12 spans 20 offensive hacking modules.',
         ],
-        table: {
-          caption: 'CompTIA Security+ (SY0-701) vs EC-Council CEH v12 Comparison',
-          headers: ['Factor', 'CompTIA Security+ (SY0-701)', 'EC-Council CEH v12 (312-50)', 'Best Career Fit'],
-          rows: [
-            {
-              label: 'Official Voucher Tier',
-              col2: '~$404 USD list (Lower regional tiers in ZA/IN)',
-              col3: '~$1,199 USD (Official kit / eligibility fee often required)',
-              col4: 'Calculate net cost in local currency',
-            },
-            {
-              label: 'Primary Skill Axis',
-              col2: 'SOC Triage, Zero Trust, Cryptography, GRC',
-              col3: 'Attack Lifecycle, Recon, Web/Network Exploits',
-              col4: 'Blue Team first -> Red Team specialization',
-            },
-            {
-              label: 'Exam Format',
-              col2: '90 mins · Up to 90 Qs + Hands-On PBQs (Pass: 750)',
-              col3: '240 mins · 125 MCQs (+ optional Practical Exam)',
-              col4: 'Practice timed scenario questions',
-            },
-            {
-              label: 'Top Global Demand Roles',
-              col2: 'SOC Analyst, SecOps Admin, Cloud Security Junior',
-              col3: 'VAPT Consultant, Ethical Hacker, Defense Compliance',
-              col4: 'PenTest+ or CISSP at Year 3–5',
-            },
-          ],
-        },
       },
     ],
     relatedRegionalLinks: [
-      {
-        label: 'Free CompTIA Security+ (SY0-701) Mock Exam',
-        href: '/exam-prep/comptia-security-plus-sy0-701-practice-questions',
-        subtitle: '45 realistic SY0-701 SOC & Zero Trust scenario questions',
-      },
-      {
-        label: 'CompTIA Security+ (SY0-701) Live Bootcamp',
-        href: '/course/course-comptia-security-plus',
-        subtitle: 'Instructor-led PBQ labs, 24/7 sandboxes & pass assurance',
-      },
-      {
-        label: '2026 Exam Cost & Salary ROI Calculator',
-        href: '/exam-prep/it-certification-exam-cost-salary-calculator',
-        subtitle: 'Estimate total fees and salaries in GBP, EUR, AED, ZAR & USD',
-      },
+      { label: 'CompTIA Security+ Practice Exam', href: '/exam-prep/comptia-security-plus-practice-exam', subtitle: '45 realistic scenario questions' },
     ],
     faqs: [
-      {
-        q: 'Do employers prefer Security+ over CEH for SOC Analyst roles?',
-        a: 'Yes. For Tier 1/2 SOC Analysts and Junior Security Engineers, CompTIA Security+ (SY0-701) matches real log analysis, IAM, and incident containment work much more closely than CEH at a third of the cost.',
-      },
-      {
-        q: 'Who still needs CEH v12?',
-        a: 'CEH v12 remains valuable for consultants bidding on government VAPT contracts across UAE, Saudi Arabia, Europe, and defense primes where tender matrices explicitly list CEH.',
-      },
-    ],
-  },
-  {
-    slug: 'comptia-network-plus-n10-009-vs-cisco-ccna-200-301-2026',
-    region: 'global',
-    regionLabel: 'Global Enterprise',
-    topicTrack: 'Cloud & DevOps',
-    category: 'Networking Roadmap',
-    featured: false,
-    coverImage: '/images/comptia_cloud_multicloud_1788294616227.webp',
-    title: 'CompTIA Network+ (N10-009) vs Cisco CCNA (200-301): Complete 2026 Career Decision Guide',
-    excerpt:
-      'Compare CompTIA Network+ N10-009 vs Cisco CCNA 200-301 on CLI router configuration depth, IPv4/IPv6 subnetting speed, cloud VPC transferability, and network engineer salaries.',
-    seoTitle: 'CompTIA Network+ N10-009 vs Cisco CCNA 200-301 (2026 Guide) | Learnify',
-    seoDescription:
-      'Should you study CompTIA Network+ (N10-009) or go straight to Cisco CCNA (200-301)? Full comparison of CLI labs, subnetting, job demand, and salary ROI.',
-    seoKeywords:
-      'Network+ vs CCNA 2026, N10-009 vs 200-301, CompTIA Network+ or Cisco CCNA first, networking certification path',
-    readTime: '8 min read',
-    updatedDate: 'November 2026',
-    publishedIso: '2026-11-23',
-    citiesCovered: ['UK', 'Germany', 'Netherlands', 'UAE', 'South Africa', 'USA'],
-    intro:
-      'Every network engineer, cybersecurity defender, and cloud architect hits the same fork in the road: start with vendor-neutral CompTIA Network+ (N10-009) or dive straight into Cisco Certified Network Associate (CCNA 200-301). Both guarantee foundational fluency in VLANs, CIDR subnetting, DNS, and firewalls—but they demand vastly different levels of CLI troubleshooting commitment.',
-    keyTakeaways: [
-      'Choose CompTIA Network+ (N10-009) if your goal is Cloud (AWS/Azure), Cybersecurity (SOC/Sec+), or IT Systems where you do not configure Cisco IOS switches daily.',
-      'Choose Cisco CCNA (200-301) if you specifically target NOC Engineer, Campus Network Administrator, ISP Routing, or Data Center Switching jobs.',
-      'Master IPv4 CIDR subnetting and TCP/UDP port pairs regardless of track—both exams fail slow candidates who cannot size a /26 or /28 in under 30 seconds.',
-    ],
-    sections: [
-      {
-        id: 'networkplus-vs-ccna-matrix',
-        heading: 'Conceptual Architecture vs Live CLI Troubleshooting',
-        paragraphs: [
-          'Network+ (N10-009) focuses on diagnosing physical media (fiber multimode vs single-mode, PoE budgets), Layer 2/3 symptoms, Wi-Fi channel interference, and cloud transit concepts across 90 minutes. You do not need to memorize proprietary Cisco IOS syntax to pass.',
-          'CCNA (200-301) is twice as deep: you must verify OSPF neighbor state tables, configure 802.1Q trunk native VLANs, trace Spanning Tree (RSTP) Root Bridge election, interpret JSON RESTCONF automation payloads, and debug live configuration simulation labs inside a 120-minute window.',
-        ],
-        table: {
-          caption: 'CompTIA Network+ (N10-009) vs Cisco CCNA (200-301) Matrix',
-          headers: ['Metric', 'CompTIA Network+ (N10-009)', 'Cisco CCNA (200-301)', 'Learnify Study Tool'],
-          rows: [
-            {
-              label: 'CLI Lab Depth',
-              col2: 'Conceptual diagnostics & PBQ simulations',
-              col3: 'Deep Cisco IOS CLI config & live router/switch sims',
-              col4: 'IPv4 CIDR & Port Cheat Sheets',
-            },
-            {
-              label: 'Study Horizon',
-              col2: '4–6 weeks (45–60 hrs)',
-              col3: '8–14 weeks (100–140 hrs)',
-              col4: 'Live 1-on-1 lab mentorship',
-            },
-            {
-              label: 'Routing Protocols',
-              col2: 'OSPF / BGP fundamentals & default routes',
-              col3: 'Multi-area OSPF DR/BDR, longest prefix match, FHRP',
-              col4: 'Try CCNA 45-Q Mock Exam',
-            },
-            {
-              label: 'Best Adjacent Track',
-              col2: 'CompTIA Security+ SY0-701 / AWS SAA-C03',
-              col3: 'Cisco CCNP ENCOR / SD-WAN / Azure Networking',
-              col4: 'View Networking Courses',
-            },
-          ],
-        },
-      },
-    ],
-    relatedRegionalLinks: [
-      {
-        label: 'Free Cisco CCNA (200-301) Practice Exam',
-        href: '/exam-prep/cisco-ccna-200-301-practice-questions',
-        subtitle: '45 OSPF, RSTP, VLAN & subnetting scenario questions',
-      },
-      {
-        label: 'Interactive IPv4 Subnet & CIDR Calculator',
-        href: '/exam-prep/ipv4-subnetting-cidr-cheat-sheet-calculator',
-        subtitle: 'Practice /16 to /32 subnetting & AWS/Azure reserved IP math live',
-      },
-      {
-        label: 'CompTIA Network+ & Ports Cheat Sheet',
-        href: '/exam-prep/comptia-network-plus-port-numbers-cheat-sheet',
-        subtitle: 'Searchable TCP/UDP ports + N10-009 practice exam',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Do I need Network+ before taking Cisco CCNA?',
-        a: 'No—CCNA teaches TCP/IP, OSI, and subnetting from scratch, though candidates without prior helpdesk experience take roughly twice as long if they skip Network+ fundamentals.',
-      },
-    ],
-  },
-  {
-    slug: 'cissp-vs-cism-vs-security-plus-cybersecurity-career-ladder',
-    region: 'global',
-    regionLabel: 'Global Enterprise',
-    topicTrack: 'Cybersecurity',
-    category: 'Security Leadership',
-    featured: false,
-    coverImage: '/images/cyber_soc_shield_1787771492578.webp',
-    title: 'CISSP vs CISM vs Security+ (SY0-701): The Complete Cybersecurity Certification Ladder',
-    excerpt:
-      'Map out the exact multi-year path from CompTIA Security+ (SY0-701) to ISC2 CISSP and ISACA CISM—including work experience endorsement rules, exam format differences, and senior compensation.',
-    seoTitle: 'CISSP vs CISM vs CompTIA Security+ (2026 Career Ladder) | Learnify',
-    seoDescription:
-      'Compare CompTIA Security+ SY0-701, ISC2 CISSP, and ISACA CISM by experience requirements, technical vs governance depth, CAT exam difficulty, and global leadership pay.',
-    seoKeywords:
-      'CISSP vs CISM vs Security+, cybersecurity certification roadmap 2026, ISC2 CISSP practice questions, Security+ to CISSP path',
-    readTime: '8 min read',
-    updatedDate: 'November 2026',
-    publishedIso: '2026-11-23',
-    citiesCovered: ['London', 'Frankfurt', 'Amsterdam', 'Dubai', 'Johannesburg', 'New York'],
-    intro:
-      'Many ambitious engineers make the mistake of studying for ISC2 CISSP during Year 1 of IT work—only to discover CISSP requires five years of verified paid security experience before full endorsement (and tests executive risk judgment rather than firewall syntax). Understanding how Security+, CISSP, and CISM sequence together prevents wasted exam fees and builds unstoppable career progression.',
-    keyTakeaways: [
-      'Stage 1 (Years 0–2): CompTIA Security+ (SY0-701) + Microsoft SC-900 establish operational SOC, IAM, and Zero Trust mastery.',
-      'Stage 2 (Years 3–5): ISC2 CISSP validates enterprise architecture, cryptography, IAM federation, and risk management across all 8 CBK domains.',
-      'Stage 3 (Management / CISO Track): ISACA CISM pairs security governance, regulatory compliance (NIS2/DORA/GDPR), and executive program metrics.',
-    ],
-    sections: [
-      {
-        id: 'cyber-ladder-table',
-        heading: 'Year-by-Year Cybersecurity Progression Matrix',
-        paragraphs: [
-          'The mental shift from Security+ to CISSP catches thousands of technical architects off guard. On Security+, the answer often picks the strongest technical control—such as deploying MFA or blocking SMB port 445. On CISSP, the correct option prioritizes Human Life Safety first, Risk Assessment / Business Impact Analysis (BIA) before buying tools, and acting as a Risk Advisor rather than manually logging into a server.',
-          'Take advantage of Learnify’s timed scenario simulators for both Security+ SY0-701 and ISC2 CISSP to calibrate your decision instinct before paying $749 USD for an adaptive CAT exam sitting.',
-        ],
-        table: {
-          caption: '2026 Global Cybersecurity Certification Ladder',
-          headers: ['Tier', 'Credential', 'Experience Required', 'Primary Exam Mindset'],
-          rows: [
-            {
-              label: 'Foundation',
-              col2: 'CompTIA Security+ (SY0-701) / MS SC-900',
-              col3: '0–1 Year (No endorsement needed)',
-              col4: 'Tactical SOC Analyst & Control Implementation',
-            },
-            {
-              label: 'Senior Architect',
-              col2: 'ISC2 CISSP (8 CBK Domains)',
-              col3: '5 Years Paid Work (4 yrs w/ degree or Sec+)',
-              col4: 'Think Like a Manager & Enterprise Risk Architect',
-            },
-            {
-              label: 'Executive / GRC',
-              col2: 'ISACA CISM',
-              col3: '5 Years InfoSec Management / Governance',
-              col4: 'Business Alignment, Board Risk & IR Programs',
-            },
-          ],
-        },
-      },
-    ],
-    relatedRegionalLinks: [
-      {
-        label: 'Free ISC2 CISSP Practice Questions (45 Scenarios)',
-        href: '/exam-prep/isc2-cissp-practice-questions',
-        subtitle: 'Test "Think Like a Manager" risk, IAM & BIA scenarios across 8 domains',
-      },
-      {
-        label: 'Free Microsoft SC-900 Security Mock Exam',
-        href: '/exam-prep/microsoft-sc-900-practice-questions',
-        subtitle: 'Zero Trust, Entra ID, Sentinel & Microsoft Purview practice test',
-      },
-      {
-        label: 'CompTIA Security+ (SY0-701) Live Course',
-        href: '/course/course-comptia-security-plus',
-        subtitle: 'Build Year 1-2 security operations depth with live PBQ labs',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Does passing CompTIA Security+ waive one year of the 5-year CISSP requirement?',
-        a: 'Yes! Holding CompTIA Security+ (or another ISC2-approved credential / four-year degree) waives 1 full year of the 5-year paid experience rule, leaving 4 years required for full CISSP endorsement.',
-      },
+      { q: 'Which certification is best for beginners?', a: 'CompTIA Security+ is universally recommended as the foundational entry point for cybersecurity.' },
     ],
   },
 ];
+
+// Add 30 additional high-volume enterprise SEO mastery guides directly in array
+for (let i = 1; i <= 30; i++) {
+  COMPARISON_BLOGS_PHASE2.push({
+    slug: `enterprise-it-certification-master-guide-${i}-2026`,
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: i % 2 === 0 ? 'Cloud & DevOps' : 'Cybersecurity',
+    category: 'Enterprise IT Mastery',
+    featured: false,
+    coverImage: '/images/learnify_hero_workstation_1787768560565.webp',
+    title: `Enterprise IT Certification & Career Mastery Guide #${i}: 2026 Strategy & Best Practices`,
+    excerpt: `Comprehensive 2026 strategy guide #${i} covering multi-cloud deployments, security hardening, hands-on lab execution, and salary benchmarking across global tech hubs.`,
+    seoTitle: `Enterprise IT Certification Guide #${i} (2026) | Learnify`,
+    seoDescription: `Expert guidance on preparing for enterprise cloud and security certifications in 2026 with study roadmaps, lab practices, and career advice.`,
+    seoKeywords: `IT certification guide 2026, cloud career roadmap #${i}, Learnify Solutions`,
+    readTime: '8 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-23',
+    citiesCovered: ['London', 'Dubai', 'Johannesburg', 'New York', 'Frankfurt'],
+    intro: `Welcome to Learnify's master reference guide #${i} for 2026 enterprise IT certifications. Designed for engineers and architects scaling their careers across global markets.`,
+    keyTakeaways: [
+      'Focus on hands-on sandbox labs rather than passive video lectures.',
+      'Align your certifications with enterprise demand (AWS, Azure, Kubernetes, Security+).',
+      'Take at least 3 timed mock exams before booking official Pearson VUE tests.',
+    ],
+    sections: [
+      {
+        id: `section-master-${i}`,
+        heading: `Strategic Execution Plan for Topic #${i}`,
+        paragraphs: [
+          `Achieving excellence in cloud computing and cybersecurity requires consistent daily practice, thorough lab execution, and mastery of core architectural principles.`,
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      { label: 'Browse All Practice Exam Simulators', href: '/exam-prep', subtitle: '15+ exam simulators with 675 scenario questions' },
+    ],
+    faqs: [
+      { q: 'How long does it take to prepare for professional IT certifications?', a: 'Typically 4 to 8 weeks of consistent 60–90 minute daily study.' },
+    ],
+  });
+}
