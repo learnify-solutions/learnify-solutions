@@ -538,7 +538,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {paginatedCourses.map((course) => {
+                {paginatedCourses.map((course, index) => {
                   const vendor = course.certificationVendor || 'Tech';
                   const level = course.skillLevel || course.level || 'Intermediate';
                   const format = course.format || 'Live Online';
@@ -554,8 +554,11 @@ export const CoursesView: React.FC<CoursesViewProps> = ({
                         <img
                           src={normalizeImageUrl(course.imageUrl, 'course')}
                           alt={course.imageAlt || course.title}
+                          width={640}
+                          height={360}
                           className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                          loading="eager"
+                          loading={index < 3 ? 'eager' : 'lazy'}
+                          fetchPriority={index === 0 ? 'high' : undefined}
                           decoding="async"
                           referrerPolicy="no-referrer"
                           onError={(e) => {

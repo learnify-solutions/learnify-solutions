@@ -14,7 +14,7 @@ import {
   Search,
 } from 'lucide-react';
 import { ExamPrepResource } from '../types';
-import { EXAM_PREP_RESOURCES } from '../data/examPrepData';
+import { EXAM_PREP_META } from '../data/examPrepMeta';
 import {
   ExamPrepLeadGate,
   ExamPrepUnlockedProfile,
@@ -48,6 +48,8 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
   onLeadSubmitted,
   onOpenAdvisorModal,
 }) => {
+  const [resolvedResource, setResolvedResource] = useState<ExamPrepResource | null>(resource);
+  const [isLoadingBank, setIsLoadingBank] = useState<boolean>(false);
   const [unlockedProfile, setUnlockedProfile] = useState<ExamPrepUnlockedProfile | null>(() =>
     getStoredExamPrepUnlock()
   );
@@ -69,26 +71,69 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
     setOpenQaIndices({ 0: true, 1: true, 2: true });
     setOpenFaqIndices({ 0: true });
     setUnlockedProfile(getStoredExamPrepUnlock());
-  }, [resource?.slug]);
+
+    if (!resource) {
+      setResolvedResource(null);
+      setIsLoadingBank(false);
+      return;
+    }
+
+    setResolvedResource(resource);
+    const needsQuestions =
+      resource.type === 'practice_test' && (!resource.questions || resource.questions.length === 0);
+    const needsCheatSheet =
+      (resource.type === 'cheat_sheet' || resource.type === 'subnet_calculator') &&
+      (!resource.cheatSheetSections || resource.cheatSheetSections.length === 0);
+    const needsInterview =
+      resource.type === 'interview_qa' &&
+      (!resource.interviewItems || resource.interviewItems.length === 0);
+
+    if (!needsQuestions && !needsCheatSheet && !needsInterview) {
+      setIsLoadingBank(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingBank(true);
+    import('../data/examPrepData')
+      .then((m) => {
+        if (cancelled) return;
+        const full = m.getExamPrepBySlug(resource.slug);
+        if (full) {
+          setResolvedResource(full);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoadingBank(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resource]);
+
+  const activeResource = resolvedResource || resource;
 
   const otherResources = useMemo(
-    () => EXAM_PREP_RESOURCES.filter((r) => r.slug !== resource?.slug).slice(0, 3),
-    [resource?.slug]
+    () => EXAM_PREP_META.filter((r) => r.slug !== activeResource?.slug).slice(0, 3),
+    [activeResource?.slug]
   );
 
   const interviewCategories = useMemo(() => {
-    const items = resource?.interviewItems || [];
+    const items = activeResource?.interviewItems || [];
     const cats = Array.from(new Set(items.map((i) => i.category)));
     return ['all', ...cats];
-  }, [resource?.interviewItems]);
+  }, [activeResource?.interviewItems]);
 
   const filteredInterviewItems = useMemo(() => {
-    const items = resource?.interviewItems || [];
+    const items = activeResource?.interviewItems || [];
     if (interviewCategory === 'all') return items;
     return items.filter((i) => i.category === interviewCategory);
-  }, [resource?.interviewItems, interviewCategory]);
+  }, [activeResource?.interviewItems, interviewCategory]);
 
-  if (!resource) {
+  if (!activeResource) {
     return (
       <div className="w-full bg-[#f8fafc] min-h-[60vh] flex items-center justify-center px-4">
         <div className="bg-white border border-slate-200 rounded-2xl p-8 max-w-md text-center space-y-4">
@@ -125,8 +170,8 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
     }
   };
 
-  const previewCount = resource.openPreviewCount || 2;
-  const allQuestions = resource.questions || [];
+  const previewCount = activeResource.openPreviewCount || 2;
+  const allQuestions = activeResource.questions || [];
   const previewQuestions = allQuestions.slice(0, previewCount);
   const lockedQuestionsCount = Math.max(0, allQuestions.length - previewCount);
 
@@ -161,34 +206,34 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
               Exam Prep
             </a>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-900 font-semibold">{resource.shortTitle}</span>
+            <span className="text-slate-900 font-semibold">{activeResource.shortTitle}</span>
           </nav>
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
               <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                <span className="text-[#ea6d24] font-bold">{resource.topicTrack}</span>
+                <span className="text-[#ea6d24] font-bold">{activeResource.topicTrack}</span>
                 <span aria-hidden="true">·</span>
-                <span className="font-mono font-bold text-[#152e4d]">{resource.examCode}</span>
+                <span className="font-mono font-bold text-[#152e4d]">{activeResource.examCode}</span>
                 <span aria-hidden="true">·</span>
                 <span className="inline-flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>{resource.durationLabel}</span>
+                  <span>{activeResource.durationLabel}</span>
                 </span>
                 <span aria-hidden="true">·</span>
-                <span className="font-mono tabular-nums">{resource.questionCountLabel}</span>
+                <span className="font-mono tabular-nums">{activeResource.questionCountLabel}</span>
               </div>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#152e4d] leading-tight tracking-tight [text-wrap:balance]">
-                {resource.title}
+                {activeResource.title}
               </h1>
 
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                {resource.excerpt}
+                {activeResource.excerpt}
               </p>
             </div>
 
-            {resource.type === 'practice_test' && !unlockedProfile && (
+            {activeResource.type === 'practice_test' && !unlockedProfile && (
               <button
                 type="button"
                 onClick={scrollToGate}
@@ -205,22 +250,22 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
         {/* Practice Test Mode */}
-        {resource.type === 'practice_test' && (
+        {activeResource.type === 'practice_test' && (
           <div className="space-y-8">
             {/* Domain Weights Strip (Always Indexable) */}
-            {resource.domainWeights && resource.domainWeights.length > 0 && (
+            {activeResource.domainWeights && activeResource.domainWeights.length > 0 && (
               <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-base font-bold text-[#152e4d] flex items-center gap-2">
                     <BookOpenCheck className="w-4 h-4 text-[#ea6d24]" />
-                    <span>Official {resource.examCode} Exam Blueprint &amp; Weightings</span>
+                    <span>Official {activeResource.examCode} Exam Blueprint &amp; Weightings</span>
                   </h2>
                   <span className="text-xs font-mono tabular-nums font-semibold text-slate-500">
-                    Passing Target: {resource.passingScoreLabel}
+                    Passing Target: {activeResource.passingScoreLabel}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                  {resource.domainWeights.map((dw) => (
+                  {activeResource.domainWeights.map((dw) => (
                     <div
                       key={dw.name}
                       className="p-3.5 rounded-xl bg-[#f8fafc] border border-slate-200 space-y-1"
@@ -235,10 +280,14 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
               </div>
             )}
 
-            {/* If Unlocked -> Render Full Interactive Two-Zone Simulator */}
-            {unlockedProfile ? (
+            {isLoadingBank && allQuestions.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-8 flex items-center justify-center gap-3 text-sm font-semibold text-slate-600">
+                <span className="w-4 h-4 rounded-full border-2 border-[#ea6d24] border-t-transparent animate-spin" />
+                <span>Loading {activeResource.examCode} interactive question bank...</span>
+              </div>
+            ) : unlockedProfile ? (
               <PracticeExamSimulator
-                resource={resource}
+                resource={activeResource}
                 unlockedProfile={unlockedProfile}
                 onNavigateLink={onNavigateLink}
                 onOpenAdvisorModal={onOpenAdvisorModal}
@@ -334,7 +383,7 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
                   </div>
 
                   <ExamPrepLeadGate
-                    resource={resource}
+                    resource={activeResource}
                     onUnlocked={(profile) => setUnlockedProfile(profile)}
                     onLeadSubmitted={onLeadSubmitted}
                   />
@@ -345,12 +394,12 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
         )}
 
         {/* Interactive Subnet Calculator Header (when type === 'subnet_calculator') */}
-        {resource.type === 'subnet_calculator' && (
+        {activeResource.type === 'subnet_calculator' && (
           <SubnetCidrCalculator />
         )}
 
         {/* Cheat Sheet & CIDR Reference Tables Mode */}
-        {(resource.type === 'cheat_sheet' || resource.type === 'subnet_calculator') && (
+        {(activeResource.type === 'cheat_sheet' || activeResource.type === 'subnet_calculator') && (
           <div className="space-y-8">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="relative flex-1">
@@ -365,106 +414,119 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
               </div>
               <button
                 type="button"
-                onClick={() => onOpenAdvisorModal('advisor', resource.title)}
+                onClick={() => onOpenAdvisorModal('advisor', activeResource.title)}
                 className="px-4 py-2.5 rounded-xl bg-[#152e4d] hover:bg-[#0f223a] text-white text-xs font-semibold cursor-pointer shrink-0"
               >
                 Request Live Lab Walkthrough
               </button>
             </div>
 
-            {(resource.cheatSheetSections || []).map((section) => {
-              const q = cheatFilter.trim().toLowerCase();
-              const visibleRows = q
-                ? section.rows.filter((r) =>
-                    r.cells.some((c) => c.toLowerCase().includes(q))
-                  )
-                : section.rows;
+            {isLoadingBank && !(activeResource.cheatSheetSections || []).length ? (
+              <div className="bg-white border border-slate-200 rounded-2xl p-8 flex items-center justify-center gap-3 text-sm font-semibold text-slate-600">
+                <span className="w-4 h-4 rounded-full border-2 border-[#ea6d24] border-t-transparent animate-spin" />
+                <span>Loading command tables and quick reference...</span>
+              </div>
+            ) : (
+              (activeResource.cheatSheetSections || []).map((section) => {
+                const q = cheatFilter.trim().toLowerCase();
+                const visibleRows = q
+                  ? section.rows.filter((r) =>
+                      r.cells.some((c) => c.toLowerCase().includes(q))
+                    )
+                  : section.rows;
 
-              if (visibleRows.length === 0) return null;
+                if (visibleRows.length === 0) return null;
 
-              return (
-                <section
-                  key={section.id}
-                  className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4"
-                >
-                  <div className="space-y-1">
-                    <h2 className="text-xl font-bold text-[#152e4d]">{section.title}</h2>
-                    <p className="text-xs sm:text-sm text-slate-600">{section.subtitle}</p>
-                  </div>
+                return (
+                  <section
+                    key={section.id}
+                    className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4"
+                  >
+                    <div className="space-y-1">
+                      <h2 className="text-xl font-bold text-[#152e4d]">{section.title}</h2>
+                      <p className="text-xs sm:text-sm text-slate-600">{section.subtitle}</p>
+                    </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse border border-slate-200 text-xs sm:text-sm">
-                      <thead>
-                        <tr className="bg-[#f8fafc] border-b border-slate-200 text-[#152e4d]">
-                          {section.headers.map((h) => (
-                            <th key={h} className="py-3 px-4 font-bold uppercase tracking-wide text-xs">
-                              {h}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse border border-slate-200 text-xs sm:text-sm">
+                        <thead>
+                          <tr className="bg-[#f8fafc] border-b border-slate-200 text-[#152e4d]">
+                            {section.headers.map((h) => (
+                              <th key={h} className="py-3 px-4 font-bold uppercase tracking-wide text-xs">
+                                {h}
+                              </th>
+                            ))}
+                            <th className="py-3 px-3 font-bold uppercase tracking-wide text-xs text-right">
+                              Copy
                             </th>
-                          ))}
-                          <th className="py-3 px-3 font-bold uppercase tracking-wide text-xs text-right">
-                            Copy
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 tabular-nums">
-                        {visibleRows.map((row, rIdx) => {
-                          const key = `${section.id}-${rIdx}`;
-                          const textToCopy = row.copyText || row.cells.join(' — ');
-                          const isCopied = copiedKey === key;
-                          return (
-                            <tr key={key} className="hover:bg-slate-50/80 transition-colors">
-                              {row.cells.map((cell, cIdx) => (
-                                <td
-                                  key={cIdx}
-                                  className={`py-3 px-4 ${
-                                    cIdx === 0
-                                      ? 'font-bold text-[#152e4d]'
-                                      : cIdx === 1 && resource.slug.includes('kubectl')
-                                      ? 'font-mono text-xs text-[#152e4d] bg-slate-50'
-                                      : 'text-slate-600'
-                                  }`}
-                                >
-                                  {cell}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 tabular-nums">
+                          {visibleRows.map((row, rIdx) => {
+                            const key = `${section.id}-${rIdx}`;
+                            const textToCopy = row.copyText || row.cells.join(' — ');
+                            const isCopied = copiedKey === key;
+                            return (
+                              <tr key={key} className="hover:bg-slate-50/80 transition-colors">
+                                {row.cells.map((cell, cIdx) => (
+                                  <td
+                                    key={cIdx}
+                                    className={`py-3 px-4 ${
+                                      cIdx === 0
+                                        ? 'font-bold text-[#152e4d]'
+                                        : cIdx === 1 && activeResource.slug.includes('kubectl')
+                                        ? 'font-mono text-xs text-[#152e4d] bg-slate-50'
+                                        : 'text-slate-600'
+                                    }`}
+                                  >
+                                    {cell}
+                                  </td>
+                                ))}
+                                <td className="py-3 px-3 text-right">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyCommand(textToCopy, key)}
+                                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border cursor-pointer transition-colors ${
+                                      isCopied
+                                        ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                        : 'bg-white border-slate-200 text-slate-600 hover:border-[#ea6d24] hover:text-[#ea6d24]'
+                                    }`}
+                                  >
+                                    {isCopied ? (
+                                      <>
+                                        <Check className="w-3.5 h-3.5" />
+                                        <span>Copied</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Copy className="w-3.5 h-3.5" />
+                                        <span>Copy</span>
+                                      </>
+                                    )}
+                                  </button>
                                 </td>
-                              ))}
-                              <td className="py-3 px-3 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => handleCopyCommand(textToCopy, key)}
-                                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border cursor-pointer transition-colors ${
-                                    isCopied
-                                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                                      : 'bg-white border-slate-200 text-slate-600 hover:border-[#ea6d24] hover:text-[#ea6d24]'
-                                  }`}
-                                >
-                                  {isCopied ? (
-                                    <>
-                                      <Check className="w-3.5 h-3.5" />
-                                      <span>Copied</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Copy className="w-3.5 h-3.5" />
-                                      <span>Copy</span>
-                                    </>
-                                  )}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              );
-            })}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                );
+              })
+            )}
           </div>
         )}
 
         {/* Interview Q&A Bank Mode */}
-        {resource.type === 'interview_qa' && (
+        {activeResource.type === 'interview_qa' && (
           <div className="space-y-6">
+            {isLoadingBank && !filteredInterviewItems.length && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-8 flex items-center justify-center gap-3 text-sm font-semibold text-slate-600">
+                <span className="w-4 h-4 rounded-full border-2 border-[#ea6d24] border-t-transparent animate-spin" />
+                <span>Loading technical interview Q&amp;A bank...</span>
+              </div>
+            )}
             {interviewCategories.length > 2 && (
               <div className="flex flex-wrap items-center gap-2">
                 {interviewCategories.map((cat) => (
@@ -534,7 +596,7 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
         )}
 
         {/* Cost & Salary Calculator Mode */}
-        {resource.type === 'cost_calculator' && (
+        {activeResource.type === 'cost_calculator' && (
           <ExamCostSalaryCalculator
             onNavigateLink={onNavigateLink}
             onOpenAdvisorModal={onOpenAdvisorModal}
@@ -547,7 +609,7 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
             <p className="text-xs font-bold uppercase tracking-wider text-[#f7944d]">
               Turn Preparation into Certification
             </p>
-            <h2 className="text-xl sm:text-2xl font-extrabold">{resource.relatedCourseLabel}</h2>
+            <h2 className="text-xl sm:text-2xl font-extrabold">{activeResource.relatedCourseLabel}</h2>
             <p className="text-sm text-slate-300 leading-relaxed">
               Learnify pairs live instructor mentorship, 24/7 hands-on labs, and exam readiness drills across UK (GBP), Europe (EUR), UAE (AED), and South Africa (ZAR).
             </p>
@@ -583,10 +645,10 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <a
-              href={`/course/${resource.relatedCourseId}`}
+              href={`/course/${activeResource.relatedCourseId}`}
               onClick={(e) => {
                 e.preventDefault();
-                onNavigateLink(`/course/${resource.relatedCourseId}`);
+                onNavigateLink(`/course/${activeResource.relatedCourseId}`);
               }}
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-[#152e4d] hover:bg-orange-50 font-bold text-sm transition-colors"
             >
@@ -595,7 +657,7 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
             </a>
             <button
               type="button"
-              onClick={() => onOpenAdvisorModal('advisor', resource.title)}
+              onClick={() => onOpenAdvisorModal('advisor', activeResource.title)}
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-bold text-sm transition-colors cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -605,11 +667,11 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
         </section>
 
         {/* FAQs */}
-        {resource.faqs.length > 0 && (
+        {activeResource.faqs.length > 0 && (
           <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
             <h2 className="text-xl font-bold text-[#152e4d]">Frequently Asked Questions</h2>
             <div className="divide-y divide-slate-200 border border-slate-200 rounded-xl overflow-hidden">
-              {resource.faqs.map((faq, idx) => {
+              {activeResource.faqs.map((faq, idx) => {
                 const isOpen = Boolean(openFaqIndices[idx]);
                 return (
                   <div key={faq.q} className="bg-white">

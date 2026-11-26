@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Course } from '../types';
 import { sampleCourses } from '../data/coursesData';
 import { getRegionalAlternatesForCourse } from '../data/regionalSeoData';
-import { getRelatedExamPrepResources } from '../data/examPrepData';
+import { getRelatedExamPrepResources } from '../data/examPrepMeta';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
+import { buildCourseFaqs } from '../utils/courseSeo';
 import { 
   Check, 
   Clock, 
@@ -233,25 +234,8 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
     { id: 'faqs', label: 'FAQs' },
   ];
 
-  // Dynamic FAQs based on vendor and course
-  const courseFaqs = [
-    {
-      q: `What is the format of the ${course.title} examination?`,
-      a: `The official examination includes multiple-choice, drag-and-drop, and scenario-based simulation questions administered globally through Pearson VUE testing centers and online proctoring.`
-    },
-    {
-      q: 'Will I receive access to live hands-on labs?',
-      a: 'Yes! Every enrolled participant receives dedicated remote lab access with pre-configured topologies for the entire course duration and practice period.'
-    },
-    {
-      q: 'Are class sessions recorded for later review?',
-      a: 'Yes, all live instructor-led sessions are recorded in high-definition and made available inside your student portal for 365 days.'
-    },
-    {
-      q: 'Can our enterprise sponsor this training with corporate purchase orders?',
-      a: 'Absolutely. We accept corporate purchase orders, training credits, and customized invoice arrangements for corporate engineering teams.'
-    }
-  ];
+  // Course-specific FAQs matching FAQPage JSON-LD schema
+  const courseFaqs = buildCourseFaqs(resolvedCourse);
 
   return (
     <div className="w-full bg-[#f8fafc] min-h-screen pb-20">
@@ -364,7 +348,10 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                 <img
                   src={normalizeImageUrl(course.imageUrl, 'course')}
                   alt={course.imageAlt || course.title}
+                  width={640}
+                  height={360}
                   loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
@@ -814,6 +801,35 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
               )}
 
             </div>
+
+            {activeTab !== 'faqs' && (
+              <section
+                id="course-faqs-visible"
+                className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-4"
+              >
+                <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <h2 className="text-lg sm:text-xl font-bold text-[#152e4d] flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-[#ea6d24]" />
+                    <span>{course.title} — Key Questions Answered</span>
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={handleOpenSyllabus}
+                    className="text-xs font-bold text-[#ea6d24] hover:underline shrink-0 cursor-pointer"
+                  >
+                    Download Syllabus PDF
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {courseFaqs.map((faq, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                      <h3 className="text-sm font-bold text-[#152e4d]">{faq.q}</h3>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{faq.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {/* Right Column (Sticky Form) */}

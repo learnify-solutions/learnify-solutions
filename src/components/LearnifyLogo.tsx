@@ -17,11 +17,17 @@ export const LearnifyLogo: React.FC<LearnifyLogoProps> = ({
   if (iconOnly) {
     return (
       <img
-        src="/learnify-icon.png"
+        src="/learnify-icon.webp"
         alt="Learnify Icon"
-        width={457}
-        height={464}
+        width={128}
+        height={130}
+        loading="eager"
         decoding="async"
+        onError={(e) => {
+          const target = e.currentTarget;
+          target.onerror = null;
+          target.src = '/learnify-icon.png';
+        }}
         className={`${className} object-contain select-none`}
         referrerPolicy="no-referrer"
       />

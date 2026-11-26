@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { BlogSummary, BlogTopicTrack } from '../types';
 import { BlogEditorialCover } from './BlogEditorialCover';
-import { ArrowRight, BookOpen, Clock, Globe2 } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock, Globe2, Loader2 } from 'lucide-react';
 
 interface BlogSectionProps {
   summaries: BlogSummary[];
@@ -111,12 +111,43 @@ export const BlogSection: React.FC<BlogSectionProps> = ({
 
         {/* Asymmetric Editorial Showcase */}
         {isLoading && summaries.length === 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
-            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl h-[440px]" />
-            <div className="lg:col-span-7 space-y-4">
-              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
-              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
-              <div className="bg-white border border-slate-200 rounded-2xl h-32" />
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-full px-3.5 py-1.5 shadow-xs">
+              <Loader2 className="w-3.5 h-3.5 text-[#ea6d24] animate-spin" />
+              <span>Loading latest certification guides &amp; exam roadmaps...</span>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
+              <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between min-h-[420px]">
+                <div>
+                  <div className="aspect-video bg-slate-200" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-3 w-40 bg-slate-200 rounded" />
+                    <div className="h-6 w-5/6 bg-slate-200 rounded" />
+                    <div className="h-6 w-2/3 bg-slate-200 rounded" />
+                    <div className="h-3.5 w-full bg-slate-100 rounded" />
+                    <div className="h-3.5 w-4/5 bg-slate-100 rounded" />
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="h-3 w-28 bg-slate-200 rounded" />
+                  <div className="h-4 w-32 bg-orange-100 rounded" />
+                </div>
+              </div>
+              <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+                {[1, 2, 3, 4].map((idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:items-center"
+                  >
+                    <div className="sm:w-48 md:w-52 aspect-video sm:aspect-[4/3] rounded-xl bg-slate-200 shrink-0" />
+                    <div className="flex-1 space-y-2.5">
+                      <div className="h-3 w-36 bg-slate-200 rounded" />
+                      <div className="h-5 w-11/12 bg-slate-200 rounded" />
+                      <div className="h-3.5 w-4/5 bg-slate-100 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ) : spotlightPost ? (

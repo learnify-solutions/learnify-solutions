@@ -19,7 +19,7 @@ export const sampleCourses: Course[] = [
     "enrolled": 5410,
     "imageUrl": "/images/pc_hardware_workbench_1788294359055.webp",
     "imageAlt": "CompTIA A+ hardware, workstation and troubleshooting workbench",
-    "summary": "The industry baseline credential for IT careers, validating foundational hardware, mobile devices, networking, operating systems, security, and operational troubleshooting.",
+    "summary": "The industry baseline credential for IT careers, covering CompTIA A+ Core 1 & Core 2 (220-1201 / 220-1202 V15 & 220-1101 / 220-1102), validating hardware, mobile devices, networking, OS, security, and troubleshooting.",
     "curriculum": [
       "Module 1: PC Hardware Architecture, Motherboards, RAM, Storage & Power Supplies",
       "Module 2: Network Topologies, TCP/UDP Ports, Wi-Fi Protocols & Cable Testing",
@@ -27,7 +27,7 @@ export const sampleCourses: Course[] = [
       "Module 4: Windows, macOS & Linux OS Installation, Command Line & Registry Tuning",
       "Module 5: Malware Remediation, Data Security Best Practices & Customer Support"
     ],
-    "overview": "CompTIA A+ is the industry standard for launching IT support and infrastructure careers. This comprehensive course prepares candidates for both Core 1 (220-1101: Hardware, Mobile Devices, Networking, Virtualization) and Core 2 (220-1102: Operating Systems, Security, Software Troubleshooting, Operational Procedures).\n\nIdeal for entry-level IT technicians, field service specialists, help desk technicians, and desktop support analysts.",
+    "overview": "CompTIA A+ is the industry standard for launching IT support and infrastructure careers. This comprehensive course prepares candidates for both Core 1 (220-1201 V15 / 220-1101: Hardware, Mobile Devices, Networking, Virtualization) and Core 2 (220-1202 V15 / 220-1102: Operating Systems, Security, Software Troubleshooting, Operational Procedures).\n\nIdeal for entry-level IT technicians, field service specialists, help desk technicians, and desktop support analysts.",
     "learningObjectives": [
       "Assemble, configure, and troubleshoot personal computer components, storage, and peripheral hardware",
       "Configure and maintain client operating systems including Windows 10/11, macOS, Linux, and ChromeOS",
@@ -1365,15 +1365,15 @@ export const sampleCourses: Course[] = [
     "enrolled": 3650,
     "imageUrl": "/images/copilot_genai_workspace_1788294313357.webp",
     "imageAlt": "Microsoft 365 Copilot enterprise workplace generative AI training",
-    "summary": "Accelerate enterprise workplace productivity by mastering Microsoft 365 Copilot prompt engineering across Word, Excel, PowerPoint, Outlook, and Microsoft Teams.",
+    "summary": "Accelerate enterprise workplace productivity by mastering Microsoft 365 Copilot and Copilot Studio across Word, Excel, PowerPoint, Outlook, Microsoft Teams, and Microsoft Graph.",
     "curriculum": [
       "Module 1: Microsoft 365 Copilot Architecture, Microsoft Graph Data Grounding & Security",
       "Module 2: Drafting & Summarizing Executive Documents in Word with Copilot",
       "Module 3: Data Analysis, Python Scripting & Formula Generation in Excel with Copilot",
       "Module 4: Creating High-Impact Client Presentations in PowerPoint & Email Triage in Outlook",
-      "Module 5: Meeting Summaries in Teams & Building Custom Copilots in Copilot Studio"
+      "Module 5: Meeting Summaries in Teams & Building Custom Agents in Copilot Studio"
     ],
-    "overview": "MS-4018: Draft, Analyze and Present with Microsoft 365 Copilot teaches business professionals and knowledge workers how to leverage generative AI within Microsoft Word, PowerPoint, Excel, Teams, and Outlook.\n\nIdeal for business professionals, project leaders, executives, and managers looking to drastically accelerate daily work productivity using Copilot AI.",
+    "overview": "MS-4018: Draft, Analyze and Present with Microsoft 365 Copilot & Copilot Studio teaches business professionals and AI champions how to deploy generative AI workflows securely within Microsoft Word, PowerPoint, Excel, Teams, Outlook, and custom Copilot Studio agents grounded on Microsoft Graph.\n\nIdeal for business professionals, project leaders, executives, and enterprise change teams adopting Microsoft 365 Copilot.",
     "learningObjectives": [
       "Formulate effective prompt engineering strategies for Microsoft 365 Copilot",
       "Draft complex contracts, memos, and executive summaries rapidly in Microsoft Word",

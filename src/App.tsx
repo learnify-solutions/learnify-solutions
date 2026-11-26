@@ -17,10 +17,10 @@ import {
   parseBlogRoutePath,
 } from './data/blogsData';
 import {
-  EXAM_PREP_RESOURCES,
-  getExamPrepBySlug,
+  EXAM_PREP_META,
+  getExamPrepMetaBySlug,
   parseExamPrepRoutePath,
-} from './data/examPrepData';
+} from './data/examPrepMeta';
 import { CmsData, Course, TechDomain, LeadSubmission, BlogPost, BlogSummary, ExamPrepResource } from './types';
 import {
   fetchCmsData,
@@ -32,18 +32,27 @@ import {
   fetchBlogDetail,
 } from './services/cmsService';
 import { useSEO } from './lib/useSEO';
+import { buildCourseSeoMeta } from './utils/courseSeo';
 import { TopBanner } from './components/TopBanner';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { StatsBar } from './components/StatsBar';
-import { TrainingProofSection } from './components/TrainingProofSection';
-import { TestimonialsSection } from './components/TestimonialsSection';
-import { BlogsHubView } from './components/BlogsHubView';
-import { BlogDetailView } from './components/BlogDetailView';
 import { LoadingFallback } from './components/LoadingFallback';
 import { Settings, Database } from 'lucide-react';
 
 // Code Splitting / Lazy Loading for optimum bundle size and performance
+const TrainingProofSection = lazy(() =>
+  import('./components/TrainingProofSection').then((m) => ({ default: m.TrainingProofSection }))
+);
+const TestimonialsSection = lazy(() =>
+  import('./components/TestimonialsSection').then((m) => ({ default: m.TestimonialsSection }))
+);
+const BlogsHubView = lazy(() =>
+  import('./components/BlogsHubView').then((m) => ({ default: m.BlogsHubView }))
+);
+const BlogDetailView = lazy(() =>
+  import('./components/BlogDetailView').then((m) => ({ default: m.BlogDetailView }))
+);
 const PerformanceSection = lazy(() =>
   import('./components/PerformanceSection').then((m) => ({ default: m.PerformanceSection }))
 );
@@ -151,6 +160,17 @@ function getHydratedBlogSummaries(): BlogSummary[] {
   if (typeof window === 'undefined') return [];
   const raw = (window as any).__INITIAL_BLOG_SUMMARIES__;
   return Array.isArray(raw) ? (raw as BlogSummary[]) : [];
+}
+
+function getHydratedExamPrepForCurrentPath(): ExamPrepResource | null {
+  if (typeof window === 'undefined') return null;
+  const initialPrep = (window as any).__INITIAL_EXAM_PREP__ as ExamPrepResource | undefined;
+  if (!initialPrep || !initialPrep.slug) return null;
+  const match = parseExamPrepRoutePath(window.location.pathname);
+  if (match && match.type === 'detail' && initialPrep.slug.toLowerCase() === match.resource.slug.toLowerCase()) {
+    return initialPrep;
+  }
+  return null;
 }
 
 export default function App() {
@@ -276,6 +296,8 @@ export default function App() {
 
   const [selectedExamPrep, setSelectedExamPrep] = useState<ExamPrepResource | null>(() => {
     if (typeof window === 'undefined') return null;
+    const hydrated = getHydratedExamPrepForCurrentPath();
+    if (hydrated) return hydrated;
     const match = parseExamPrepRoutePath(window.location.pathname);
     return match && match.type === 'detail' ? match.resource : null;
   });
@@ -526,10 +548,10 @@ export default function App() {
         };
       case 'cisco_training':
         return {
-          title: 'Cisco Authorized Certification Training (CCNA, CCNP, DevNet) | Learnify Solutions',
+          title: 'Cisco Authorized Certification Training (CCNA 200-301, CCNP ENCOR, SD-WAN, DevNet) | Learnify',
           description:
-            'Authorized Cisco training partner: CCNA 200-301, CCNP ENCOR, SD-WAN & DevNet with hands-on live lab pods and expert guidance.',
-          keywords: 'Cisco certification training, CCNA 200-301 course, CCNP ENCOR bootcamp, Cisco DevNet training',
+            'Authorized Cisco training partner: CCNA 200-301, CCNP Enterprise ENCOR 350-401, ENARSI 300-410, Security SCOR 350-701, SD-WAN & DevNet with 24/7 lab pods and corporate PO cohorts.',
+          keywords: 'Cisco certification training, CCNA 200-301 course, CCNP ENCOR 350-401 bootcamp, ENARSI 300-410, Cisco SD-WAN 300-415, CCNP Security SCOR 350-701, Cisco DevNet training, CCNA training UAE UK South Africa',
           canonicalUrl: 'https://www.learnify-solutions.com/cisco-training',
           ogUrl: 'https://www.learnify-solutions.com/cisco-training',
           jsonLd: {
@@ -543,15 +565,16 @@ export default function App() {
         };
       case 'courses':
         return {
-          title: 'IT & Cloud Certification Courses Catalog (Microsoft, Cisco, CompTIA, AWS) | Learnify Solutions',
+          title: '50+ Official IT & Cloud Certification Courses (CompTIA, Microsoft Azure, AWS, Kubernetes) | Learnify',
           description: isCiscoAuthorized
-            ? 'Browse 50+ official certification courses in Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS Cloud, DevOps, and Cybersecurity. 1-on-1 live mentorship & corporate batches.'
-            : 'Browse 50+ official certification courses in Microsoft Azure, CompTIA Security+, AWS Cloud, DevOps, Kubernetes, and Cybersecurity. 1-on-1 live mentorship & corporate batches.',
+            ? 'Browse 50+ vendor-authorized courses in Microsoft Azure (AZ-104, AI-102, DP-900, PL-300, MS-4018 Copilot Studio), Cisco CCNA/CCNP, CompTIA Security+ SY0-701, A+ 220-1201, ITF+, AWS SAA-C03 & Kubernetes CKA.'
+            : 'Browse 50+ vendor-authorized certification courses in Microsoft Azure (AZ-104, AI-102, DP-900, PL-300, MS-4018 Copilot), CompTIA Security+ SY0-701, A+ 220-1201, ITF+, AWS SAA-C03 & Kubernetes CKA.',
           keywords: isCiscoAuthorized
-            ? 'IT courses catalog, Microsoft certification training, Azure AZ-104, Cisco CCNA 200-301, Cisco CCNP ENCOR, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, Kubernetes CKA, CEH v12, IT training Dubai, UK London IT bootcamps, USA IT training'
-            : 'IT courses catalog, Microsoft certification training, Azure AZ-104, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, Kubernetes CKA, CEH v12, IT training Dubai, UK London IT bootcamps, USA IT training',
+            ? 'IT courses catalog, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, Cisco CCNA 200-301, AWS SAA-C03, Kubernetes CKA, UK Europe UAE South Africa IT training'
+            : 'IT courses catalog, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03, Kubernetes CKA, UK Europe UAE South Africa IT training',
           canonicalUrl: 'https://www.learnify-solutions.com/courses',
           ogUrl: 'https://www.learnify-solutions.com/courses',
+          hreflangAlternates: getHubHreflangAlternates(),
         };
       case 'country_hub': {
         const region = REGION_CONFIGS[regionalRegion];
@@ -620,8 +643,8 @@ export default function App() {
                 'name': 'Learnify IT Certification Exam Prep Hub',
                 'mainEntity': {
                   '@type': 'ItemList',
-                  'numberOfItems': EXAM_PREP_RESOURCES.length,
-                  'itemListElement': EXAM_PREP_RESOURCES.map((item, idx) => ({
+                  'numberOfItems': EXAM_PREP_META.length,
+                  'itemListElement': EXAM_PREP_META.map((item, idx) => ({
                     '@type': 'ListItem',
                     'position': idx + 1,
                     'name': item.title,
@@ -938,90 +961,99 @@ export default function App() {
       }
       case 'course_detail': {
         const courseAlternates = selectedCourse ? getRegionalAlternatesForCourse(selectedCourse.id) : null;
-        return selectedCourse
-          ? {
-              title: `${selectedCourse.title} ${selectedCourse.examCode ? '(' + selectedCourse.examCode + ') ' : ''}Certification Training & Bootcamp | Learnify Solutions`,
-              description: `${selectedCourse.summary || selectedCourse.overview || 'Master ' + selectedCourse.title + ' with official vendor curriculum, 1-on-1 mentor guidance, and 24/7 hands-on cloud labs.'} Official ${selectedCourse.certificationVendor || 'IT'} certification training with guaranteed batches across USA, UK, UAE, Africa & India.`,
-              keywords: `${selectedCourse.title}, ${selectedCourse.examCode || ''}, ${selectedCourse.certificationVendor || 'IT'} training, ${selectedCourse.certificationVendor || 'IT'} certification course, authorized ${selectedCourse.certificationVendor || 'IT'} training partner, ${selectedCourse.domain} bootcamps, online 1-on-1 ${selectedCourse.certificationVendor || 'IT'} training, IT training Dubai, IT certifications London UK, corporate tech upskilling, Learnify Solutions`,
-              canonicalUrl: `https://www.learnify-solutions.com/course/${selectedCourse.id}`,
-              ogUrl: `https://www.learnify-solutions.com/course/${selectedCourse.id}`,
-              ogImage: selectedCourse.imageUrl?.startsWith('http')
-                ? selectedCourse.imageUrl
-                : `https://www.learnify-solutions.com${selectedCourse.imageUrl || '/hero.webp'}`,
-              hreflangAlternates: courseAlternates
-                ? getCourseHreflangAlternates(courseAlternates)
-                : undefined,
-              jsonLd: {
-                '@context': 'https://schema.org',
-                '@graph': [
+        if (!selectedCourse) {
+          const fallbackPath =
+            typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '') : '/courses';
+          const fallbackCanonical = `https://www.learnify-solutions.com${fallbackPath || '/courses'}`;
+          return {
+            title: 'IT Certification Courses | Learnify Solutions',
+            description: 'Comprehensive IT training course overview, learning objectives, and curriculum syllabus.',
+            canonicalUrl: fallbackCanonical,
+            ogUrl: fallbackCanonical,
+          };
+        }
+        const seoMeta = buildCourseSeoMeta(selectedCourse);
+        return {
+          title: seoMeta.title,
+          description: seoMeta.description,
+          keywords: seoMeta.keywords,
+          canonicalUrl: `https://www.learnify-solutions.com/course/${selectedCourse.id}`,
+          ogUrl: `https://www.learnify-solutions.com/course/${selectedCourse.id}`,
+          ogImage: selectedCourse.imageUrl?.startsWith('http')
+            ? selectedCourse.imageUrl
+            : `https://www.learnify-solutions.com${selectedCourse.imageUrl || '/hero.webp'}`,
+          hreflangAlternates: courseAlternates
+            ? getCourseHreflangAlternates(courseAlternates)
+            : undefined,
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'Course',
+                '@id': `https://www.learnify-solutions.com/course/${selectedCourse.id}#course`,
+                'name': selectedCourse.title,
+                'courseCode': selectedCourse.examCode || selectedCourse.id,
+                'description': selectedCourse.summary || selectedCourse.overview || '',
+                'provider': {
+                  '@type': 'EducationalOrganization',
+                  'name': 'Learnify Solutions',
+                  'url': 'https://www.learnify-solutions.com',
+                },
+                'educationalLevel': selectedCourse.skillLevel || 'Intermediate',
+                'educationalCredentialAwarded': `${selectedCourse.title} Official Certification`,
+                'courseMode': ['online', 'blended', 'onsite'],
+                'teaches': selectedCourse.learningObjectives || [selectedCourse.title],
+                'offers': {
+                  '@type': 'Offer',
+                  'category': 'Paid',
+                  'priceCurrency': 'USD',
+                  'price': '999',
+                  'availability': 'https://schema.org/InStock',
+                },
+              },
+              {
+                '@type': 'BreadcrumbList',
+                '@id': `https://www.learnify-solutions.com/course/${selectedCourse.id}#breadcrumb`,
+                'itemListElement': [
                   {
-                    '@type': 'Course',
-                    '@id': `https://www.learnify-solutions.com/course/${selectedCourse.id}#course`,
-                    'name': selectedCourse.title,
-                    'courseCode': selectedCourse.examCode || selectedCourse.id,
-                    'description': selectedCourse.summary || selectedCourse.overview || '',
-                    'provider': {
-                      '@type': 'EducationalOrganization',
-                      'name': 'Learnify Solutions',
-                      'url': 'https://www.learnify-solutions.com'
-                    },
-                    'educationalLevel': selectedCourse.skillLevel || 'Intermediate',
-                    'educationalCredentialAwarded': `${selectedCourse.title} Official Certification`,
-                    'courseMode': ['online', 'blended', 'onsite'],
-                    'teaches': selectedCourse.learningObjectives || [selectedCourse.title],
-                    'offers': {
-                      '@type': 'Offer',
-                      'category': 'Paid',
-                      'priceCurrency': 'USD',
-                      'price': '999',
-                      'availability': 'https://schema.org/InStock'
-                    }
+                    '@type': 'ListItem',
+                    'position': 1,
+                    'name': 'Home',
+                    'item': 'https://www.learnify-solutions.com/',
                   },
                   {
-                    '@type': 'BreadcrumbList',
-                    '@id': `https://www.learnify-solutions.com/course/${selectedCourse.id}#breadcrumb`,
-                    'itemListElement': [
-                      {
-                        '@type': 'ListItem',
-                        'position': 1,
-                        'name': 'Home',
-                        'item': 'https://www.learnify-solutions.com/'
-                      },
-                      {
-                        '@type': 'ListItem',
-                        'position': 2,
-                        'name': 'Courses',
-                        'item': 'https://www.learnify-solutions.com/courses'
-                      },
-                      {
-                        '@type': 'ListItem',
-                        'position': 3,
-                        'name': selectedCourse.title,
-                        'item': `https://www.learnify-solutions.com/course/${selectedCourse.id}`
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          : (() => {
-              const fallbackPath =
-                typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '') : '/courses';
-              const fallbackCanonical = `https://www.learnify-solutions.com${fallbackPath || '/courses'}`;
-              return {
-                title: 'IT Certification Courses | Learnify Solutions',
-                description: 'Comprehensive IT training course overview, learning objectives, and curriculum syllabus.',
-                canonicalUrl: fallbackCanonical,
-                ogUrl: fallbackCanonical,
-              };
-            })();
+                    '@type': 'ListItem',
+                    'position': 2,
+                    'name': 'Courses',
+                    'item': 'https://www.learnify-solutions.com/courses',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    'position': 3,
+                    'name': selectedCourse.title,
+                    'item': `https://www.learnify-solutions.com/course/${selectedCourse.id}`,
+                  },
+                ],
+              },
+              {
+                '@type': 'FAQPage',
+                '@id': `https://www.learnify-solutions.com/course/${selectedCourse.id}#faq`,
+                'mainEntity': seoMeta.faqs.map((f) => ({
+                  '@type': 'Question',
+                  'name': f.q,
+                  'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+                })),
+              },
+            ],
+          },
+        };
       }
       case 'corporate_training':
         return {
-          title: 'Enterprise & Corporate IT Training Solutions | Learnify Solutions',
+          title: 'Corporate IT Training Solutions | UK, Europe (NIS2/DORA), UAE & South Africa POs | Learnify',
           description:
-            'Scalable enterprise learning solutions and corporate IT bootcamps for engineering teams worldwide. Custom curriculum, private cloud sandboxes, and 98.4% exam pass rate.',
-          keywords: 'corporate IT training, enterprise tech training, B2B workforce upskilling, corporate certification programs',
+            'Enterprise IT bootcamps and corporate workforce upskilling across UK (GBP), Europe (EUR / NIS2 & DORA), UAE (AED / NESA), and South Africa (ZAR / POPIA). Custom syllabi, 24/7 sandboxes & Purchase Orders.',
+          keywords: 'corporate IT training, enterprise tech upskilling, bulk IT certification vouchers, corporate Purchase Order PO training GBP EUR AED ZAR, NIS2 DORA compliance training EU, NCSC training UK, NESA UAE IT training, POPIA South Africa cybersecurity, Microsoft Copilot corporate training',
           canonicalUrl: 'https://www.learnify-solutions.com/corporate-training',
           ogUrl: 'https://www.learnify-solutions.com/corporate-training',
           jsonLd: {
@@ -1070,14 +1102,13 @@ export default function App() {
       default:
         return {
           title: isCiscoAuthorized
-            ? 'Learnify Solutions | Authorized Global IT Training Partner & Corporate Bootcamps'
-            : 'Learnify Solutions | Authorized Microsoft, AWS & CompTIA Global IT Training Partner',
-          description: isCiscoAuthorized
-            ? 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification labs & corporate cohorts across North America, UK, Europe, UAE, Africa & APAC.'
-            : 'Global authorized IT training partner for Microsoft, CompTIA, AWS & Kubernetes. Live instructor-led bootcamps, official certification labs & corporate cohorts across North America, UK, Europe, UAE, Africa & APAC.',
+            ? 'Learnify Solutions | Authorized Microsoft, CompTIA, AWS & Cisco IT Training'
+            : 'Learnify Solutions | Authorized Microsoft, AWS & CompTIA IT Training Partner',
+          description:
+            'Authorized global IT certification training across UK, Europe, UAE, South Africa & North America. Live 1-on-1 & corporate bootcamps for CompTIA SY0-701, A+ 220-1201, ITF+, Azure AZ-104, AI-102, DP-900, PL-300, MS-4018 Copilot Studio, AWS SAA-C03 & Kubernetes CKA.',
           keywords: isCiscoAuthorized
-            ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, Microsoft Copilot MS-4018, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN, Cisco SCOR 350-701, Cisco DevNet DEVASC, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+ N10-008 N10-009, CompTIA Cloud+ CV0-004, CompTIA PenTest+ PT0-002, CompTIA Linux+, AWS certification courses, AWS Solutions Architect SAA-C03, AWS Security SCS-C02, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, enterprise IT workforce upskilling, Learnify Solutions'
-            : 'IT training certification courses, corporate IT training, 1-on-1 IT training, vendor authorized training partner, Microsoft certification training, Microsoft Azure AZ-104, Azure AI-102, DP-100, SC-900, PL-300, CompTIA Security+ SY0-701 bootcamp, CompTIA A+ 220-1101, CompTIA Network+, CompTIA Cloud+, AWS certification courses, AWS Solutions Architect SAA-C03, CEH v12 certification, CISSP training, Kubernetes CKA training, IT bootcamps UK London, IT training UAE Dubai, corporate IT training USA, Learnify Solutions',
+            ? 'IT training certification courses, corporate IT training, 1-on-1 IT training, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, CompTIA Cloud+ CV0-004, CompTIA Linux+ Server+, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, DP-100, PL-900, PL-300, SC-900, Microsoft Copilot MS-4018 Copilot Studio, Cisco CCNA 200-301 CCNP ENCOR, AWS Solutions Architect SAA-C03 CLF-C02 SCS-C02, Kubernetes CKA CKS, CEH v12, CISSP, IT training UK London, Europe NIS2 DORA, UAE Dubai AED, South Africa Gauteng ZAR, Learnify Solutions'
+            : 'IT training certification courses, corporate IT training, 1-on-1 IT training, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, CompTIA Cloud+ CV0-004, CompTIA Linux+ Server+, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, DP-100, PL-900, PL-300, SC-900, Microsoft Copilot MS-4018 Copilot Studio, AWS Solutions Architect SAA-C03 CLF-C02 SCS-C02, Kubernetes CKA CKS, CEH v12, CISSP, IT training UK London, Europe NIS2 DORA, UAE Dubai AED, South Africa Gauteng ZAR, Learnify Solutions',
           canonicalUrl: 'https://www.learnify-solutions.com/',
           ogUrl: 'https://www.learnify-solutions.com/',
         };
@@ -1132,7 +1163,8 @@ export default function App() {
           setSelectedExamPrep(null);
           setActivePage('exam_prep_hub');
         } else if (examPrepMatch.type === 'detail') {
-          setSelectedExamPrep(examPrepMatch.resource);
+          const hydrated = getHydratedExamPrepForCurrentPath();
+          setSelectedExamPrep(hydrated || examPrepMatch.resource);
           setActivePage('exam_prep_detail');
         } else {
           setSelectedExamPrep(null);
@@ -1596,11 +1628,21 @@ export default function App() {
     setSelectedBlog(null);
     setActivePage('blogs_hub');
     setActiveNavId('nav-blogs');
+    if (blogSummaries.length === 0) {
+      setIsLoadingBlogs(true);
+      fetchBlogSummaries()
+        .then((res) => {
+          if (Array.isArray(res) && res.length > 0) setBlogSummaries(res);
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingBlogs(false));
+    }
     if (typeof window !== 'undefined') window.history.pushState(null, '', '/blogs');
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   const navigateToBlogSlug = (slug: string) => {
+    setIsLoadingBlogDetail(true);
     setSelectedBlog(null);
     setActivePage('blog_detail');
     setActiveNavId('nav-blogs');
@@ -1618,7 +1660,7 @@ export default function App() {
   };
 
   const navigateToExamPrepSlug = (slug: string) => {
-    const matched = getExamPrepBySlug(slug);
+    const matched = getExamPrepMetaBySlug(slug);
     setSelectedExamPrep(matched);
     setActivePage('exam_prep_detail');
     setActiveNavId('nav-exam-prep');

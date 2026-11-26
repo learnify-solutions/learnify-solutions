@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BlogTopicTrack } from '../types';
+import { normalizeImageUrl } from '../utils/imageHelper';
 
 interface BlogEditorialCoverProps {
   slug: string;
@@ -510,16 +511,42 @@ export const BlogEditorialCover: React.FC<BlogEditorialCoverProps> = ({
 }) => {
   const showCustomPhoto = isCustomUploadedPhoto(coverImage);
   const spec = getEditorialCoverSpec(slug, title, String(topicTrack || ''), regionLabel, category);
+  const normalizedCover = showCustomPhoto && coverImage ? normalizeImageUrl(coverImage, 'course') : '';
+  const [hasImgError, setHasImgError] = useState(false);
+  const [isImgLoaded, setIsImgLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
-  if (showCustomPhoto && coverImage) {
+  useEffect(() => {
+    setHasImgError(false);
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      setIsImgLoaded(true);
+    } else {
+      setIsImgLoaded(false);
+    }
+  }, [normalizedCover]);
+
+  if (showCustomPhoto && normalizedCover && !hasImgError) {
     return (
       <div className={`relative w-full h-full bg-[#152e4d] overflow-hidden ${className}`}>
+        {!isImgLoaded && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-br from-[#152e4d] via-[#1d3f69] to-[#152e4d] animate-pulse pointer-events-none"
+          />
+        )}
         <img
-          src={coverImage}
+          ref={imgRef}
+          src={normalizedCover}
           alt={title || spec.coverHeadline}
+          width={variant === 'compact' ? 320 : 800}
+          height={variant === 'compact' ? 240 : 450}
           loading={variant === 'hero' ? 'eager' : 'lazy'}
+          fetchPriority={variant === 'hero' ? 'high' : undefined}
+          decoding="async"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          onLoad={() => setIsImgLoaded(true)}
+          onError={() => setHasImgError(true)}
+          className="relative w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
       </div>
     );

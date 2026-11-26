@@ -16,7 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { ExamPrepCategory, ExamPrepResource, ExamPrepTopicTrack } from '../types';
-import { EXAM_PREP_RESOURCES } from '../data/examPrepData';
+import { EXAM_PREP_META } from '../data/examPrepMeta';
 import { getStoredExamPrepUnlock } from './ExamPrepLeadGate';
 
 interface ExamPrepHubViewProps {
@@ -107,7 +107,7 @@ export const ExamPrepHubView: React.FC<ExamPrepHubViewProps> = ({
 
   const filteredResources = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return EXAM_PREP_RESOURCES.filter((item) => {
+    return EXAM_PREP_META.filter((item) => {
       if (formatFilter === 'calculators') {
         if (item.type !== 'cost_calculator' && item.type !== 'subnet_calculator') return false;
       } else if (formatFilter !== 'all' && item.type !== formatFilter) {
@@ -230,7 +230,7 @@ export const ExamPrepHubView: React.FC<ExamPrepHubViewProps> = ({
               >
                 {TOPIC_TRACKS.map((t) => (
                   <option key={t} value={t}>
-                    {t === 'all' ? `All Tracks (${EXAM_PREP_RESOURCES.length})` : t}
+                    {t === 'all' ? `All Tracks (${EXAM_PREP_META.length})` : t}
                   </option>
                 ))}
               </select>

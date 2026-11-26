@@ -828,22 +828,22 @@ export const TARGET_REGIONAL_COURSES: RegionalCourseMeta[] = [
   },
   {
     courseId: 'course-ms-4018-copilot',
-    shortName: 'Microsoft 365 Copilot (MS-4018)',
+    shortName: 'Microsoft 365 Copilot (MS-4018) & Copilot Studio',
     categoryTag: 'Enterprise GenAI',
     aeSlug: 'microsoft-365-copilot-ms-4018-training-dubai-uae',
     zaSlug: 'microsoft-365-copilot-ms-4018-training-south-africa',
-    aeFocusKeyword: 'Microsoft 365 Copilot Training Dubai & UAE',
-    zaFocusKeyword: 'Microsoft 365 Copilot Training South Africa',
+    aeFocusKeyword: 'Copilot Studio & Microsoft 365 Copilot Training Dubai UAE',
+    zaFocusKeyword: 'Copilot Studio & Microsoft 365 Copilot Training South Africa',
     aeIndustryAngle:
-      'Practical enterprise Copilot prompt engineering across Word, Excel, PowerPoint, Outlook, and Teams—helping UAE corporate teams unlock immediate productivity ROI safely.',
+      'Practical enterprise M365 Copilot & Copilot Studio agent building across Word, Excel, PowerPoint, Outlook, and Teams—helping UAE corporate teams in Dubai & Abu Dhabi deploy governed enterprise AI safely.',
     zaIndustryAngle:
-      'Hands-on corporate enablement program for South African knowledge workers and executives adopting Microsoft 365 Copilot with secure data boundaries.',
-    aeRoleDemand: 'Enterprise Workforce, Executive Leadership, Finance/HR/Ops Teams (Dubai & Abu Dhabi)',
-    zaRoleDemand: 'Corporate Knowledge Workers, Operations Managers, FinTech & Enterprise Teams (South Africa)',
-    ukRoleDemand: 'Corporate Leadership, Finance/Legal/Ops Teams, AI Champions Network (London / UK)',
-    euRoleDemand: 'European Corporate Teams, Product Operations, Finance & Legal Workforces (EU)',
-    deRoleDemand: 'Enterprise Business Teams, Controlling/HR/Procurement Leaders (Germany & DACH)',
-    nlRoleDemand: 'Corporate Knowledge Workers, Innovation Leads, Benelux Enterprise Teams (Netherlands)',
+      'Hands-on corporate enablement program for South African knowledge workers and executives adopting Microsoft 365 Copilot & Copilot Studio custom agents with strict POPIA data boundaries.',
+    aeRoleDemand: 'Enterprise Workforce, Copilot Studio Champions, Executive Leadership, Finance/HR/Ops Teams (Dubai & Abu Dhabi)',
+    zaRoleDemand: 'Corporate Knowledge Workers, Copilot Studio Makers, Operations Managers, FinTech Teams (South Africa)',
+    ukRoleDemand: 'Corporate Leadership, Finance/Legal/Ops Teams, Copilot Studio AI Champions (London / UK)',
+    euRoleDemand: 'European Corporate Teams, Copilot Studio Builders, Product & Finance Workforces (EU)',
+    deRoleDemand: 'Enterprise Business Teams, Copilot Studio Leads, Controlling/HR/Procurement (Germany & DACH)',
+    nlRoleDemand: 'Corporate Knowledge Workers, Copilot Studio Specialists, Benelux Enterprise Teams (Netherlands)',
   },
 
   // ===================== AWS & CLOUD NATIVE (3 COURSES — NO CISCO) =====================
@@ -1047,33 +1047,33 @@ export function buildRegionalCoursePage(
   let h1Title = '';
 
   if (regionCode === 'ae') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Dubai & UAE | Learnify Solutions`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} certification bootcamp in Dubai, Abu Dhabi & Sharjah. ${region.timezone} schedules, 24/7 cloud labs, AED corporate invoicing & 98.4% pass rate.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in Dubai & UAE (2026) | Learnify`;
+    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course & syllabus in Dubai, Abu Dhabi & Sharjah. ${region.timezone} evening & weekday batches, 24/7 cloud labs, AED corporate POs & 98.4% pass rate.`;
     seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} Dubai, ${meta.shortName} Abu Dhabi, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, corporate IT training Dubai, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Dubai & UAE`;
   } else if (regionCode === 'za') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in South Africa | Learnify Solutions`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} certification bootcamp in Johannesburg, Cape Town, Pretoria & Durban. ${region.timezone} batches, 24/7 cloud labs & ZAR corporate POs.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in South Africa (2026) | Learnify`;
+    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban. ${region.timezone} after-hours & weekday batches, 24/7 cloud labs & ZAR corporate POs.`;
     seoKeywords = `${meta.zaFocusKeyword}, ${meta.shortName} Johannesburg, ${meta.shortName} Cape Town, ${meta.shortName} Pretoria, ${course.examCode || ''} South Africa, ${course.certificationVendor} training South Africa, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in South Africa`;
   } else if (regionCode === 'uk') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in London & UK | Learnify Solutions`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} certification bootcamp in London, Manchester, Birmingham & Edinburgh. ${region.timezone} cohorts, 24/7 cloud sandbox labs & GBP corporate POs.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in London & UK (2026) | Learnify`;
+    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course & bootcamp in London, Manchester, Birmingham & Edinburgh. ${region.timezone} cohorts, 24/7 cloud sandbox labs & GBP corporate POs.`;
     seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, ${course.examCode || ''} UK certification, ${course.certificationVendor} training London Manchester, corporate IT training GBP, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in London & UK`;
   } else if (regionCode === 'de') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Germany & DACH | Learnify Solutions`;
-    seoDescription = `Live English-language ${meta.shortName}${examCodeText} certification bootcamp in Frankfurt, Munich, Berlin & Zurich. ${region.timezone} schedules, 24/7 cloud labs & EUR corporate POs.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in Germany & DACH (2026) | Learnify`;
+    seoDescription = `Live English-language ${meta.shortName}${examCodeText} course in Frankfurt, Munich, Berlin & Zurich. ${region.timezone} schedules, 24/7 cloud labs & EUR corporate POs.`;
     seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Frankfurt Munich Berlin, ${course.examCode || ''} DACH certification, ${course.certificationVendor} training Germany EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Germany & DACH`;
   } else if (regionCode === 'nl') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Netherlands & Benelux | Learnify Solutions`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} certification course in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels. ${region.timezone} batches, 24/7 cloud labs & EUR PO invoicing.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in Netherlands & Benelux (2026) | Learnify`;
+    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels. ${region.timezone} batches, 24/7 cloud labs & EUR PO invoicing.`;
     seoKeywords = `${meta.shortName} training Netherlands, ${meta.shortName} Amsterdam Utrecht Eindhoven, ${course.examCode || ''} Benelux course, ${course.certificationVendor} training Netherlands EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Netherlands & Benelux`;
   } else {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Europe (EU) | Learnify Solutions`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} certification bootcamp across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw. ${region.timezone} batches, 24/7 labs & EUR SEPA POs.`;
+    seoTitle = `${meta.shortName}${examCodeText} Training in Europe (EU) (2026) | Learnify`;
+    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw. ${region.timezone} batches, 24/7 labs & EUR SEPA POs.`;
     seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Europe`;
   }

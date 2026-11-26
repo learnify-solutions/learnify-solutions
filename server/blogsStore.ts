@@ -27,9 +27,9 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'Microsoft Azure AZ-104 vs AWS Solutions Architect (SAA-C03): 2026 Global Career & Certification Guide',
     excerpt:
       'A practical, instructor-led breakdown comparing Microsoft Azure AZ-104 and AWS SAA-C03 across exam blueprints, hands-on lab difficulty, 6-week study schedules, common mistakes, and global hiring demand.',
-    seoTitle: 'Microsoft Azure AZ-104 vs AWS SAA-C03: Preparation & Career Guide (2026) | Learnify Blogs',
+    seoTitle: 'Azure AZ-104 vs AWS SAA-C03: 2026 Exam, Career & Study Guide | Learnify',
     seoDescription:
-      'Compare Microsoft Azure Administrator (AZ-104) vs AWS Solutions Architect (SAA-C03) with a 6-week preparation roadmap, hands-on lab strategy, common exam traps, and global salary outlook.',
+      'Compare Microsoft Azure Administrator (AZ-104) vs AWS Solutions Architect (SAA-C03) with a 6-week preparation roadmap, hands-on lab strategy, exam traps, and 2026 salary outlook.',
     seoKeywords:
       'Azure AZ-104 vs AWS SAA-C03, AZ-104 preparation plan, AWS SAA-C03 study roadmap, best cloud certification 2026, multi-cloud career path, Learnify Solutions',
     readTime: '9 min read',
@@ -127,14 +127,19 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: '40-hour live instructor-led training with 24/7 Azure cloud sandbox labs',
       },
       {
+        label: 'Azure AZ-104 UK (London) & Dubai (UAE) Cohorts',
+        href: '/uk/microsoft-azure-az-104-training-uk',
+        subtitle: 'Dedicated GMT/BST (GBP) and UAE GST (AED) live Azure batches',
+      },
+      {
         label: 'AWS Certified Solutions Architect (SAA-C03)',
         href: '/course/course-aws-solutions',
         subtitle: 'Design resilient, secure multi-AZ & serverless AWS architectures',
       },
       {
-        label: 'Kubernetes & Cloud-Native (CKA & CKS Prep)',
-        href: '/course/course-kubernetes-cka',
-        subtitle: 'Production container cluster engineering across AWS EKS & Azure AKS',
+        label: 'Free Azure AZ-104 Mock Exam (45 Questions)',
+        href: '/exam-prep/azure-az-104-practice-questions',
+        subtitle: 'Timed practice questions on Entra ID, VNet peering & storage',
       },
     ],
     faqs: [
@@ -167,11 +172,11 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'CompTIA Certification Career Roadmap (2026): A+, Network+, Security+, Cloud+ & PenTest+ Master Guide',
     excerpt:
       'The definitive career and certification roadmap for CompTIA credentials. Compare A+, Network+, Security+, Cloud+, and PenTest+ across exam paths, study timelines, salary impact, and hiring demand.',
-    seoTitle: 'CompTIA Certification Roadmap (2026): A+, Network+, Security+ Guide | Learnify Blogs',
+    seoTitle: 'CompTIA Roadmap 2026 (PDF Checklist): A+, Network+, Security+ & ITF+ | Learnify',
     seoDescription:
-      'Explore the ultimate CompTIA certification roadmap for 2026. Compare A+, Network+, Security+, Cloud+, and PenTest+ with study plans, exam prerequisites, and career progression.',
+      'Explore the complete CompTIA certification roadmap 2026 PDF checklist: compare ITF+, A+, Network+, Security+, Cloud+, and PenTest+ with study timelines and career paths.',
     seoKeywords:
-      'CompTIA certification roadmap 2026, CompTIA A+ vs Network+ vs Security+, CompTIA Cloud+, PenTest+ study plan, IT support to cybersecurity career path, Learnify Solutions',
+      'CompTIA certification roadmap 2026, CompTIA A+ 220-1201 220-1202 vs 220-1101, CompTIA ITF+ FC0-U61, CompTIA A+ vs Network+ vs Security+, CompTIA Cloud+, PenTest+ study plan, IT support to cybersecurity career path, Learnify Solutions',
     readTime: '9 min read',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-17',
@@ -179,7 +184,7 @@ export const SEED_BLOGS: BlogPost[] = [
     intro:
       'Whether you are stepping into IT support for the first time or transitioning from helpdesk operations into cloud infrastructure and cybersecurity, CompTIA certifications remain the most recognized vendor-neutral credentials on global hiring shortlists. At Learnify Solutions, we mentor thousands of professionals across North America, the UK, Europe, the Middle East, and Africa who ask: which CompTIA cert should I take next, and in what sequence?',
     keyTakeaways: [
-      'CompTIA A+ (220-1101 / 220-1102) is your foundational entry ticket for desktop support, helpdesk, and field technician roles.',
+      'CompTIA ITF+ (FC0-U61) gives career changers a low-risk bridge into A+ (220-1201 / 220-1202 V15 & 220-1101 / 220-1102) for desktop support, helpdesk, and field technician roles.',
       'CompTIA Network+ (N10-008 / N10-009) builds essential TCP/IP, subnetting, routing, and switching fluency before tackling cloud or security tracks.',
       'CompTIA Security+ (SY0-701) is the global gold standard for cybersecurity baseline compliance, DoD 8140/8570 recognition, and SOC readiness.',
       'Advanced CompTIA credentials like Cloud+ (CV0-004) and PenTest+ (PT0-002) position engineers for senior cloud administration and ethical hacking roles.',
@@ -250,14 +255,19 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: 'Official vendor curriculum, hands-on SOC labs & 98.4% pass rate',
       },
       {
-        label: 'CompTIA A+ & Network+ Live Cohorts',
-        href: '/course/course-comptia-a-plus',
-        subtitle: 'Master hardware, OS troubleshooting, and enterprise networking',
+        label: 'CompTIA ITF+, Cloud Essentials+ & Server+ Guide',
+        href: '/blogs/comptia-itf-plus-cloud-essentials-server-plus-study-guide-2026',
+        subtitle: 'Beginner-to-infrastructure roadmap covering FC0-U61, CLO-002 & SK0-005',
       },
       {
-        label: 'UAE (Dubai & Abu Dhabi) CompTIA Hub',
+        label: 'Free Security+ SY0-701 Mock Questions (45 Qs)',
+        href: '/exam-prep/comptia-security-plus-sy0-701-practice-questions',
+        subtitle: 'Interactive timed scenario exam prep & domain scoring',
+      },
+      {
+        label: 'UAE & South Africa CompTIA Hubs',
         href: '/ae',
-        subtitle: 'Authorized Pearson VUE exam guidance, AED pricing & local bootcamps',
+        subtitle: 'AED & ZAR exam voucher guidance + local timezone cohorts',
       },
     ],
     faqs: [
@@ -509,8 +519,8 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: 'Instructor-led live cohort with PBQ simulations & 24/7 cyber sandbox',
       },
       {
-        label: 'Certified Ethical Hacker (CEH v12)',
-        href: '/course/course-ceh-v12',
+        label: 'CompTIA PenTest+ & Ethical Hacking (PT0-002)',
+        href: '/course/course-comptia-pentest-plus',
         subtitle: 'Offensive penetration testing, reconnaissance & vulnerability exploitation labs',
       },
       {
@@ -548,9 +558,9 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'Microsoft Power BI (PL-300) & M365 Copilot (MS-4018): Modern Enterprise Analytics Blueprint',
     excerpt:
       'Learn how data, finance, and operations teams combine Power Query ETL, Star Schema DAX modeling (PL-300), and governed Microsoft 365 Copilot workflows (MS-4018)—plus full PL-300 prep guidance.',
-    seoTitle: 'Power BI (PL-300) & Copilot (MS-4018) Preparation & Analytics Guide | Learnify Blogs',
+    seoTitle: 'Power BI (PL-300) & Copilot (MS-4018) 2026 Study & Analytics Guide | Learnify',
     seoDescription:
-      'Step-by-step preparation guide for Microsoft Power BI PL-300 and M365 Copilot MS-4018: Star Schema design, DAX CALCULATE mastery, Row-Level Security, and exam study plan.',
+      'Step-by-step preparation guide for Microsoft Power BI PL-300 and M365 Copilot MS-4018: Star Schema design, DAX CALCULATE mastery, Row-Level Security, and Dubai/UK/SA batches.',
     seoKeywords:
       'Microsoft Power BI PL-300 preparation, PL-300 study plan 2026, Microsoft 365 Copilot MS-4018 course, Star Schema DAX modeling, Power BI exam tips, Learnify Solutions',
     readTime: '8 min read',
@@ -645,14 +655,19 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: 'Live DAX, Power Query & enterprise dashboard capstone labs',
       },
       {
-        label: 'Microsoft 365 Copilot Enterprise Track (MS-4018)',
-        href: '/course/course-ms-4018-copilot',
-        subtitle: 'Practical prompt governance across Excel, Teams, Word & PowerPoint',
+        label: 'Power BI (PL-300) Training in Dubai & UAE',
+        href: '/ae/microsoft-power-bi-pl-300-training-dubai-uae',
+        subtitle: 'GST evening batches, AED corporate POs & live enterprise BI labs',
       },
       {
-        label: 'Azure AI Engineer (AI-102) Bootcamp',
-        href: '/course/course-ms-ai-102',
-        subtitle: 'Architect production enterprise RAG pipelines on Azure OpenAI',
+        label: 'Free Power BI PL-300 Mock Exam (45 Questions)',
+        href: '/exam-prep/power-bi-pl-300-practice-questions',
+        subtitle: 'Test your DAX filter context & Power Query folding before exam day',
+      },
+      {
+        label: 'Microsoft 365 Copilot & Copilot Studio (MS-4018)',
+        href: '/course/course-ms-4018-copilot',
+        subtitle: 'Practical prompt governance across Excel, Teams, Word & PowerPoint',
       },
     ],
     faqs: [
@@ -688,17 +703,17 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'Where to Write CompTIA Exams in Gauteng, Johannesburg & South Africa (2026 Guide)',
     excerpt:
       'Authorized Pearson VUE testing centers across Sandton, Midrand, Johannesburg, Pretoria, Cape Town & Durban, plus OnVUE online rules, ZAR voucher costs, and prep guidance.',
-    seoTitle: 'Where to Write CompTIA A+, Network+ & Security+ in Gauteng & SA | Learnify Blogs',
+    seoTitle: 'Where to Write CompTIA Exams in Gauteng (2026 Centers & ZAR Fees) | Learnify',
     seoDescription:
-      'Complete 2026 guide on where to write CompTIA A+, Network+, and Security+ exams across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town & Durban, plus ZAR costs & prep tips.',
+      'Complete 2026 guide on where to write CompTIA A+, Network+, and Security+ exams across Gauteng (Johannesburg, Sandton, Midrand, Pretoria), Cape Town & Durban—with ZAR voucher tiers.',
     seoKeywords:
-      'where to write CompTIA A+ in Gauteng, CompTIA exam centres Johannesburg, Pearson VUE Gauteng Pretoria Sandton Midrand, CompTIA Security+ exam cost South Africa ZAR, OnVUE proctored exam South Africa',
+      'where to write CompTIA A+ in Gauteng, CompTIA A+ 220-1201 220-1202 Gauteng, CompTIA exam centres Johannesburg, Pearson VUE Gauteng Pretoria Sandton Midrand, CompTIA Security+ exam cost South Africa ZAR, OnVUE proctored exam South Africa',
     readTime: '8 min read',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-17',
     citiesCovered: ['Johannesburg', 'Sandton', 'Midrand', 'Pretoria', 'Centurion', 'Cape Town', 'Durban'],
     intro:
-      'One of the first logistical hurdles South African IT learners face after finishing their study notes is figuring out where to write CompTIA A+ (220-1101 / 220-1102), Network+ (N10-009), or Security+ (SY0-701) reliably—and how to avoid paying unnecessary foreign exchange bank markups. Every official CompTIA exam in South Africa is administered exclusively through Pearson VUE, either in person at an accredited Gauteng/regional testing lab or remotely via Pearson OnVUE.',
+      'One of the first logistical hurdles South African IT learners face after finishing their study notes is figuring out where to write CompTIA A+ (220-1201 / 220-1202 V15 & 220-1101 / 220-1102), Network+ (N10-009), or Security+ (SY0-701) reliably—and how to avoid paying unnecessary foreign exchange bank markups. Every official CompTIA exam in South Africa is administered exclusively through Pearson VUE, either in person at an accredited Gauteng/regional testing lab or remotely via Pearson OnVUE.',
     keyTakeaways: [
       'Authorized Pearson VUE centers operate across Sandton, Midrand, Johannesburg CBD/Rosebank, Pretoria, Centurion, Cape Town, and Durban.',
       'South Africa qualifies for CompTIA Emerging Market regional voucher tiers—saving thousands of Rands compared to US/EU USD rates when booked locally.',
@@ -755,7 +770,7 @@ export const SEED_BLOGS: BlogPost[] = [
           headers: ['Certification Track', 'Exams Required', 'Est. Exam Tier (ZAR Ref.)', 'Recommended Prep Format'],
           rows: [
             {
-              label: 'CompTIA A+ (220-1101 & 220-1102)',
+              label: 'CompTIA A+ (220-1201/1202 & 220-1101/1102)',
               col2: '2 Exams (Core 1 + Core 2)',
               col3: 'R4,500 – R5,400 per exam',
               col4: '5-Day Bootcamp + 24/7 Labs',
@@ -798,6 +813,11 @@ export const SEED_BLOGS: BlogPost[] = [
     ],
     relatedRegionalLinks: [
       {
+        label: 'South Africa IT Certification Hub (ZAR / SAST)',
+        href: '/za',
+        subtitle: '22 CompTIA, Microsoft & AWS bootcamps in Johannesburg, Pretoria & Cape Town',
+      },
+      {
         label: 'CompTIA A+ Certification Training in South Africa',
         href: '/za/comptia-a-plus-training-south-africa',
         subtitle: 'Core 1 & Core 2 live SAST bootcamp · Hardware, Windows, Linux & Endpoint Support',
@@ -808,9 +828,9 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: 'POPIA & FSCA-aligned cybersecurity defense + mock exam simulations',
       },
       {
-        label: 'CompTIA Network+ (N10-009) South Africa',
-        href: '/za/comptia-network-plus-training-south-africa',
-        subtitle: 'Vendor-neutral routing, switching & packet troubleshooting in SAST',
+        label: 'Interactive ZAR Exam Cost & Salary Calculator',
+        href: '/exam-prep/it-certification-exam-cost-salary-calculator',
+        subtitle: 'Compare South Africa CompTIA & Azure fees in ZAR before booking',
       },
     ],
     faqs: [
@@ -842,9 +862,9 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'Microsoft Azure & Power BI (PL-300 / AZ-104) Certification Cost & Schedules in Dubai & UAE',
     excerpt:
       'AED Pearson VUE exam fees (~AED 605 for role-based tracks), evening GST schedules in Dubai & Abu Dhabi, practical study tips, and corporate PO billing options.',
-    seoTitle: 'Power BI (PL-300) & Azure AZ-104 Course Cost in Dubai & UAE | Learnify Blogs',
+    seoTitle: 'Power BI (PL-300) & Azure AZ-104 Cost in Dubai & UAE (2026 AED) | Learnify',
     seoDescription:
-      'Compare 2026 training schedules, AED Pearson VUE exam fees, study preparation advice, and corporate batch options for Microsoft Power BI PL-300, Azure AZ-104, AI-102, and Copilot MS-4018 in UAE.',
+      'Compare 2026 training schedules, AED Pearson VUE exam fees (~AED 605), study prep & corporate PO billing for Power BI PL-300, Azure AZ-104, AI-102, and Copilot Studio MS-4018 in Dubai & UAE.',
     seoKeywords:
       'Power BI training Dubai cost, Power BI course in Dubai fees, Microsoft Azure AZ-104 training Dubai price AED, Microsoft AI-102 Dubai UAE, Pearson VUE exam centers Dubai Knowledge Park, MS-4018 Copilot Dubai',
     readTime: '8 min read',
@@ -1496,9 +1516,9 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'CompTIA ITF+ (FC0-U61), Cloud Essentials+ (CLO-002) & Server+ (SK0-005): Complete Certification Guide',
     excerpt:
       'Everything candidates search for before booking CompTIA ITF+ (IT Fundamentals), Cloud Essentials+ (CLO-002), or Server+ (SK0-005)—including exam objectives, who should take each cert, career progression, and lab preparation tips.',
-    seoTitle: 'CompTIA ITF+ (FC0-U61), Cloud Essentials+ & Server+ Guide (2026) | Learnify Blogs',
+    seoTitle: 'CompTIA ITF+ (FC0-U61), Cloud Essentials+ & Server+ Guide (2026) | Learnify',
     seoDescription:
-      'Master CompTIA ITF+ (IT Fundamentals FC0-U61), CompTIA Cloud Essentials+ (CLO-002), and CompTIA Server+ (SK0-005). Compare exam domains, prerequisites, costs, and study roadmaps.',
+      'CompTIA ITF+ (IT Fundamentals FC0-U61), CompTIA Cloud Essentials+ (CLO-002), and Server+ (SK0-005) 2026 study guide: syllabus domains, prerequisites, costs, and live lab courses.',
     seoKeywords:
       'CompTIA ITF+, IT Fundamentals certification, FC0-U61 training, CompTIA Cloud Essentials+, CLO-002 course, CompTIA Server+ SK0-005, CompTIA fundamentals course, Learnify Solutions',
     readTime: '8 min read',
@@ -1576,6 +1596,11 @@ export const SEED_BLOGS: BlogPost[] = [
         href: '/course/course-comptia-server-plus',
         subtitle: 'Hands-on RAID storage, virtualization, data center operations & disaster recovery',
       },
+      {
+        label: 'CompTIA ITF+ UK, Netherlands & South Africa Cohorts',
+        href: '/uk/comptia-itf-plus-training-uk',
+        subtitle: 'Regional timezone bootcamps in GBP, EUR (CET) & ZAR',
+      },
     ],
     faqs: [
       {
@@ -1599,9 +1624,9 @@ export const SEED_BLOGS: BlogPost[] = [
     title: 'Microsoft DP-900, PL-900, SC-900 & AI-102 Certification Roadmap (2026): Which Microsoft Track Fits Your Role?',
     excerpt:
       'Structured guide to Microsoft Azure Data Fundamentals (DP-900), Power Platform Fundamentals (PL-900), Security Fundamentals (SC-900), Data Scientist (DP-100), and Azure AI Engineer (AI-102)—with official exam blueprints and lab preparation tips.',
-    seoTitle: 'Microsoft DP-900, PL-900, SC-900 & AI-102 Certification Guide (2026) | Learnify Blogs',
+    seoTitle: 'Azure DP-900, PL-900, SC-900 & AI-102 Certification Guide (2026) | Learnify',
     seoDescription:
-      'Compare Microsoft DP-900 Azure Data Fundamentals, PL-900 Power Platform, SC-900 Security Compliance, DP-100 Data Science & AI-102 Azure AI Engineer with study roadmaps and 24/7 lab workflows.',
+      'Compare Microsoft Azure Data Fundamentals (DP-900), Power Platform (PL-900), Security Compliance & Identity (SC-900), DP-100 & Azure AI Engineer (AI-102) with syllabus & 24/7 labs.',
     seoKeywords:
       'DP-900 Azure Data Fundamentals, PL-900 Power Platform training, AI-102 Azure AI Engineer course, SC-900 security compliance and identity fundamentals, DP-100 data science course, Learnify Solutions',
     readTime: '9 min read',
@@ -1682,14 +1707,19 @@ export const SEED_BLOGS: BlogPost[] = [
         subtitle: 'Live SQL, Cosmos DB, Synapse & cloud data warehousing foundations',
       },
       {
-        label: 'Microsoft Azure AI Engineer (AI-102)',
-        href: '/course/course-ms-ai-102',
-        subtitle: 'Hands-on Azure OpenAI, RAG search, vision & NLP engineering labs',
-      },
-      {
         label: 'Microsoft Power Platform Fundamentals (PL-900)',
         href: '/course/course-ms-pl-900',
         subtitle: 'Power Apps, Power Automate, Dataverse & Copilot Studio low-code bootcamp',
+      },
+      {
+        label: 'Microsoft Security, Compliance & Identity (SC-900)',
+        href: '/course/course-ms-sc-900',
+        subtitle: 'Zero Trust, Microsoft Entra ID, Defender XDR & Purview foundations',
+      },
+      {
+        label: 'Microsoft Azure AI Engineer (AI-102) — Global & UAE',
+        href: '/ae/microsoft-azure-ai-102-training-dubai-uae',
+        subtitle: 'Hands-on Azure OpenAI, RAG search & Document Intelligence labs',
       },
     ],
     faqs: [

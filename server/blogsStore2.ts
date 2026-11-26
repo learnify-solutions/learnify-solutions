@@ -1006,14 +1006,14 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
     coverImage: '/images/copilot_genai_workspace_1788294313357.webp',
     title: 'Microsoft 365 Copilot (MS-4018) & Copilot Studio Enterprise Deployment Guide (UAE, UK & Europe)',
     excerpt: 'How enterprise IT leaders deploy Microsoft 365 Copilot safely: SharePoint oversharing remediation, Microsoft Purview sensitivity labels, Copilot Studio agents, and executive ROI.',
-    seoTitle: 'Microsoft 365 Copilot MS-4018 & Copilot Studio Enterprise Guide | Learnify',
-    seoDescription: 'Complete enterprise guide to Microsoft Copilot MS-4018, SharePoint permission governance, Microsoft Purview DLP, and Copilot Studio custom agent training in UAE & UK.',
-    seoKeywords: 'Microsoft Copilot MS-4018 training, Copilot Studio training UAE Dubai, M365 Copilot enterprise governance',
+    seoTitle: 'Copilot Studio & M365 Copilot (MS-4018) Training Guide UAE & UK (2026) | Learnify',
+    seoDescription: 'Complete 2026 enterprise training guide to Microsoft Copilot Studio custom agents, MS-4018 workshops, SharePoint permission governance & Purview DLP in Dubai UAE & UK.',
+    seoKeywords: 'Copilot Studio training UAE, Microsoft Copilot MS-4018 training Dubai, M365 Copilot enterprise governance UK',
     readTime: '9 min read',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-24',
     citiesCovered: ['Dubai', 'Abu Dhabi', 'London', 'Amsterdam', 'Zurich'],
-    intro: 'Copilot adoption is surging across Dubai, Abu Dhabi, London, and European corporate headquarters—yet 70% of failed enterprise rollouts stall because of SharePoint oversharing permissions rather than prompt quality. MS-4018 + Microsoft Purview governance closes that gap.',
+    intro: 'Copilot Studio and Microsoft 365 Copilot adoption is surging across Dubai, Abu Dhabi, London, and European corporate headquarters—yet 70% of failed enterprise rollouts stall because of SharePoint oversharing permissions rather than prompt quality. MS-4018 + Microsoft Purview governance closes that gap.',
     keyTakeaways: [
       'Audit SharePoint Permissions First: Copilot inherits the user’s existing M365 graph permissions—unrestricted "Everyone except external users" sites expose sensitive HR/finance files immediately.',
       'Apply Microsoft Purview Sensitivity Labels: Ensure encrypted/restricted files honor Rights Management protections inside Copilot answers.',
@@ -1022,15 +1022,16 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
     sections: [
       {
         id: 'copilot-rollout',
-        heading: '4-Phase Enterprise M365 Copilot Rollout Checklist',
+        heading: '4-Phase Enterprise M365 Copilot & Copilot Studio Rollout Checklist',
         paragraphs: [
-          'Start with Restricted SharePoint Search (RSS) for pilot cohorts, deploy Data Access Governance reports, train department champions via MS-4018 workshops, and measure weekly Teams/Outlook/Excel time-savings.',
+          'Start with Restricted SharePoint Search (RSS) for pilot cohorts, deploy Data Access Governance reports, train department champions via MS-4018 and Copilot Studio workshops, and measure weekly Teams/Outlook/Excel time-savings.',
         ],
       },
     ],
     relatedRegionalLinks: [
-      { label: 'Microsoft 365 Copilot (MS-4018) Live Training', href: '/course/course-ms-4018-copilot', subtitle: 'Enterprise workshops tailored for UAE, UK & EU teams' },
-      { label: 'Dubai UAE MS-4018 Training Page', href: '/ae/microsoft-365-copilot-ms-4018-training-dubai-uae', subtitle: 'Gulf-timezone corporate cohorts & GCC compliance' },
+      { label: 'Copilot Studio & M365 Copilot (MS-4018) Course', href: '/course/course-ms-4018-copilot', subtitle: 'Enterprise workshops tailored for UAE, UK & EU teams' },
+      { label: 'Dubai & UAE Copilot Studio (MS-4018) Training', href: '/ae/microsoft-365-copilot-ms-4018-training-dubai-uae', subtitle: 'Gulf-timezone corporate cohorts, AED POs & GCC compliance' },
+      { label: 'UK & London Copilot Studio (MS-4018) Training', href: '/uk/microsoft-365-copilot-ms-4018-training-uk', subtitle: 'GMT/BST corporate cohorts & GBP PO invoicing' },
     ],
     faqs: [
       { q: 'Does Microsoft 365 Copilot train public OpenAI models on our corporate emails?', a: 'No—Enterprise Commercial Data Protection isolates all prompts, grounding retrieval, and responses strictly inside your Microsoft 365 tenant boundary.' },

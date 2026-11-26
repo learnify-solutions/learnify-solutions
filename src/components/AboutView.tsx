@@ -93,11 +93,15 @@ export const AboutView: React.FC<AboutViewProps> = ({
                 <img
                   src={normalizeImageUrl(data.hero.imageUrl, 'about')}
                   alt={data.hero.imageAlt || 'Learnify Solutions Training Team'}
+                  width={800}
+                  height={600}
                   className="w-full h-auto aspect-4/3 object-cover object-center group-hover:scale-102 transition-transform duration-500"
                   loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   onError={(e) => {
                     const target = e.currentTarget;
+                    target.onerror = null;
                     if (!target.src.includes('hero.webp')) {
                       target.src = '/hero.webp';
                     }

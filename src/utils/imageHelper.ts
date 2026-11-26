@@ -15,6 +15,9 @@ const KNOWN_VALID_ASSETS: Record<string, string> = {
   'powerbi_data': '/images/powerbi_data_analytics_1788294280157.webp',
   'copilot_genai': '/images/copilot_genai_workspace_1788294313357.webp',
   'cloud_essentials': '/images/cloud_essentials_business_1788294640468.webp',
+  'DeliveredTraningOnline1': '/images/delivered_traning_online_1.webp',
+  'delivered_traning_online_1': '/images/delivered_traning_online_1.webp',
+  'delivered_traning_online_2': '/images/delivered_traning_online_2.webp',
 };
 
 export function normalizeImageUrl(
@@ -37,7 +40,8 @@ export function normalizeImageUrl(
   // If it's an absolute external URL or data URI, return as-is
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
     if (trimmed.includes('images.unsplash.com') && !trimmed.includes('fm=webp')) {
-      return `${trimmed}&fm=webp`;
+      const separator = trimmed.includes('?') ? '&' : '?';
+      return `${trimmed}${separator}auto=format&fit=crop&w=800&q=75&fm=webp`;
     }
     return trimmed;
   }
@@ -61,6 +65,8 @@ export function normalizeImageUrl(
     const webpAssets = [
       'delivered_traning_1',
       'delivered_traning_2',
+      'delivered_traning_online_1',
+      'delivered_traning_online_2',
       'aws_architecture_diagram_1787771528914',
       'azure_cloud_infra_1787771504293',
       'cisco_network_map_1787771488810',
@@ -92,7 +98,7 @@ export function getDefaultFallback(fallbackType: 'course' | 'about' | 'hero' | '
     case 'hero':
       return '/hero.webp';
     case 'logo':
-      return '/logo.jpeg';
+      return '/logo-mobile.webp';
     case 'about':
       return '/images/learnify_about_team_1787770808391.webp';
     case 'cisco':

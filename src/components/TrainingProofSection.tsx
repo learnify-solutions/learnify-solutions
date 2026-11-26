@@ -15,7 +15,7 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
       title: 'Advanced Cybersecurity Fundamentals Live Session',
       subtitle: 'Live Interactive Virtual Training & Threat Analysis Cohort',
       description: 'Instructor-led live virtual training session focusing on core cybersecurity principles, threat analysis protocols, and secure network defense with international participants via secure video conference and interactive lab pods.',
-      image: '/images/DeliveredTraningOnline1.jpeg',
+      image: '/images/delivered_traning_online_1.webp',
       badge: 'Live Virtual Classroom',
       metrics: 'Interactive Virtual Cohort',
       region: 'GCC & International Virtual Cohort',
@@ -25,7 +25,7 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
       title: 'Enterprise Cloud & Network Infrastructure Masterclass',
       subtitle: 'Live Remote Technical Workshop & Hands-On Labs',
       description: 'Live interactive screen-sharing and cloud network architecture demonstration conducted by senior technical experts. Participants engaged in real-time virtual lab deployment and infrastructure configuration.',
-      image: '/images/delivered_traning_online_2.png',
+      image: '/images/delivered_traning_online_2.webp',
       badge: 'Remote Training Room',
       metrics: 'Global Virtual Training Room',
       region: 'Global Virtual Training Cohort',
@@ -38,7 +38,7 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
       title: 'Enterprise Onsite IT Training - Dubai HQ',
       subtitle: 'Dedicated Corporate Training Workshop at Client Facility',
       description: 'Onsite technical upskilling workshop conducted directly at enterprise client facilities in Dubai, UAE. Focused on advanced networking, system administration, and infrastructure resilience.',
-      image: '/images/delivered_traning_1.png',
+      image: '/images/delivered_traning_1.webp',
       badge: 'Onsite Delivery UAE',
       metrics: 'Customized Corporate Curriculum',
       region: 'Dubai, United Arab Emirates',
@@ -48,7 +48,7 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
       title: 'Executive Technical Upskilling - Muscat',
       subtitle: 'On-Premise Corporate Tech Training Session',
       description: 'Delivered an intensive on-premise training bootcamp for corporate engineering teams in Muscat, Oman, featuring dedicated physical lab setups and personalized instructor guidance.',
-      image: '/images/delivered_traning_2.png',
+      image: '/images/delivered_traning_2.webp',
       badge: 'Onsite Delivery Oman',
       metrics: 'Private Enterprise Batch',
       region: 'Muscat, Sultanate of Oman',
@@ -121,7 +121,9 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
                 <img
                   src={item.image}
                   alt={item.title}
-                  loading="eager"
+                  width={800}
+                  height={450}
+                  loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 opacity-95"
                   referrerPolicy="no-referrer"
@@ -222,6 +224,9 @@ export const TrainingProofSection: React.FC<TrainingProofSectionProps> = ({ onOp
               <img
                 src={selectedImage.url}
                 alt={selectedImage.title}
+                width={1200}
+                height={675}
+                decoding="async"
                 className="max-h-[65vh] object-contain rounded-lg"
                 referrerPolicy="no-referrer"
               />

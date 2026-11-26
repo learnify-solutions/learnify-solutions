@@ -81,9 +81,9 @@ export function useSEO({
     }
     canonical.setAttribute('href', canonicalUrl || window.location.href);
 
-    // 6. Update Hreflang Alternate Links when specified
+    // 6. Update Hreflang Alternate Links (always clear stale tags on non-regional routes)
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
     if (hreflangAlternates && hreflangAlternates.length > 0) {
-      document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
       hreflangAlternates.forEach((alt) => {
         const link = document.createElement('link');
         link.setAttribute('rel', 'alternate');

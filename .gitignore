@@ -17,3 +17,5 @@ credentials*.json
 *HANDOVER*
 CLIENT_HANDOVER*
 public/assets/aistudio/
+.aistudio/
+

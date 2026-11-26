@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Clock,
   Globe2,
+  Loader2,
   MapPin,
   PenSquare,
   Search,
@@ -211,10 +212,34 @@ export const BlogsHubView: React.FC<BlogsHubViewProps> = ({
       {/* Main Editorial Area */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10">
         {isLoading && summaries.length === 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map((idx) => (
-              <div key={idx} className="bg-white border border-slate-200 rounded-2xl h-80" />
-            ))}
+          <div className="space-y-6">
+            <div className="flex items-center justify-center gap-2.5 py-2 text-sm font-semibold text-[#152e4d]">
+              <Loader2 className="w-5 h-5 text-[#ea6d24] animate-spin" />
+              <span>Loading certification blogs, roadmaps &amp; exam guides...</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              {[1, 2, 3, 4, 5, 6].map((idx) => (
+                <div
+                  key={idx}
+                  className="bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="aspect-video bg-slate-200" />
+                    <div className="p-6 space-y-3">
+                      <div className="h-3 w-36 bg-slate-200 rounded" />
+                      <div className="h-5 w-11/12 bg-slate-200 rounded" />
+                      <div className="h-5 w-3/4 bg-slate-200 rounded" />
+                      <div className="h-3.5 w-full bg-slate-100 rounded" />
+                      <div className="h-3.5 w-5/6 bg-slate-100 rounded" />
+                    </div>
+                  </div>
+                  <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-[#fcfdfe]">
+                    <div className="h-3 w-24 bg-slate-200 rounded" />
+                    <div className="h-4 w-24 bg-orange-100 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <>

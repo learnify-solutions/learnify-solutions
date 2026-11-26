@@ -170,10 +170,13 @@ export const CorporateTrainingView: React.FC<CorporateTrainingViewProps> = ({ co
             </div>
 
             {/* Right Image */}
-            <div className="relative w-full h-[320px] lg:h-[440px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 group">
+            <div className="relative w-full h-[320px] lg:h-[440px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-100 group">
               <img 
                 src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=75&fm=webp" 
                 alt="Corporate Training Session"
+                width={800}
+                height={533}
+                loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -349,11 +352,13 @@ export const CorporateTrainingView: React.FC<CorporateTrainingViewProps> = ({ co
             </div>
             
             <div className="relative">
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-slate-200">
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-100">
                 <img 
                   src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=75&fm=webp" 
                   alt="Corporate Training Session" 
-                  loading="eager"
+                  width={800}
+                  height={600}
+                  loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover"
                 />
@@ -535,11 +540,13 @@ export const CorporateTrainingView: React.FC<CorporateTrainingViewProps> = ({ co
                 </button>
               </div>
 
-              <div className="rounded-2xl overflow-hidden shadow-xl aspect-video lg:aspect-[4/3]">
+              <div className="rounded-2xl overflow-hidden shadow-xl aspect-video lg:aspect-[4/3] bg-slate-100">
                 <img 
                   src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=75&fm=webp" 
                   alt="Hands on tech lab" 
-                  loading="eager"
+                  width={800}
+                  height={600}
+                  loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover"
                 />
@@ -605,12 +612,15 @@ export const CorporateTrainingView: React.FC<CorporateTrainingViewProps> = ({ co
                 <img 
                   src={normalizeImageUrl(card.imageUrl, 'course')} 
                   alt={card.title} 
-                  loading="eager"
+                  width={800}
+                  height={450}
+                  loading="lazy"
                   decoding="async"
                   onError={(e) => {
                     const target = e.currentTarget;
+                    target.onerror = null;
                     if (target.src.endsWith('.webp')) {
-                      target.src = target.src.replace('.webp', '.png');
+                      target.src = '/hero.webp';
                     }
                   }}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

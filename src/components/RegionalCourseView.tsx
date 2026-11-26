@@ -7,7 +7,7 @@ import {
   getRegionalCoursePages,
   getRegionalCourseSlug,
 } from '../data/regionalSeoData';
-import { getRelatedExamPrepResources } from '../data/examPrepData';
+import { getRelatedExamPrepResources } from '../data/examPrepMeta';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
 import {
   ArrowRight,

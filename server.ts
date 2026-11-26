@@ -35,6 +35,7 @@ import {
   getRelatedExamPrepResources,
   parseExamPrepRoutePath,
 } from './src/data/examPrepData';
+import { buildCourseSeoMeta } from './src/utils/courseSeo';
 import { CmsData, LeadSubmission, Course, BlogPost } from './src/types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
@@ -89,20 +90,36 @@ let leadsStore: LeadSubmission[] = [
 
 let coursesStore: Course[] = JSON.parse(JSON.stringify(sampleCourses));
 let customBlogsStore: BlogPost[] = [];
+const DB_SYNC_TTL_MS = 60_000;
+let lastBlogsSyncAt = 0;
+let lastCoursesSyncAt = 0;
+const sitemapXmlCache = new Map<string, { xml: string; expiresAt: number }>();
+
+function invalidateBlogAndSitemapCaches() {
+  lastBlogsSyncAt = 0;
+  sitemapXmlCache.clear();
+}
 
 function getAllBlogsList(): BlogPost[] {
   const legacyCmsBlogs = Array.isArray(currentCmsData.blogs) ? currentCmsData.blogs : [];
   return getMergedBlogs([...customBlogsStore, ...legacyCmsBlogs]);
 }
 
-async function syncBlogsFromSupabase(): Promise<void> {
+async function syncBlogsFromSupabase(force = false): Promise<void> {
   if (!supabase) return;
+  const now = Date.now();
+  if (!force && lastBlogsSyncAt > 0 && now - lastBlogsSyncAt < DB_SYNC_TTL_MS) {
+    return;
+  }
   try {
     const { data, error } = await supabase
       .from('learnify_blogs')
       .select('slug, data, region, topic_track, published_at, updated_at')
       .order('updated_at', { ascending: false });
 
+    if (!error) {
+      lastBlogsSyncAt = Date.now();
+    }
     if (!error && Array.isArray(data) && data.length > 0) {
       const parsed: BlogPost[] = [];
       for (const row of data) {
@@ -461,8 +478,8 @@ async function startServer() {
     crossOriginEmbedderPolicy: false,
   }));
 
-  // High-performance gzip/deflate compression for all API and asset responses
-  app.use(compression() as any);
+  // High-performance gzip/deflate compression for all API, SSR HTML, and asset responses
+  app.use(compression({ threshold: 512, level: 6 }) as any);
   app.use(cors());
   app.use(express.json({ limit: '10mb' }));
 
@@ -575,6 +592,12 @@ async function startServer() {
     '/netherlands': '/nl',
     '/amsterdam': '/nl',
     '/rotterdam': '/nl',
+    '/corporate': '/corporate-training',
+    '/cisco': '/cisco-training',
+    '/course/course-azure-ai-102': '/course/course-ms-ai-102',
+    '/course/course-ceh-v12': '/course/course-comptia-pentest-plus',
+    '/course/course-azure-900': '/course/course-ms-900',
+    '/course/course-azure-305': '/course/course-azure-104',
     '/cisco-certified-network-associate-and-ccna-the-essential-cisco-networking-certification': '/course/course-cisco-ccna',
   };
 
@@ -714,33 +737,45 @@ ${courseEntries.join('\n')}
 
   for (const regionCode of ALL_REGION_CODES) {
     app.get(`/sitemap-${regionCode}.xml`, (_req, res) => {
+      const cacheKey = `regional-${regionCode}`;
+      const cached = sitemapXmlCache.get(cacheKey);
+      let xml = cached && cached.expiresAt > Date.now() ? cached.xml : '';
+      if (!xml) {
+        xml = buildRegionalSitemapXml(regionCode);
+        sitemapXmlCache.set(cacheKey, { xml, expiresAt: Date.now() + DB_SYNC_TTL_MS });
+      }
       res.setHeader('Content-Type', 'application/xml; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=3600');
-      res.send(buildRegionalSitemapXml(regionCode));
+      res.send(xml);
     });
   }
 
   app.get('/sitemap-prep.xml', (_req, res) => {
-    const today = new Date().toISOString().split('T')[0];
-    const hubEntry = `  <url>
+    const cached = sitemapXmlCache.get('prep');
+    let xml = cached && cached.expiresAt > Date.now() ? cached.xml : '';
+    if (!xml) {
+      const today = new Date().toISOString().split('T')[0];
+      const hubEntry = `  <url>
     <loc>${SITE_BASE_URL}/exam-prep</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.98</priority>
   </url>`;
-    const prepEntries = EXAM_PREP_RESOURCES.map(
-      (item) => `  <url>
+      const prepEntries = EXAM_PREP_RESOURCES.map(
+        (item) => `  <url>
     <loc>${SITE_BASE_URL}/exam-prep/${item.slug}</loc>
     <lastmod>${item.publishedIso || today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>`
-    );
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+      );
+      xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${hubEntry}
 ${prepEntries.join('\n')}
 </urlset>`;
+      sitemapXmlCache.set('prep', { xml, expiresAt: Date.now() + DB_SYNC_TTL_MS });
+    }
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(xml);
@@ -748,6 +783,12 @@ ${prepEntries.join('\n')}
 
   // Dynamic SEO Sitemap Generation with all courses, blogs, exam prep resources, and UK/EU/DE/NL/AE/ZA regional hreflang URLs
   app.get('/sitemap.xml', (req, res) => {
+    const cached = sitemapXmlCache.get('main');
+    if (cached && cached.expiresAt > Date.now()) {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.send(cached.xml);
+    }
     const today = new Date().toISOString().split('T')[0];
 
     const allBlogs = getAllBlogsList();
@@ -784,11 +825,18 @@ ${prepEntries.join('\n')}
       'course-kubernetes-cka',
       'course-comptia-a-plus',
       'course-cisco-ccnp-encor',
-      'course-ceh-v12',
+      'course-comptia-pentest-plus',
       'course-comptia-network-plus',
+      'course-comptia-itf-plus',
+      'course-comptia-cloud-essentials',
+      'course-comptia-server-plus',
       'course-ms-ai-102',
       'course-ms-dp-900',
       'course-ms-pl-300',
+      'course-ms-pl-900',
+      'course-ms-sc-900',
+      'course-ms-dp-100',
+      'course-ms-4018-copilot',
     ];
 
     const courseRoutes = coursesStore.map((c) => {
@@ -868,6 +916,7 @@ ${regionalCourseEntries.join('\n')}
 ${courseRoutes.join('\n')}
 </urlset>`;
 
+    sitemapXmlCache.set('main', { xml, expiresAt: Date.now() + DB_SYNC_TTL_MS });
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(xml);
@@ -1024,15 +1073,23 @@ ${regionalSitemaps}
     const sitemaps = [
       `${SITE_BASE_URL}/sitemap.xml`,
       `${SITE_BASE_URL}/sitemap-prep.xml`,
+      ...ALL_REGION_CODES.map((code) => `${SITE_BASE_URL}/sitemap-${code}.xml`),
     ];
 
-    const priorityUrls = [
-      `${SITE_BASE_URL}/`,
-      `${SITE_BASE_URL}/courses`,
-      `${SITE_BASE_URL}/exam-prep`,
-      `${SITE_BASE_URL}/blogs`,
-      ...EXAM_PREP_RESOURCES.map((r) => `${SITE_BASE_URL}/exam-prep/${r.slug}`),
-    ];
+    const allBlogsForPing = getAllBlogsList();
+    const priorityUrls = Array.from(
+      new Set([
+        `${SITE_BASE_URL}/`,
+        `${SITE_BASE_URL}/courses`,
+        `${SITE_BASE_URL}/exam-prep`,
+        `${SITE_BASE_URL}/blogs`,
+        `${SITE_BASE_URL}/corporate-training`,
+        ...ALL_REGION_CODES.map((code) => `${SITE_BASE_URL}/${code}`),
+        ...EXAM_PREP_RESOURCES.map((r) => `${SITE_BASE_URL}/exam-prep/${r.slug}`),
+        ...allBlogsForPing.slice(0, 40).map((b) => `${SITE_BASE_URL}/blogs/${b.slug}`),
+        ...coursesStore.slice(0, 20).map((c) => `${SITE_BASE_URL}/course/${c.id}`),
+      ])
+    ).slice(0, 100);
 
     const results: Record<string, any> = {
       timestamp: new Date().toISOString(),
@@ -1320,6 +1377,7 @@ ${regionalSitemaps}
         }
       }
 
+      invalidateBlogAndSitemapCaches();
       res.status(201).json({
         success: true,
         post: normalized,
@@ -1375,6 +1433,7 @@ ${regionalSitemaps}
         }
       }
 
+      invalidateBlogAndSitemapCaches();
       res.json({
         success: true,
         post: normalized,
@@ -1401,6 +1460,7 @@ ${regionalSitemaps}
         }
       }
 
+      invalidateBlogAndSitemapCaches();
       res.json({
         success: true,
         summaries: getAllBlogsList().map(toBlogSummary),
@@ -1448,10 +1508,14 @@ ${regionalSitemaps}
     const format = req.query.format as string;
     const search = req.query.search as string;
 
-    // Refresh from Supabase if connected
-    if (supabase) {
+    // Refresh from Supabase if connected (respecting 60s TTL cache)
+    const nowCourses = Date.now();
+    if (supabase && (lastCoursesSyncAt === 0 || nowCourses - lastCoursesSyncAt >= DB_SYNC_TTL_MS)) {
       try {
         const { data, error } = await supabase.from('learnify_courses').select('*');
+        if (!error) {
+          lastCoursesSyncAt = Date.now();
+        }
         if (!error && data && data.length > 0) {
           const sampleMap = new Map(sampleCourses.map((sc) => [sc.id, sc]));
 
@@ -2103,7 +2167,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       })
     );
 
-    // General static file serving with 1 day caching (index: false lets SSR handler serve /)
+    // General static file serving (HTML fresh, images/icons cached 30 days)
     app.use(
       express.static(distPath, {
         index: false,
@@ -2112,6 +2176,8 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           if (filePath.endsWith('.html')) {
             // HTML is fresh or short cache for immediate updates
             res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+          } else if (/\.(webp|png|jpe?g|svg|ico|woff2?)$/i.test(filePath)) {
+            res.setHeader('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
           }
         },
       })
@@ -2135,14 +2201,18 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
         .replace(/\u2028/g, '\\u2028')
         .replace(/\u2029/g, '\\u2029');
 
+    const stripHreflangBlock = (htmlInput: string) =>
+      htmlInput.replace(
+        /\s*<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/gi,
+        ''
+      );
+
     const replaceHreflangBlock = (
       htmlInput: string,
       alternates: Array<{ hreflang: string; href: string }>
     ) => {
-      const cleaned = htmlInput.replace(
-        /\s*<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/gi,
-        ''
-      );
+      const cleaned = stripHreflangBlock(htmlInput);
+      if (!alternates || alternates.length === 0) return cleaned;
       const tags = alternates
         .map(
           (a) =>
@@ -2260,7 +2330,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             ).join('')}</ul>
           </main>`;
 
-          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+          html = stripHreflangBlock(stripHomeHeroPreloads(stripGlobalJsonLd(html)))
             .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(title)}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(desc)}" />`)
@@ -2400,7 +2470,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             ${item.faqs && item.faqs.length > 0 ? `<h2>Frequently Asked Questions</h2>${item.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}` : ''}
           </main>`;
 
-          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+          html = stripHreflangBlock(stripHomeHeroPreloads(stripGlobalJsonLd(html)))
             .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(item.seoTitle)}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(item.seoTitle)}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(item.seoDescription)}" />`)
@@ -2413,12 +2483,12 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${escapeHtml(item.seoDescription)}" />`)
             .replace(
               /<\/head>/,
-              `    <script type="application/ld+json">${safeJsonForScript(schemaObj)}</script>\n  </head>`
+              `    <script>window.__INITIAL_EXAM_PREP__=${safeJsonForScript(item)};</script>\n    <script type="application/ld+json">${safeJsonForScript(schemaObj)}</script>\n  </head>`
             )
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (examPrepMatch && examPrepMatch.type === 'not_found') {
           res.status(404);
-          html = stripHomeHeroPreloads(html)
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>Exam Prep Resource Not Found | Learnify Solutions</title>`)
             .replace(/<head>/, `<head><meta name="robots" content="noindex, follow" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Exam Prep Resource Not Found</h1><p>Explore our <a href="/exam-prep">Exam Prep Practice Tests, Cheat Sheets &amp; Salary Calculator</a>.</p></main></div>`);
@@ -2470,7 +2540,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
 
           const blogSummariesPayload = allBlogs.map(toBlogSummary);
 
-          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+          html = stripHreflangBlock(stripHomeHeroPreloads(stripGlobalJsonLd(html)))
             .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(title)}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(desc)}" />`)
@@ -2582,7 +2652,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             ${g.faqs.length > 0 ? `<h2>Frequently Asked Questions</h2>${g.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}` : ''}
           </main>`;
 
-          html = stripHomeHeroPreloads(stripGlobalJsonLd(html))
+          html = stripHreflangBlock(stripHomeHeroPreloads(stripGlobalJsonLd(html)))
             .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(g.seoTitle)}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${escapeHtml(g.seoTitle)}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(g.seoDescription)}" />`)
@@ -2813,10 +2883,11 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const course = courseId ? coursesStore.find(c => c.id === courseId) : null;
 
           if (course) {
-            const courseTitle = `${course.title} ${course.examCode ? '(' + course.examCode + ') ' : ''}Certification Training & Bootcamp | Learnify Solutions`;
-            const courseDesc = `${course.summary || course.overview || 'Master ' + course.title + ' with official vendor curriculum, 1-on-1 mentor guidance, and 24/7 hands-on cloud labs.'} Official ${course.certificationVendor} training with guaranteed batches across USA, UK, UAE (Dubai), Africa & India. 98.4% pass rate.`;
+            const seoMeta = buildCourseSeoMeta(course);
+            const courseTitle = seoMeta.title;
+            const courseDesc = seoMeta.description;
             const canonicalUrl = `${SITE_BASE_URL}/course/${course.id}`;
-            const courseKeywords = `${course.title}, ${course.examCode || ''}, ${course.certificationVendor} training, ${course.certificationVendor} certification course, ${course.certificationVendor} authorized training partner, ${course.domain} bootcamps, online 1-on-1 ${course.certificationVendor} training, IT training Dubai, IT certifications London UK, corporate tech upskilling, Learnify Solutions`;
+            const courseKeywords = seoMeta.keywords;
             const courseImg = course.imageUrl?.startsWith('http')
               ? course.imageUrl
               : `${SITE_BASE_URL}${course.imageUrl || '/hero.webp'}`;
@@ -2824,9 +2895,11 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             const courseAlternates = getRegionalAlternatesForCourse(course.id);
             if (courseAlternates) {
               html = replaceHreflangBlock(html, getCourseHreflangAlternates(courseAlternates));
+            } else {
+              html = stripHreflangBlock(html);
             }
 
-            // Specific Course & Breadcrumb Schema
+            // Specific Course, Breadcrumb & FAQPage Schema
             const dynamicCourseSchema = `
     <script type="application/ld+json">
     {
@@ -2881,6 +2954,17 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               "item": "${canonicalUrl}"
             }
           ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "${canonicalUrl}#faq",
+          "mainEntity": ${JSON.stringify(
+            seoMeta.faqs.map((f) => ({
+              '@type': 'Question',
+              name: f.q,
+              acceptedAnswer: { '@type': 'Answer', text: f.a },
+            }))
+          )}
         }
       ]
     }
@@ -2893,14 +2977,19 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
 
             const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
               <nav><a href="/">Home</a> &gt; <a href="/courses">Courses</a> &gt; <span>${escapeHtml(course.title)}</span></nav>
-              <h1>${escapeHtml(course.title)} Certification Training</h1>
-              <p>${escapeHtml(course.summary || course.overview || '')}</p>
-              <p><strong>Vendor:</strong> ${escapeHtml(course.certificationVendor)} | <strong>Duration:</strong> ${escapeHtml(course.duration)} | <strong>Level:</strong> ${escapeHtml(course.skillLevel || 'Intermediate')}</p>
+              <h1>${escapeHtml(course.title)}${course.examCode && !course.title.toLowerCase().includes(course.examCode.toLowerCase()) ? ` (${escapeHtml(course.examCode)})` : ''} Certification Training</h1>
+              <p>${escapeHtml(course.summary || '')}</p>
+              ${course.overview ? `<p>${escapeHtml(course.overview)}</p>` : ''}
+              <p><strong>Vendor:</strong> ${escapeHtml(course.certificationVendor)} | <strong>Duration:</strong> ${escapeHtml(course.duration)} | <strong>Level:</strong> ${escapeHtml(course.skillLevel || 'Intermediate')} | <strong>Delivery:</strong> 1-on-1 Live Mentorship &amp; Corporate Batches</p>
+              ${course.prerequisites && course.prerequisites.length > 0 ? `<p><strong>Recommended Prerequisites:</strong> ${escapeHtml(course.prerequisites.join('; '))}</p>` : ''}
+              ${course.outline && course.outline.length > 0 ? `<h2>Detailed Module Outline</h2><ul>${course.outline.slice(0, 8).map((sec) => `<li><strong>${escapeHtml(sec.title)}</strong>${sec.description ? ` — ${escapeHtml(sec.description)}` : ''}</li>`).join('')}</ul>` : ''}
               ${regionalLinksHtml}
               <h2>Course Learning Objectives</h2>
               <ul>${(course.learningObjectives || []).map((o) => `<li>${escapeHtml(o)}</li>`).join('')}</ul>
               <h2>Curriculum Modules</h2>
               <ul>${(course.curriculum || []).map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>
+              <h2>Frequently Asked Questions</h2>
+              ${seoMeta.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}
               <h2>Free Practice Tests &amp; Study Resources</h2>
               <ul>${getRelatedExamPrepResources({ courseId: course.id, vendor: course.certificationVendor, titleOrDomain: `${course.title} ${course.examCode || ''}`, limit: 3 })
                 .map((prep) => `<li><a href="/exam-prep/${escapeHtml(prep.slug)}">${escapeHtml(prep.title)}</a> — ${escapeHtml(prep.examCode)}</li>`)
@@ -2924,18 +3013,18 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
           } else {
             res.status(404);
-            html = stripHomeHeroPreloads(html)
+            html = stripHreflangBlock(stripHomeHeroPreloads(html))
               .replace(/<title>.*?<\/title>/, `<title>Course Not Found | Learnify Solutions</title>`)
               .replace(/<head>/, `<head><meta name="robots" content="noindex, follow" />`)
               .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Course Not Found</h1><p>Explore our <a href="/courses">full IT certification catalog</a>, <a href="/ae">UAE Training Hub</a>, or <a href="/za">South Africa Training Hub</a>.</p></main></div>`);
           }
-        } else if (url.startsWith('/about')) {
+        } else if (cleanPath === '/about') {
           const canonicalUrl = `${SITE_BASE_URL}/about`;
           const title = 'About Us | Learnify Solutions - Global Enterprise IT Training';
           const desc = 'Discover Learnify Solutions’ mission, leadership, and ISO-certified training frameworks empowering global enterprise tech workforces across USA, UK, UAE, Africa & India.';
           const keywords = 'about Learnify Solutions, enterprise IT training organization, tech upskilling leadership, corporate training partner, global IT academy, authorized training partner';
           const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>About Us</span></nav><h1>About Learnify Solutions</h1><p>${escapeHtml(desc)}</p><p><a href="/courses">Browse Courses</a> | <a href="/ae">UAE Training</a> | <a href="/za">South Africa Training</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/contact">Contact Us</a></p></main>`;
-          html = stripHomeHeroPreloads(html)
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -2947,13 +3036,13 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/courses')) {
+        } else if (cleanPath === '/courses') {
           const canonicalUrl = `${SITE_BASE_URL}/courses`;
-          const title = 'IT & Cloud Certification Courses Catalog (Microsoft, Cisco, CompTIA, AWS) | Learnify Solutions';
-          const desc = 'Browse 50+ official certification courses in Microsoft Azure, Cisco CCNA/CCNP, CompTIA Security+, AWS Cloud, CEH v12, and Kubernetes CKA. 1-on-1 & corporate batches across USA, UK, UAE & India.';
-          const keywords = 'Microsoft certification training, Azure AZ-104, Cisco CCNA 200-301 training, Cisco CCNP ENCOR, CompTIA Security+ SY0-701, CompTIA A+, AWS Solutions Architect, CEH v12, CKA Kubernetes, IT training partner, 1-on-1 tech bootcamps Dubai, London, USA';
-          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Courses</span></nav><h1>IT &amp; Cloud Certification Courses Catalog</h1><p>${escapeHtml(desc)}</p><p><strong>Regional Programs:</strong> <a href="/uk">UK (London) Hub</a> | <a href="/eu">Europe (EU) Hub</a> | <a href="/de">Germany &amp; DACH Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">Dubai &amp; UAE Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/cisco-training">Cisco Training</a></p><h2>All Certification Programs</h2><ul>${coursesStore.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)} (${escapeHtml(c.duration)})</li>`).join('')}</ul></main>`;
-          html = stripHomeHeroPreloads(html)
+          const title = '50+ Official IT & Cloud Certification Courses (CompTIA, Microsoft Azure, AWS, Kubernetes) | Learnify';
+          const desc = 'Browse 50+ vendor-authorized courses in CompTIA Security+ SY0-701, A+ 220-1201/1202 & 220-1101/1102, ITF+ FC0-U61, Microsoft Azure AZ-104, AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03 & Kubernetes CKA across UK, EU, UAE & SA.';
+          const keywords = 'CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, Cisco CCNA 200-301, AWS SAA-C03, Kubernetes CKA, UK Europe UAE South Africa IT training';
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Courses</span></nav><h1>50+ Official IT &amp; Cloud Certification Courses Catalog</h1><p>${escapeHtml(desc)}</p><p><strong>Regional Programs:</strong> <a href="/uk">UK (London) Hub</a> | <a href="/eu">Europe (EU) Hub</a> | <a href="/de">Germany &amp; DACH Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">Dubai &amp; UAE Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/exam-prep">Exam Prep &amp; Mock Tests</a> | <a href="/cisco-training">Cisco Training</a></p><h2>All Certification Programs</h2><ul>${coursesStore.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)} (${escapeHtml(c.duration)})</li>`).join('')}</ul></main>`;
+          html = replaceHreflangBlock(stripHomeHeroPreloads(html), getHubHreflangAlternates())
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -2965,13 +3054,13 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/corporate-training') || url.startsWith('/corporate')) {
+        } else if (cleanPath === '/corporate-training') {
           const canonicalUrl = `${SITE_BASE_URL}/corporate-training`;
-          const title = 'Corporate IT Training & Workforce Upskilling Solutions | Learnify Solutions';
-          const desc = 'Scalable enterprise IT learning solutions for engineering teams worldwide. Custom syllabus, private cloud sandboxes, 98.4% first-time certification rate.';
-          const keywords = 'corporate IT training, enterprise tech upskilling, Microsoft corporate training, Cisco enterprise training, CompTIA corporate cohorts, B2B IT training, workforce digital transformation';
-          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Corporate Training</span></nav><h1>Corporate IT Training &amp; Workforce Upskilling Solutions</h1><p>${escapeHtml(desc)}</p><ul><li>Private Corporate Cohorts &amp; Custom Syllabi</li><li>24/7 Cloud Sandbox Labs &amp; Instructor Mentorship</li><li>Dedicated Regional Delivery: <a href="/ae">UAE (Dubai &amp; Abu Dhabi)</a> | <a href="/za">South Africa (Johannesburg &amp; Cape Town)</a></li></ul><p><a href="/courses">Explore All Courses</a> | <a href="/contact">Request Corporate Quote</a></p></main>`;
-          html = stripHomeHeroPreloads(html)
+          const title = 'Corporate IT Training Solutions | UK, Europe (NIS2/DORA), UAE & South Africa POs | Learnify';
+          const desc = 'Enterprise IT bootcamps and corporate workforce upskilling across UK (GBP), Europe (EUR / NIS2 & DORA / BSI C5), UAE (AED / NESA), and South Africa (ZAR / POPIA). Custom syllabi, 24/7 sandboxes & Purchase Orders.';
+          const keywords = 'corporate IT training, enterprise tech upskilling, corporate Purchase Order PO training GBP EUR AED ZAR, NIS2 DORA compliance training EU, NCSC training UK, NESA UAE IT training, POPIA South Africa cybersecurity, Microsoft Copilot corporate training';
+          const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Corporate Training</span></nav><h1>Corporate IT Training &amp; Workforce Upskilling Solutions</h1><p>${escapeHtml(desc)}</p><ul><li>Private Corporate Cohorts &amp; Custom Syllabi (Microsoft Copilot Studio MS-4018, Azure AZ-104/AZ-305, CompTIA SY0-701, AWS SAA-C03, Kubernetes CKA)</li><li>Compliance &amp; Security Frameworks: UK NCSC Cyber Essentials, EU NIS2 &amp; DORA, Germany BSI C5, UAE NESA &amp; South Africa POPIA</li><li>Corporate Purchase Order (PO) Invoicing in GBP, EUR, AED, ZAR &amp; USD: <a href="/uk">UK Hub</a> | <a href="/eu">Europe Hub</a> | <a href="/de">Germany Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">UAE (Dubai &amp; Abu Dhabi)</a> | <a href="/za">South Africa (Johannesburg &amp; Cape Town)</a></li></ul><p><a href="/courses">Explore All Courses</a> | <a href="/exam-prep/it-certification-exam-cost-salary-calculator">Corporate Exam Fee &amp; ROI Calculator</a> | <a href="/contact">Request Corporate Quote</a></p></main>`;
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -2983,14 +3072,14 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/cisco-training') || url.startsWith('/cisco')) {
+        } else if (cleanPath === '/cisco-training') {
           const canonicalUrl = `${SITE_BASE_URL}/cisco-training`;
-          const title = 'Cisco Authorized Certification Training (CCNA, CCNP, DevNet, Security) | Learnify Solutions';
-          const desc = 'Authorized Cisco training partner covering CCNA 200-301, CCNP Enterprise ENCOR, Security SCOR, SD-WAN, and DevNet. Real hardware topologies & virtual labs.';
-          const keywords = 'Cisco training partner, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN course, CCNP Security SCOR 350-701, DevNet DEVASC, Cisco bootcamps Dubai, Cisco certified instructors';
+          const title = 'Cisco Authorized Certification Training (CCNA 200-301, CCNP ENCOR, SD-WAN, DevNet) | Learnify';
+          const desc = 'Authorized Cisco training partner covering CCNA 200-301, CCNP Enterprise ENCOR 350-401, ENARSI 300-410, Security SCOR 350-701, SD-WAN 300-415, and DevNet DEVASC with 24/7 lab pods and UK/EU/UAE/SA PO cohorts.';
+          const keywords = 'Cisco training partner, Cisco CCNA 200-301 training, Cisco CCNP ENCOR 350-401, ENARSI 300-410, Cisco SD-WAN 300-415 course, CCNP Security SCOR 350-701, DevNet DEVASC, Cisco bootcamps Dubai UK South Africa';
           const ciscoList = coursesStore.filter((c) => c.certificationVendor === 'Cisco');
-          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Cisco Training</span></nav><h1>Cisco Authorized Certification Training</h1><p>${escapeHtml(desc)}</p><ul>${ciscoList.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.duration)}</li>`).join('')}</ul></main>`;
-          html = stripHomeHeroPreloads(html)
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Cisco Training</span></nav><h1>Cisco Authorized Certification Training</h1><p>${escapeHtml(desc)}</p><ul>${ciscoList.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.duration)}</li>`).join('')}</ul><p><a href="/exam-prep/cisco-ccna-200-301-practice-questions">Free CCNA 200-301 Practice Exam</a> | <a href="/exam-prep/ipv4-subnetting-cidr-cheat-sheet-calculator">IPv4 Subnetting &amp; CIDR Calculator</a></p></main>`;
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -3002,13 +3091,13 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/contact')) {
+        } else if (cleanPath === '/contact') {
           const canonicalUrl = `${SITE_BASE_URL}/contact`;
           const title = 'Contact Admissions & Corporate Sales | Learnify Solutions';
           const desc = 'Connect with Learnify Solutions educational advisors for 1-on-1 batch schedules, course fees, corporate discount quotes, and custom syllabus planning.';
           const keywords = 'contact Learnify Solutions, corporate training quote, educational advisor, IT training inquiry, batch schedule, course fee inquiry';
           const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Contact</span></nav><h1>Contact Admissions &amp; Corporate Sales</h1><p>${escapeHtml(desc)}</p><p>Email: <a href="mailto:info@learnify-solutions.com">info@learnify-solutions.com</a></p><p><a href="/courses">Browse Courses</a> | <a href="/ae">UAE Training Hub</a> | <a href="/za">South Africa Training Hub</a></p></main>`;
-          html = stripHomeHeroPreloads(html)
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -3020,17 +3109,17 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
             .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${desc}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/privacy')) {
+        } else if (cleanPath === '/privacy') {
           const canonicalUrl = `${SITE_BASE_URL}/privacy`;
           const title = 'Privacy Policy & Compliance | Learnify Solutions';
           const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Privacy Policy</span></nav><h1>Privacy Policy &amp; Compliance</h1><p>Learnify Solutions maintains strict GDPR, UAE PDPL, and South Africa POPIA data privacy standards across all training portals.</p></main>`;
-          html = stripHomeHeroPreloads(html)
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonicalUrl}" />`)
             .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonicalUrl}" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
-        } else if (url.startsWith('/admin')) {
-          html = stripHomeHeroPreloads(html)
+        } else if (cleanPath === '/admin' || cleanPath.startsWith('/admin/') || cleanPath.startsWith('/admin-secure-portal')) {
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>Learnify Portal Administration</title>`)
             .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`);
         } else if (cleanPath === '/' || cleanPath === '') {
@@ -3040,10 +3129,16 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             'course-comptia-security-plus',
             'course-comptia-a-plus',
             'course-comptia-network-plus',
+            'course-comptia-itf-plus',
+            'course-comptia-cloud-essentials',
+            'course-comptia-server-plus',
             'course-azure-104',
             'course-ms-pl-300',
+            'course-ms-pl-900',
+            'course-ms-sc-900',
             'course-ms-ai-102',
             'course-ms-dp-900',
+            'course-ms-dp-100',
             'course-ms-4018-copilot',
             'course-aws-solutions',
             'course-kubernetes-cka',
@@ -3051,12 +3146,30 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const flagship = flagshipIds
             .map((id) => coursesStore.find((c) => c.id === id))
             .filter((c): c is Course => Boolean(c));
-          const ukLinks = getRegionalCoursePages('uk').slice(0, 6);
-          const euLinks = getRegionalCoursePages('eu').slice(0, 6);
-          const deLinks = getRegionalCoursePages('de').slice(0, 6);
-          const nlLinks = getRegionalCoursePages('nl').slice(0, 6);
-          const aeLinks = getRegionalCoursePages('ae').slice(0, 6);
-          const zaLinks = getRegionalCoursePages('za').slice(0, 6);
+          const priorityRegionalCourseIds = [
+            'course-azure-104',
+            'course-ms-ai-102',
+            'course-ms-pl-300',
+            'course-ms-4018-copilot',
+            'course-ms-dp-900',
+            'course-ms-pl-900',
+            'course-comptia-security-plus',
+            'course-comptia-itf-plus',
+            'course-aws-solutions',
+            'course-kubernetes-cka',
+          ];
+          const pickPriorityRegional = (code: RegionCode) => {
+            const pages = getRegionalCoursePages(code);
+            return priorityRegionalCourseIds
+              .map((cid) => pages.find((p) => p.course.id === cid))
+              .filter((p): p is NonNullable<typeof p> => Boolean(p));
+          };
+          const ukLinks = pickPriorityRegional('uk');
+          const euLinks = pickPriorityRegional('eu');
+          const deLinks = pickPriorityRegional('de');
+          const nlLinks = pickPriorityRegional('nl');
+          const aeLinks = pickPriorityRegional('ae');
+          const zaLinks = pickPriorityRegional('za');
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
             <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on cloud labs for Microsoft Azure, Power BI, CompTIA, AWS, Kubernetes, and Cybersecurity across United Kingdom, Europe (Germany, Netherlands, EU), UAE &amp; Middle East, South Africa, North America, and Asia-Pacific.</p>
@@ -3084,7 +3197,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {
           res.status(404);
-          html = stripHomeHeroPreloads(html)
+          html = stripHreflangBlock(stripHomeHeroPreloads(html))
             .replace(/<title>.*?<\/title>/, `<title>Page Not Found | Learnify Solutions</title>`)
             .replace(/<head>/, `<head><meta name="robots" content="noindex, follow" />`)
             .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Page Not Found</h1><p>Explore our <a href="/courses">IT Certification Courses</a>, <a href="/ae">UAE Training Hub</a>, or <a href="/za">South Africa Training Hub</a>.</p></main></div>`);

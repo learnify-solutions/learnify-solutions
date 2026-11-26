@@ -16,7 +16,7 @@ export default defineConfig(() => {
       minify: 'esbuild' as const,
       cssCodeSplit: true,
       sourcemap: false,
-      chunkSizeWarningLimit: 600,
+      chunkSizeWarningLimit: 300,
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -42,6 +42,14 @@ export default defineConfig(() => {
             }
             if (id.includes('defaultCmsData')) {
               return 'cms-defaults';
+            }
+            if (
+              (id.includes('examPrepData') ||
+                id.includes('examPrepQuestions') ||
+                id.includes('examPrepResources')) &&
+              !id.includes('examPrepMeta')
+            ) {
+              return 'exam-prep-bank';
             }
           },
         },
