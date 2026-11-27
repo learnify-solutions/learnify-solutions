@@ -140,6 +140,8 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
     lastName: '',
     email: '',
     phone: '',
+    audienceType: 'individual' as 'individual' | 'corporate',
+    company: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -149,15 +151,19 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.email) return;
 
+    const isCorporate = formData.audienceType === 'corporate';
     onSubmitLead({
       fullName: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
       phone: formData.phone,
-      inquiryType: 'course_info',
+      company: isCorporate ? formData.company.trim() || 'Corporate Team Inquiry' : '',
+      inquiryType: isCorporate ? 'corporate_quote' : 'course_info',
       selectedDomain: course.domain,
       courseTitle: course.title,
       courseId: course.id,
-      message: `Requested more information for course: ${course.title}`,
+      message: isCorporate
+        ? `Corporate Team Training Quote Request for ${course.title}${formData.company ? ` (${formData.company})` : ''}`
+        : `Individual 1-on-1 / Cohort Info Request for course: ${course.title}`,
     });
 
     setSubmitted(true);
@@ -306,6 +312,32 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                   <span>Download Syllabus</span>
                 </button>
               </div>
+
+              {(() => {
+                const primaryPractice = relatedPrepTools.find((p) => p.type === 'practice_test');
+                if (!primaryPractice) return null;
+                return (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Free Readiness Check:
+                    </span>
+                    <a
+                      href={`/exam-prep/${primaryPractice.slug}`}
+                      onClick={(e) => {
+                        if (onNavigateLink) {
+                          e.preventDefault();
+                          onNavigateLink(`/exam-prep/${primaryPractice.slug}`);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 font-bold text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 transition-colors"
+                    >
+                      <span>Take {primaryPractice.shortTitle} ({primaryPractice.questionCountLabel})</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                );
+              })()}
 
               {regionalLinks && (() => {
                 const stripDomain = (u: string) =>
@@ -882,7 +914,32 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3.5">
+                  <div className="grid grid-cols-2 p-1 rounded-lg bg-slate-100 border border-slate-200/80">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, audienceType: 'individual' })}
+                      className={`py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                        formData.audienceType === 'individual'
+                          ? 'bg-white text-[#152e4d] shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      1-on-1 / Individual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, audienceType: 'corporate' })}
+                      className={`py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                        formData.audienceType === 'corporate'
+                          ? 'bg-white text-[#152e4d] shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Corporate Team
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       type="text"
@@ -905,11 +962,21 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                   <input
                     type="email"
                     required
-                    placeholder="Your Work Email*"
+                    placeholder={formData.audienceType === 'corporate' ? 'Corporate / Work Email*' : 'Your Work Email*'}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-slate-300 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-[#ea6d24] transition-colors"
                   />
+
+                  {formData.audienceType === 'corporate' && (
+                    <input
+                      type="text"
+                      placeholder="Company & Approx. Team Size (e.g., 12 Engineers)"
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-slate-300 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-[#ea6d24] transition-colors"
+                    />
+                  )}
                   
                   <PhoneCountryInput
                     value={formData.phone}
@@ -923,7 +990,9 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                     type="submit"
                     className="w-full bg-[#ea6d24] hover:bg-[#d85e19] text-white font-bold text-xs sm:text-sm py-3 rounded-lg shadow-sm transition-all cursor-pointer mt-1"
                   >
-                    Submit Enrollment Inquiry
+                    {formData.audienceType === 'corporate'
+                      ? 'Request Corporate Team Quote'
+                      : 'Submit Enrollment Inquiry'}
                   </button>
 
                   <div className="pt-2 border-t border-slate-100">

@@ -95,10 +95,10 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
 
     let cancelled = false;
     setIsLoadingBank(true);
-    import('../data/examPrepData')
-      .then((m) => {
+    import('../data/examPrepLoader')
+      .then((m) => m.loadExamPrepResourceClient(resource.slug))
+      .then((full) => {
         if (cancelled) return;
-        const full = m.getExamPrepBySlug(resource.slug);
         if (full) {
           setResolvedResource(full);
         }

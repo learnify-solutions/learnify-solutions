@@ -1175,4 +1175,275 @@ export const COMPARISON_BLOGS_PHASE2: BlogPost[] = [
       { q: 'Are official exam certificates different if I take OnVUE vs a physical test center?', a: 'No—the resulting credential from CompTIA, Microsoft, AWS, or Cisco is 100% identical.' },
     ],
   },
+
+  // 23. CompTIA ITF+ vs A+ vs Cloud Essentials+ Roadmap (Hits 500+ GSC Impressions)
+  {
+    slug: 'comptia-itf-plus-vs-a-plus-vs-cloud-essentials-roadmap-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Exam & Fee Guides',
+    category: 'CompTIA Roadmap',
+    featured: true,
+    coverImage: '/images/comptia_cloud_multicloud_1788294616227.webp',
+    title: 'CompTIA ITF+ (FC0-U61) vs CompTIA A+ (220-1201) vs Cloud Essentials+ (CLO-002): 2026 Roadmap',
+    excerpt:
+      'Confused whether to start with CompTIA ITF+ (FC0-U61), jump straight into CompTIA A+ Core 1 & Core 2 (220-1201/1202), or take Cloud Essentials+ (CLO-002)? Compare costs, syllabus depth & career paths.',
+    seoTitle: 'CompTIA ITF+ vs CompTIA A+ vs Cloud Essentials+ (2026 Roadmap) | Learnify',
+    seoDescription:
+      'Compare CompTIA ITF+ (FC0-U61), CompTIA A+ (220-1201/1202 V15), and CompTIA Cloud Essentials+ (CLO-002) by exam difficulty, job roles, regional voucher prices & free practice tests.',
+    seoKeywords:
+      'CompTIA ITF+ vs A+, CompTIA Cloud Essentials+ CLO-002, FC0-U61 vs 220-1201, CompTIA certification roadmap 2026, IT fundamentals certification',
+    readTime: '8 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    citiesCovered: ['United Kingdom', 'Europe', 'UAE & Middle East', 'South Africa', 'North America'],
+    intro:
+      'Hundreds of career changers, IT project managers, and aspiring helpdesk engineers search every week for whether CompTIA ITF+ (FC0-U61), CompTIA A+ (220-1201 & 220-1202), or CompTIA Cloud Essentials+ (CLO-002) belongs first on their CV. Picking the wrong starting exam wastes months of study and hundreds of dollars in voucher fees.',
+    keyTakeaways: [
+      'Take CompTIA ITF+ (FC0-U61) first if you have zero technical background—it bridges binary math, relational SQL databases, coding concepts, and cybersecurity in ~3 weeks.',
+      'Take CompTIA A+ (220-1201/1202) directly if you already build PCs or troubleshoot OS issues and want an immediate Service Desk / Desktop Support role.',
+      'Take CompTIA Cloud Essentials+ (CLO-002) if you work in IT management, FinOps, procurement, or consulting and need vendor-neutral Cloud TCO, SLA, and compliance fluency without heavy Linux CLI.',
+    ],
+    sections: [
+      {
+        id: 'comptia-entry-comparison-table',
+        heading: 'Side-by-Side Comparison: ITF+ vs A+ vs Cloud Essentials+',
+        paragraphs: [
+          'While all three sit at the entry tier of CompTIA’s stack, each targets a completely different career buyer. ITF+ introduces broad foundational software, database, and computing vocabulary; CompTIA A+ tests deep two-exam hardware, OS, AI PC NPU, and malware remediation drills; and Cloud Essentials+ bridges technical cloud decisions with FinOps CapEx/OpEx budgets and governance risk.',
+        ],
+        table: {
+          caption: '2026 CompTIA Entry Certifications Compared: Syllabus, Audience & Cost',
+          headers: ['Exam', 'Target Audience', 'Exam Structure', 'Best Free Practice Test'],
+          rows: [
+            {
+              label: 'CompTIA ITF+ (FC0-U61)',
+              col2: 'Career Switchers, Students, Non-Tech Leads',
+              col3: '1 Exam · 75 Qs · 60 mins (Pass 650/900)',
+              col4: 'Free 30-Q ITF+ Mock Test',
+            },
+            {
+              label: 'CompTIA A+ (220-1201/1202)',
+              col2: 'Helpdesk, Tier 1/2 Support, Field Techs',
+              col3: '2 Exams · Core 1 & Core 2 + PBQs',
+              col4: 'Free A+ 220-1201 Simulator',
+            },
+            {
+              label: 'Cloud Essentials+ (CLO-002)',
+              col2: 'IT Managers, FinOps, Cloud Analysts, PMs',
+              col3: '1 Exam · 75 Qs · 60 mins (Pass 720/900)',
+              col4: 'Free CLO-002 Mock Exam',
+            },
+          ],
+        },
+      },
+      {
+        id: 'what-to-do-next-comptia',
+        heading: 'How Employers Stack CompTIA Next: Network+ & Security+',
+        paragraphs: [
+          'Once you pass ITF+ or A+, employers across London, Dubai, Johannesburg, Amsterdam, and New York immediately look for CompTIA Network+ (N10-009) and CompTIA Security+ (SY0-701). Security+ unlocks cybersecurity analyst roles plus US DoD / UK NCSC / EU NIS2 baseline compliance shortlists.',
+        ],
+      },
+    ],
+    relatedRegionalLinks: [
+      {
+        label: 'Free CompTIA ITF+ (FC0-U61) Practice Test',
+        href: '/exam-prep/comptia-itf-plus-fc0-u61-practice-questions',
+        subtitle: '30 scenario questions with timer & rationales',
+      },
+      {
+        label: 'Free CompTIA A+ (220-1201/1202) Practice Exam',
+        href: '/exam-prep/comptia-a-plus-220-1201-practice-questions',
+        subtitle: 'Test hardware, APIPA, BitLocker & OS troubleshooting',
+      },
+      {
+        label: 'Free Cloud Essentials+ (CLO-002) Mock Test',
+        href: '/exam-prep/comptia-cloud-essentials-clo-002-practice-questions',
+        subtitle: 'Cloud TCO, RTO/RPO, Shared Responsibility & CSPM drills',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Do CompTIA ITF+ or Cloud Essentials+ replace CompTIA Security+?',
+        a: 'No—ITF+ and Cloud Essentials+ build prerequisite fluency, whereas Security+ (SY0-701) validates hands-on SOC defense, cryptography, and Zero Trust engineering.',
+      },
+    ],
+  },
+
+  // 24. Azure DP-900 vs PL-900 vs AI-102 vs DP-100 Certification Guide
+  {
+    slug: 'azure-dp-900-vs-pl-900-vs-ai-102-certification-guide-2026',
+    region: 'global',
+    regionLabel: 'Global Enterprise',
+    topicTrack: 'Data & AI',
+    category: 'Microsoft Data & AI',
+    featured: true,
+    coverImage: '/images/powerbi_data_analytics_1788294280157.webp',
+    title: 'Microsoft DP-900 vs PL-900 vs AI-102 vs DP-100: Which Azure Data or AI Cert Wins in 2026?',
+    excerpt:
+      'Clear 2026 roadmap comparing Azure Data Fundamentals (DP-900), Power Platform (PL-900), Azure AI Engineer (AI-102), and Azure Data Scientist (DP-100) across skills, coding requirements & job demand.',
+    seoTitle: 'Microsoft DP-900 vs PL-900 vs AI-102 vs DP-100 (2026 Guide) | Learnify',
+    seoDescription:
+      'Decide between Microsoft Azure DP-900, PL-900, AI-102, and DP-100 with blueprint weights, coding depth comparisons, corporate demand across UK/EU/UAE, and free mock tests.',
+    seoKeywords:
+      'DP-900 vs PL-900, Azure Data Fundamentals vs Power Platform, AI-102 vs DP-100, Microsoft Azure Data AI roadmap 2026',
+    readTime: '8 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    citiesCovered: ['United Kingdom', 'Germany', 'Netherlands', 'UAE', 'South Africa', 'USA'],
+    intro:
+      'Microsoft’s Data, Analytics, and AI track now spans four hugely popular exams: DP-900, PL-900, AI-102, and DP-100. Because names overlap ("Data Fundamentals", "AI Engineer", "Data Scientist"), technical teams often book the wrong exam first. Here is exactly how hiring managers differentiate them in 2026.',
+    keyTakeaways: [
+      'DP-900 (Azure Data Fundamentals) is the ideal starting gate for SQL DBAs, Data Analysts, and cloud architects moving into Azure SQL, Cosmos DB, ADLS Gen2, and Microsoft Fabric.',
+      'PL-900 (Power Platform Fundamentals) targets business analysts, automation makers, and operations leads building Power Apps, Power Automate RPA, Power BI, and Copilot Studio agents.',
+      'AI-102 builds production RAG apps, Azure OpenAI assistants, Document Intelligence, and Vision APIs in Python/C#—while DP-100 focuses on Azure ML SDK v2 training, MLflow, and MLOps pipelines.',
+    ],
+    sections: [
+      {
+        id: 'microsoft-data-ai-matrix',
+        heading: 'Blueprint & Coding Depth Matrix: DP-900, PL-900, AI-102 & DP-100',
+        paragraphs: [
+          'If you prefer low-code business workflows and executive dashboards, start with PL-900 and advance into Power BI Data Analyst (PL-300). If your team integrates generative AI APIs or trains custom predictive models inside enterprise cloud environments, pair DP-900 with AI-102 or DP-100.',
+        ],
+        table: {
+          caption: 'Microsoft Data & AI Certification Matrix (2026)',
+          headers: ['Exam Code', 'Role Focus', 'Coding Requirement', 'Matching Free Practice Test'],
+          rows: [
+            {
+              label: 'DP-900 (Azure Data Fundamentals)',
+              col2: 'Relational SQL, Cosmos DB, ADLS Gen2, Power BI',
+              col3: 'None (Basic SQL & KQL recognition)',
+              col4: 'Free 30-Q DP-900 Mock Exam',
+            },
+            {
+              label: 'PL-900 (Power Platform Fundamentals)',
+              col2: 'Dataverse, Power Apps, Power Automate, Copilot Studio',
+              col3: 'Low-code (Excel-like Power Fx formulas)',
+              col4: 'Free 30-Q PL-900 Mock Exam',
+            },
+            {
+              label: 'AI-102 (Azure AI Engineer Associate)',
+              col2: 'Azure OpenAI, AI Search RAG, Vision & Speech APIs',
+              col3: 'Moderate Python / C# REST SDKs',
+              col4: 'Free AI-102 Practice Exam',
+            },
+            {
+              label: 'DP-100 (Azure Data Scientist)',
+              col2: 'Azure ML SDK v2, AutoML, MLflow, Prompt Flow',
+              col3: 'Strong Python / scikit-learn / PyTorch',
+              col4: 'Free DP-100 Mock Test',
+            },
+          ],
+        },
+      },
+    ],
+    relatedRegionalLinks: [
+      {
+        label: 'Free Azure DP-900 Practice Questions',
+        href: '/exam-prep/azure-dp-900-practice-questions',
+        subtitle: 'OLTP vs OLAP, SQL MI, ADLS Gen2 & Cosmos DB scenarios',
+      },
+      {
+        label: 'Free Microsoft PL-900 Practice Exam',
+        href: '/exam-prep/power-platform-pl-900-practice-questions',
+        subtitle: 'Dataverse DLP, Canvas vs Model Apps & Copilot Studio',
+      },
+      {
+        label: 'Free Azure DP-100 Data Scientist Test',
+        href: '/exam-prep/azure-dp-100-practice-questions',
+        subtitle: 'Azure ML Managed VNets, Blue-Green Endpoints & MLflow',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Do I have to pass DP-900 or AI-900 before sitting for AI-102 or DP-100?',
+        a: 'No—Microsoft removed mandatory prerequisite locks on Fundamentals exams, though beginners strongly benefit from reviewing DP-900 core concepts before attempting associate labs.',
+      },
+    ],
+  },
+
+  // 25. Microsoft Copilot Studio (MS-4018) Enterprise Guide (UAE, UK & Europe)
+  {
+    slug: 'microsoft-copilot-studio-ms-4018-enterprise-guide-uae-uk-europe',
+    region: 'global',
+    regionLabel: 'UAE, UK & Europe',
+    topicTrack: 'Data & AI',
+    category: 'Enterprise Generative AI',
+    featured: true,
+    coverImage: '/images/powerbi_data_analytics_1788294280157.webp',
+    title: 'Microsoft 365 Copilot & Copilot Studio (MS-4018) Enterprise Training Guide: UAE, UK & Europe 2026',
+    excerpt:
+      'How enterprise IT & Transformation teams in Dubai, London, Frankfurt & Amsterdam deploy grounded Copilot Studio agents with SharePoint RAG, Entra ID RBAC, Power Platform DLP, and Purview compliance.',
+    seoTitle: 'Microsoft Copilot Studio (MS-4018) Training Guide UAE, UK & EU 2026 | Learnify',
+    seoDescription:
+      'Roll out Microsoft 365 Copilot & Copilot Studio (MS-4018) safely: SharePoint RAG grounding, Generative Orchestration, Autonomous Event Triggers, and DLP governance across UAE, UK & EU.',
+    seoKeywords:
+      'Copilot Studio training UAE, MS-4018 course Dubai UK Europe, Microsoft 365 Copilot certification training, enterprise Copilot Studio governance',
+    readTime: '7 min read',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    citiesCovered: ['Dubai', 'Abu Dhabi', 'London', 'Frankfurt', 'Amsterdam', 'Dublin'],
+    intro:
+      'Across financial institutions in DIFC Dubai, government agencies in London, and manufacturers across Germany and the Netherlands, MS-4018 (Microsoft 365 Copilot & Copilot Studio) has rapidly become the #1 requested enterprise workshop. Moving beyond generic prompt tricks requires real SharePoint oversharing hygiene, Generative Orchestration, Autonomous Event Triggers, and strict DLP policies.',
+    keyTakeaways: [
+      'Copilot Studio honors Microsoft Entra ID source permissions automatically—meaning fixing SharePoint "overshared link" permissions BEFORE rollout is essential.',
+      'Generative Orchestration lets enterprise agents combine Topics, SharePoint RAG Knowledge, and REST/Dataverse Connector Actions dynamically inside one multi-step response.',
+      'Power Platform Managed Environments and Data Loss Prevention (DLP) policies ensure teams never leak internal Dataverse records across unapproved public connectors.',
+    ],
+    sections: [
+      {
+        id: 'ms4018-enterprise-rollout',
+        heading: '4 Architecture Pillars Tested in MS-4018 Corporate Bootcamps',
+        paragraphs: [
+          'Our 1-on-1 and corporate cohorts across GST (Dubai/Abu Dhabi), GMT (London), and CET (Berlin/Amsterdam) train solution architects and low-code champions on live sandbox environments mirroring real enterprise M365 tenants.',
+        ],
+        table: {
+          caption: 'Enterprise Copilot Studio (MS-4018) Curriculum & Governance Map',
+          headers: ['Module', 'Technical Capability', 'Compliance Control', 'Delivery Format'],
+          rows: [
+            {
+              label: '01 · Knowledge RAG',
+              col2: 'SharePoint, Uploaded PDFs & Graph Connectors',
+              col3: 'Entra ID ACL + Purview Labels',
+              col4: 'Live 24/7 Lab Sandbox',
+            },
+            {
+              label: '02 · Orchestration & Tools',
+              col2: 'Generative Orchestration + Custom OpenAPI Actions',
+              col3: 'End-User Delegated OAuth',
+              col4: 'Teams & M365 Copilot Extensibility',
+            },
+            {
+              label: '03 · Autonomous Triggers',
+              col2: 'Event-Driven Inbox, ERP & Webhook Triggers',
+              col3: 'Power Platform Pipelines ALM',
+              col4: 'Corporate Cohort / 1-on-1',
+            },
+          ],
+        },
+      },
+    ],
+    relatedRegionalLinks: [
+      {
+        label: 'Free MS-4018 Copilot Studio Practice Test (30 Qs)',
+        href: '/exam-prep/microsoft-copilot-studio-ms-4018-practice-questions',
+        subtitle: 'Scenario questions on SharePoint RAG, DLP & Generative Actions',
+      },
+      {
+        label: 'Microsoft Copilot Studio Training — Dubai & UAE (AED)',
+        href: '/ae/microsoft-365-copilot-ms-4018-training-dubai-uae',
+        subtitle: 'GST corporate cohorts & AED invoicing across UAE',
+      },
+      {
+        label: 'Microsoft Copilot Studio Training — London & UK (GBP)',
+        href: '/uk/microsoft-365-copilot-ms-4018-training-uk',
+        subtitle: 'Live GMT/BST instructor workshops with corporate PO billing',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Can our corporate IT & HR teams book a private MS-4018 Copilot Studio workshop in Dubai or London timezone?',
+        a: 'Yes. Learnify delivers tailored multi-seat enterprise workshops aligned to GST (UAE), GMT/BST (UK), and CET (Europe) with Purchase Order (PO) invoicing in AED, GBP, or EUR.',
+      },
+    ],
+  },
 ];

@@ -264,6 +264,32 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                   <span>Download Official Syllabus</span>
                 </button>
               </div>
+
+              {(() => {
+                const primaryPractice = relatedPrepTools.find((p) => p.type === 'practice_test');
+                if (!primaryPractice) return null;
+                return (
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-600">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Free Exam Prep:
+                    </span>
+                    <a
+                      href={`/exam-prep/${primaryPractice.slug}`}
+                      onClick={(e) => {
+                        if (onNavigateLink) {
+                          e.preventDefault();
+                          onNavigateLink(`/exam-prep/${primaryPractice.slug}`);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 font-bold text-[#152e4d] hover:text-[#ea6d24] underline underline-offset-2 transition-colors"
+                    >
+                      <span>Take {primaryPractice.shortTitle} ({primaryPractice.questionCountLabel})</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Right Column: Clean Visual Card Matching CourseDetailView */}

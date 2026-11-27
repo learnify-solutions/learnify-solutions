@@ -441,7 +441,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
           )}
 
           {/* CTA Banner */}
-          <section className="bg-[#152e4d] text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <section className="bg-[#152e4d] text-white rounded-2xl p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-1.5">
               <h2 className="text-xl font-bold">
                 Plan Your{' '}
@@ -454,14 +454,28 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
                 Speak with a senior advisor for live batch timings, 24/7 sandbox labs, exam vouchers, and corporate quotes.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => onOpenAdvisorModal('advisor', post.title)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-semibold text-sm transition-colors cursor-pointer shrink-0 min-h-[44px]"
-            >
-              <span>Talk to Advisor</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              {relatedPrepTools[0] && (
+                <a
+                  href={`/exam-prep/${relatedPrepTools[0].slug}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigateLink(`/exam-prep/${relatedPrepTools[0].slug}`);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-colors min-h-[44px]"
+                >
+                  <span>Free {relatedPrepTools[0].examCode} Practice Test</span>
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={() => onOpenAdvisorModal('advisor', post.title)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-semibold text-sm transition-colors cursor-pointer min-h-[44px]"
+              >
+                <span>Talk to Advisor</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </section>
         </article>
 

@@ -43,14 +43,6 @@ export default defineConfig(() => {
             if (id.includes('defaultCmsData')) {
               return 'cms-defaults';
             }
-            if (
-              (id.includes('examPrepData') ||
-                id.includes('examPrepQuestions') ||
-                id.includes('examPrepResources')) &&
-              !id.includes('examPrepMeta')
-            ) {
-              return 'exam-prep-bank';
-            }
           },
         },
       },

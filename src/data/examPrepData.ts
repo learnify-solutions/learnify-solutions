@@ -53,6 +53,11 @@ import {
   CLOUD_ESSENTIALS_CLO_002_QUESTIONS,
   COPILOT_MS_4018_QUESTIONS,
 } from './examPrepQuestionsExt7';
+import {
+  AZURE_DP_100_QUESTIONS,
+  COMPTIA_A_PLUS_QUESTIONS,
+  COMPTIA_SERVER_PLUS_QUESTIONS,
+} from './examPrepQuestionsExt8';
 
 export { CALCULATOR_REGIONS, CALCULATOR_COURSES, getRelatedExamPrepResources };
 
@@ -152,6 +157,15 @@ const EXAM_PREP_PAYLOAD_BY_SLUG: Record<string, ExamPrepPayload> = {
   },
   'microsoft-copilot-studio-ms-4018-practice-questions': {
     questions: COPILOT_MS_4018_QUESTIONS,
+  },
+  'azure-dp-100-practice-questions': {
+    questions: AZURE_DP_100_QUESTIONS,
+  },
+  'comptia-a-plus-220-1201-practice-questions': {
+    questions: COMPTIA_A_PLUS_QUESTIONS,
+  },
+  'comptia-server-plus-sk0-005-practice-questions': {
+    questions: COMPTIA_SERVER_PLUS_QUESTIONS,
   },
 };
 

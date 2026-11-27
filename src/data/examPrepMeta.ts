@@ -1068,6 +1068,111 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
       },
     ],
   },
+  {
+    slug: 'azure-dp-100-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Data & AI',
+    examCode: 'DP-100',
+    title: 'Microsoft Azure Data Scientist (DP-100) Practice Questions 2026',
+    shortTitle: 'Azure Data Scientist DP-100 Practice Test',
+    excerpt:
+      'Practice Azure ML Managed VNets, AutoML, MLflow tracking, Hyperdrive Early Termination, Managed Online vs Batch Endpoints, Data Drift, and Prompt Flow RAG evaluation.',
+    seoTitle: 'Azure Data Scientist DP-100 Practice Questions & Mock Exam 2026 | Learnify',
+    seoDescription:
+      'Master Microsoft Azure Data Scientist Associate (DP-100) exam scenarios: Azure ML SDK v2 pipelines, MLflow signatures, Blue-Green traffic splitting, and MLOps.',
+    seoKeywords:
+      'DP-100 practice questions, Azure Data Scientist mock exam, Microsoft DP-100 sample questions 2026, Azure ML exam prep',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '25 Scenario Qs',
+    passingScoreLabel: '70% Target (700/1000)',
+    relatedCourseId: 'course-ms-dp-100',
+    relatedCourseLabel: 'Microsoft Azure Data Scientist (DP-100) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Design and prepare a machine learning solution', weight: '20–25%' },
+      { name: 'Explore data, and train models', weight: '35–40%' },
+      { name: 'Prepare a model for deployment', weight: '20–25%' },
+      { name: 'Deploy and retrain a model', weight: '10–15%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'What does DP-100 focus on most in 2026—theory math or Azure Machine Learning SDK v2?',
+        a: 'DP-100 heavily tests practical Azure ML workflow design: workspace VNets, identity-based datastores, SDK v2 `command()` jobs, MLflow logging, Managed Online/Batch endpoints, and Prompt Flow LLM evaluators.',
+      },
+    ],
+  },
+  {
+    slug: 'comptia-a-plus-220-1201-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: '220-1201 · 1202',
+    title: 'CompTIA A+ Core 1 & Core 2 (220-1201 / 220-1202) Practice Questions 2026',
+    shortTitle: 'CompTIA A+ 220-1201 Practice Test',
+    excerpt:
+      'Drill PC hardware, NVMe vs SATA, RAID 1, APIPA DHCP failures, AI PC NPUs, BitLocker TPM 2.0, sfc/DISM, ransomware containment, and Linux CLI across Core 1 & Core 2.',
+    seoTitle: 'CompTIA A+ 220-1201 & 220-1202 Practice Questions 2026 | Learnify',
+    seoDescription:
+      'Free CompTIA A+ V15 (220-1201 & 220-1202) practice test covering Core 1 hardware/networking troubleshooting and Core 2 OS, security, and ITIL operational procedures.',
+    seoKeywords:
+      'CompTIA A+ practice questions, 220-1201 practice test, 220-1202 sample questions 2026, CompTIA A+ V15 mock exam',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '25 Scenario Qs',
+    passingScoreLabel: '75% Target (675/700)',
+    relatedCourseId: 'course-comptia-a-plus',
+    relatedCourseLabel: 'CompTIA A+ Core 1 & Core 2 (220-1201/1202) Live Bootcamp',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Mobile Devices & Networking', weight: '32%' },
+      { name: 'Hardware & Troubleshooting', weight: '27%' },
+      { name: 'Operating Systems (Windows & Linux)', weight: '21%' },
+      { name: 'Security & Operational Procedures', weight: '20%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Do I have to pass both CompTIA A+ Core 1 (220-1201) and Core 2 (220-1202) to earn certification?',
+        a: 'Yes. CompTIA A+ requires passing Core 1 (675/900) and Core 2 (700/900), which can be scheduled separately at Pearson VUE centers or via OnVUE.',
+      },
+    ],
+  },
+  {
+    slug: 'comptia-server-plus-sk0-005-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'SK0-005',
+    title: 'CompTIA Server+ (SK0-005) Practice Questions & Mock Exam 2026',
+    shortTitle: 'CompTIA Server+ SK0-005 Practice Test',
+    excerpt:
+      'Scenario drills testing datacenter hot/cold aisles, iDRAC/IPMI out-of-band console, RAID 6, iSCSI vs NAS, cluster Split-Brain quorum, immutable backups, and Linux I/O bottlenecks.',
+    seoTitle: 'CompTIA Server+ SK0-005 Practice Questions & Mock Test 2026 | Learnify',
+    seoDescription:
+      'Practice CompTIA Server+ (SK0-005) infrastructure questions covering server hardware, ECC RAM, MPIO storage, immutable DR backups, SELinux hardening, and root-cause triage.',
+    seoKeywords:
+      'CompTIA Server+ practice questions, SK0-005 mock test, Server+ certification study questions 2026',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '25 Scenario Qs',
+    passingScoreLabel: '83% Target (750/900)',
+    relatedCourseId: 'course-comptia-server-plus',
+    relatedCourseLabel: 'CompTIA Server+ (SK0-005) Infrastructure Bootcamp',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Server Hardware Installation and Management', weight: '18%' },
+      { name: 'Server Administration', weight: '30%' },
+      { name: 'Security and Disaster Recovery', weight: '24%' },
+      { name: 'Troubleshooting', weight: '28%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Does CompTIA Server+ (SK0-005) ever expire like Security+ or Network+?',
+        a: 'CompTIA Server+ is famously a "Good-for-Life" (GFL) certification with zero annual CEU renewal fees, making it one of the highest-ROI datacenter credentials.',
+      },
+    ],
+  },
 ];
 
 export function getExamPrepMetaBySlug(slug: string): ExamPrepResource | null {
@@ -1096,6 +1201,15 @@ export function getRelatedExamPrepResources(opts: {
     }
     if (hay.includes('copilot') || hay.includes('ms-4018')) {
       if (item.slug.includes('copilot')) score += 50;
+    }
+    if (hay.includes('dp-100') || hay.includes('data scientist')) {
+      if (item.slug.includes('dp-100')) score += 50;
+    }
+    if (hay.includes('server+') || hay.includes('server-plus') || hay.includes('sk0-005')) {
+      if (item.slug.includes('server-plus')) score += 50;
+    }
+    if (hay.includes('comptia a+') || hay.includes('a-plus') || hay.includes('220-1201')) {
+      if (item.slug.includes('comptia-a-plus')) score += 50;
     }
     if (hay.includes('security') || hay.includes('cyber') || hay.includes('ceh') || hay.includes('pentest') || hay.includes('cissp')) {
       if (item.topicTrack === 'Cybersecurity') score += 25;
