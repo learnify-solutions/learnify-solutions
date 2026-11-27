@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, Send, Building2, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { X, CheckCircle, Send, Building2, User, Mail, MessageSquare } from 'lucide-react';
 import { submitLead } from '../services/cmsService';
 import { LeadSubmission } from '../types';
 import { trackLeadSubmission } from '../utils/analytics';
+import { PhoneCountryInput } from './PhoneCountryInput';
 
 interface AdvisorModalProps {
   isOpen: boolean;
@@ -159,10 +160,10 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div className="sm:col-span-5">
                   <label htmlFor="advisor-company" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Company / Organization
+                    Company / Org
                   </label>
                   <div className="relative">
                     <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -177,21 +178,16 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
                   </div>
                 </div>
 
-                <div>
+                <div className="sm:col-span-7">
                   <label htmlFor="advisor-phone" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Phone Number
+                    Phone Number *
                   </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                    <input
-                      id="advisor-phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+1 (555) 000-0000"
-                      className="w-full pl-9 pr-3 py-2.5 text-sm rounded-md border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#ea6d24] focus:border-transparent"
-                    />
-                  </div>
+                  <PhoneCountryInput
+                    id="advisor-phone"
+                    value={phone}
+                    onChange={(val) => setPhone(val)}
+                    required
+                  />
                 </div>
               </div>
 

@@ -870,6 +870,204 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
       },
     ],
   },
+  {
+    slug: 'comptia-itf-plus-fc0-u61-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'FC0-U61',
+    title: 'CompTIA ITF+ (FC0-U61) Practice Questions & Mock Exam 2026',
+    shortTitle: 'CompTIA ITF+ FC0-U61 Practice Test',
+    excerpt:
+      'Build rock-solid IT Foundations across Hardware, OS, Databases, Software Development, and Security with 30 realistic CompTIA ITF+ (FC0-U61) exam scenarios and detailed explanations.',
+    seoTitle: 'CompTIA ITF+ (FC0-U61) Practice Questions & Mock Test 2026 | Learnify',
+    seoDescription:
+      'Free CompTIA IT Fundamentals (ITF+ FC0-U61) practice test covering IT concepts, hardware infrastructure, relational vs NoSQL databases, coding basics, and CIA security.',
+    seoKeywords:
+      'CompTIA ITF+ practice questions, FC0-U61 mock exam, CompTIA IT Fundamentals certification practice test, ITF+ study questions 2026',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '72% Target (650/900)',
+    relatedCourseId: 'course-comptia-itf-plus',
+    relatedCourseLabel: 'CompTIA IT Fundamentals (ITF+ FC0-U61) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'IT Concepts and Terminology', weight: '17%' },
+      { name: 'Infrastructure', weight: '22%' },
+      { name: 'Applications and Software', weight: '18%' },
+      { name: 'Software Development Concepts', weight: '12%' },
+      { name: 'Database Fundamentals', weight: '11%' },
+      { name: 'Security', weight: '20%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'What score is required to pass CompTIA ITF+ (FC0-U61)?',
+        a: 'CompTIA requires a scaled score of 650 out of 900 (~72%) across 75 multiple-choice questions in 60 minutes. Scoring 80%+ in practice drills gives strong exam-day confidence.',
+      },
+      {
+        q: 'Is CompTIA ITF+ worth taking before CompTIA A+ or Security+?',
+        a: 'Yes—career switchers, non-technical managers, and beginners use ITF+ (FC0-U61) to master databases, binary math, programming logic, and hardware fundamentals before advancing to A+ or Network+.',
+      },
+    ],
+  },
+  {
+    slug: 'azure-dp-900-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Data & AI',
+    examCode: 'DP-900',
+    title: 'Microsoft Azure Data Fundamentals (DP-900) Practice Questions 2026',
+    shortTitle: 'Azure Data Fundamentals DP-900 Practice Test',
+    excerpt:
+      'Master OLTP vs OLAP, Azure SQL Managed Instance, ADLS Gen2, Cosmos DB RU/s, Synapse MPP, and Power BI semantic models with 30 DP-900 scenario questions.',
+    seoTitle: 'Azure Data Fundamentals DP-900 Practice Questions 2026 | Learnify',
+    seoDescription:
+      'Practice Microsoft Azure Data Fundamentals (DP-900) mock exam questions covering relational SQL, Cosmos DB NoSQL, ADLS Gen2 Data Lakes, ETL/ELT, and Power BI.',
+    seoKeywords:
+      'DP-900 practice questions, Azure Data Fundamentals mock test, Microsoft DP-900 sample exam 2026, DP-900 training prep',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '70% Target (700/1000)',
+    relatedCourseId: 'course-ms-dp-900',
+    relatedCourseLabel: 'Microsoft Azure Data Fundamentals (DP-900) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Describe core data concepts', weight: '25–30%' },
+      { name: 'Describe relational data on Azure', weight: '20–25%' },
+      { name: 'Describe non-relational data on Azure', weight: '15–20%' },
+      { name: 'Describe an analytics workload on Azure', weight: '25–30%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Which Azure storage & database distinctions are tested most heavily on DP-900?',
+        a: 'Expect scenario comparisons between OLTP vs OLAP, ETL vs ELT, Azure SQL Database vs Azure SQL Managed Instance, ADLS Gen2 vs Blob access tiers, and Cosmos DB API selection.',
+      },
+      {
+        q: 'Does DP-900 require writing complex T-SQL stored procedures?',
+        a: 'No. DP-900 focuses on identifying basic SELECT/INSERT/UPDATE/GROUP BY clauses, relational keys, and matching business workloads to the optimal Azure Data or Microsoft Fabric service.',
+      },
+    ],
+  },
+  {
+    slug: 'power-platform-pl-900-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Data & AI',
+    examCode: 'PL-900',
+    title: 'Microsoft Power Platform Fundamentals (PL-900) Practice Questions 2026',
+    shortTitle: 'Microsoft PL-900 Power Platform Practice Test',
+    excerpt:
+      'Test your fluency across Microsoft Dataverse, Canvas vs Model-Driven Apps, Power Automate Cloud & Desktop RPA flows, Power BI RLS, Power Pages, and Copilot Studio.',
+    seoTitle: 'Microsoft PL-900 Power Platform Practice Questions 2026 | Learnify',
+    seoDescription:
+      'Free Microsoft Power Platform Fundamentals (PL-900) practice test with 30 real-world scenarios covering Dataverse, Power Apps, Power Automate, Power BI, and Copilot Studio.',
+    seoKeywords:
+      'PL-900 practice questions, Microsoft Power Platform Fundamentals mock exam, PL-900 sample questions 2026, PL-900 training test',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '70% Target (700/1000)',
+    relatedCourseId: 'course-ms-pl-900',
+    relatedCourseLabel: 'Microsoft Power Platform Fundamentals (PL-900) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Business value of Power Platform & Governance', weight: '20–25%' },
+      { name: 'Foundational components & Dataverse', weight: '15–20%' },
+      { name: 'Capabilities of Power BI', weight: '15–20%' },
+      { name: 'Capabilities of Power Apps & Power Pages', weight: '20–25%' },
+      { name: 'Capabilities of Power Automate & Copilot Studio', weight: '15–20%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'What is the #1 mistake learners make on the Microsoft PL-900 exam?',
+        a: 'Confusing when to select a Canvas App vs a Model-Driven App vs Power Pages—and misunderstanding how Power Platform DLP Policies isolate Business vs Non-Business connectors.',
+      },
+      {
+        q: 'Does PL-900 cover Microsoft Copilot Studio and AI Builder in 2026?',
+        a: 'Yes. Modern PL-900 objectives test generative conversational agents in Copilot Studio, Topics/Entities, and AI Builder invoice/document processing inside Power Automate.',
+      },
+    ],
+  },
+  {
+    slug: 'comptia-cloud-essentials-clo-002-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Cloud & DevOps',
+    examCode: 'CLO-002',
+    title: 'CompTIA Cloud Essentials+ (CLO-002) Practice Questions & Mock Exam 2026',
+    shortTitle: 'CompTIA Cloud Essentials+ CLO-002 Practice Test',
+    excerpt:
+      'Validate cloud financial governance (CapEx vs OpEx, TCO, Egress, FinOps), SLA/RTO/RPO continuity planning, Lift-and-Shift vs Refactoring, CSPM, and SOC 2 compliance.',
+    seoTitle: 'CompTIA Cloud Essentials+ (CLO-002) Practice Questions 2026 | Learnify',
+    seoDescription:
+      'Practice CompTIA Cloud Essentials+ (CLO-002) exam scenarios covering Cloud Business Principles, FinOps TCO, Shared Responsibility, IaC, and Risk Governance.',
+    seoKeywords:
+      'CompTIA Cloud Essentials+ practice questions, CLO-002 mock test, Cloud Essentials+ study questions 2026, CLO-002 certification exam prep',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '80% Target (720/900)',
+    relatedCourseId: 'course-comptia-cloud-essentials',
+    relatedCourseLabel: 'CompTIA Cloud Essentials+ (CLO-002) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Cloud Concepts', weight: '24%' },
+      { name: 'Business Principles of Cloud Environments', weight: '28%' },
+      { name: 'Management and Technical Operations', weight: '26%' },
+      { name: 'Governance, Risk, Compliance, and Security', weight: '22%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'How does CompTIA Cloud Essentials+ (CLO-002) differ from CompTIA Cloud+ (CV0-004)?',
+        a: 'Cloud Essentials+ is designed for IT analysts, project managers, FinOps leads, and architects evaluating cloud ROI, migration business cases, TCO, SLAs, and compliance—whereas Cloud+ targets deep hands-on systems engineering.',
+      },
+      {
+        q: 'What passing score is required on the official CompTIA CLO-002 exam?',
+        a: 'You need 720 on a 100–900 scale across up to 75 questions in 60 minutes.',
+      },
+    ],
+  },
+  {
+    slug: 'microsoft-copilot-studio-ms-4018-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Data & AI',
+    examCode: 'MS-4018',
+    title: 'Microsoft 365 Copilot & Copilot Studio (MS-4018) Practice Questions 2026',
+    shortTitle: 'Copilot Studio MS-4018 Practice Test',
+    excerpt:
+      'Practice enterprise RAG grounding over SharePoint, Generative Orchestration, Autonomous Event Triggers, Power Platform DLP guardrails, and Purview compliance.',
+    seoTitle: 'Microsoft Copilot Studio (MS-4018) Practice Questions 2026 | Learnify',
+    seoDescription:
+      'Test your Microsoft Copilot Studio & M365 Copilot (MS-4018) readiness with 30 enterprise scenario questions on SharePoint RAG, Generative Actions, DLP, and ALM.',
+    seoKeywords:
+      'MS-4018 practice questions, Microsoft Copilot Studio assessment, Copilot Studio training UAE UK Europe, enterprise AI agent exam prep',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '80% Target Readiness',
+    relatedCourseId: 'course-ms-4018-copilot',
+    relatedCourseLabel: 'Microsoft 365 Copilot & Copilot Studio (MS-4018) Training',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-27',
+    domainWeights: [
+      { name: 'Architecture & SharePoint RAG Knowledge Grounding', weight: '30%' },
+      { name: 'Topics, Generative Orchestration & Connector Actions', weight: '30%' },
+      { name: 'Security, DLP & Microsoft Purview Governance', weight: '20%' },
+      { name: 'Publishing Channels, ALM & Autonomous Event Triggers', weight: '20%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Who should take the MS-4018 Microsoft Copilot & Copilot Studio readiness test?',
+        a: 'Solution architects, M365 administrators, and low-code makers across UK, Europe, and UAE rolling out grounded enterprise AI assistants safely inside Microsoft Teams and Microsoft 365.',
+      },
+      {
+        q: 'How does Copilot Studio enforce permissions when retrieving SharePoint documents?',
+        a: 'With Microsoft Entra ID end-user authentication enabled, Retrieval-Augmented Generation honors live SharePoint/Graph ACLs so employees never retrieve restricted folders.',
+      },
+    ],
+  },
 ];
 
 export function getExamPrepMetaBySlug(slug: string): ExamPrepResource | null {
@@ -890,6 +1088,15 @@ export function getRelatedExamPrepResources(opts: {
     let score = 0;
     if (opts.courseId && item.relatedCourseId === opts.courseId) score += 100;
     if (hay.includes(item.examCode.toLowerCase().split(' ')[0])) score += 45;
+    if (hay.includes('itf') || hay.includes('fc0-u61')) {
+      if (item.slug.includes('itf-plus')) score += 50;
+    }
+    if (hay.includes('cloud essentials') || hay.includes('clo-002')) {
+      if (item.slug.includes('cloud-essentials')) score += 50;
+    }
+    if (hay.includes('copilot') || hay.includes('ms-4018')) {
+      if (item.slug.includes('copilot')) score += 50;
+    }
     if (hay.includes('security') || hay.includes('cyber') || hay.includes('ceh') || hay.includes('pentest') || hay.includes('cissp')) {
       if (item.topicTrack === 'Cybersecurity') score += 25;
     }

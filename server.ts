@@ -366,6 +366,85 @@ async function sendEmailWithFallback(mailOptions: nodemailer.SendMailOptions): P
   }
 }
 
+const DIAL_COUNTRY_PREFIXES: Array<{ code: string; country: string }> = [
+  { code: '971', country: 'United Arab Emirates' },
+  { code: '966', country: 'Saudi Arabia' },
+  { code: '974', country: 'Qatar' },
+  { code: '973', country: 'Bahrain' },
+  { code: '968', country: 'Oman' },
+  { code: '965', country: 'Kuwait' },
+  { code: '216', country: 'Tunisia' },
+  { code: '234', country: 'Nigeria' },
+  { code: '254', country: 'Kenya' },
+  { code: '353', country: 'Ireland' },
+  { code: '91', country: 'India' },
+  { code: '92', country: 'Pakistan' },
+  { code: '44', country: 'United Kingdom' },
+  { code: '27', country: 'South Africa' },
+  { code: '49', country: 'Germany' },
+  { code: '31', country: 'Netherlands' },
+  { code: '33', country: 'France' },
+  { code: '34', country: 'Spain' },
+  { code: '39', country: 'Italy' },
+  { code: '41', country: 'Switzerland' },
+  { code: '46', country: 'Sweden' },
+  { code: '61', country: 'Australia' },
+  { code: '64', country: 'New Zealand' },
+  { code: '65', country: 'Singapore' },
+  { code: '60', country: 'Malaysia' },
+  { code: '62', country: 'Indonesia' },
+  { code: '63', country: 'Philippines' },
+  { code: '55', country: 'Brazil' },
+  { code: '52', country: 'Mexico' },
+  { code: '20', country: 'Egypt' },
+  { code: '1', country: 'United States / Canada' },
+];
+
+function escapeEmailHtml(val: string): string {
+  return String(val || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function normalizeAndIdentifyPhone(rawPhone?: string): {
+  formatted: string;
+  digits: string;
+  country: string;
+} {
+  const trimmed = String(rawPhone || '').trim();
+  if (!trimmed) return { formatted: 'N/A', digits: '', country: '' };
+
+  let normalized = trimmed.startsWith('00') ? `+${trimmed.slice(2)}` : trimmed;
+  const digits = normalized.replace(/\D/g, '');
+  if (!digits) return { formatted: trimmed, digits: '', country: '' };
+
+  let detectedCountry = '';
+  for (const entry of DIAL_COUNTRY_PREFIXES) {
+    if (normalized.startsWith(`+${entry.code}`)) {
+      detectedCountry = entry.country;
+      break;
+    }
+    // Heuristic for un-prefixed international numbers (e.g. 15713460704 -> +1 US, 971... -> +971 UAE)
+    if (
+      !normalized.startsWith('+') &&
+      ((entry.code === '1' && digits.length === 11 && digits.startsWith('1')) ||
+        (entry.code.length >= 2 && digits.length >= 10 && digits.startsWith(entry.code)))
+    ) {
+      detectedCountry = entry.country;
+      normalized = `+${entry.code} ${digits.slice(entry.code.length)}`;
+      break;
+    }
+  }
+
+  return {
+    formatted: normalized,
+    digits,
+    country: detectedCountry,
+  };
+}
+
 async function sendLeadEmails(lead: LeadSubmission) {
   const adminEmail = process.env.ADMIN_EMAIL || 'info@learnify-solutions.com';
   const senderEmail = process.env.EMAIL_USER || 'info@learnify-solutions.com';
@@ -414,21 +493,35 @@ async function sendLeadEmails(lead: LeadSubmission) {
 
   // 1. Send Email to Admin
   try {
+    const phoneMeta = normalizeAndIdentifyPhone(lead.phone);
+    const phoneDisplayHtml =
+      phoneMeta.formatted === 'N/A'
+        ? 'N/A'
+        : `${escapeEmailHtml(phoneMeta.formatted)}${
+            phoneMeta.country
+              ? ` <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:12px;background:#eef2ff;color:#152e4d;font-size:11px;font-weight:bold;">${escapeEmailHtml(phoneMeta.country)}</span>`
+              : ''
+          }${
+            phoneMeta.digits
+              ? `<div style="margin-top:6px;font-size:12px;"><a href="tel:+${phoneMeta.digits}" style="color:#152e4d;text-decoration:underline;margin-right:10px;">Call</a> <a href="https://wa.me/${phoneMeta.digits}" style="color:#16a34a;text-decoration:underline;font-weight:bold;">WhatsApp Chat</a></div>`
+              : ''
+          }`;
+
     const adminHtml = loadTemplate('admin_lead_notification.html', {
-      inquiryType: lead.inquiryType,
-      fullName: lead.fullName,
-      email: lead.email,
-      phone: lead.phone || 'N/A',
-      company: lead.company || 'N/A',
-      selectedDomain: lead.courseTitle || lead.selectedDomain || 'General',
-      message: lead.message || 'No message provided.'
+      inquiryType: escapeEmailHtml(lead.inquiryType),
+      fullName: escapeEmailHtml(lead.fullName),
+      email: escapeEmailHtml(lead.email),
+      phone: phoneDisplayHtml,
+      company: escapeEmailHtml(lead.company || 'N/A'),
+      selectedDomain: escapeEmailHtml(lead.courseTitle || lead.selectedDomain || 'General'),
+      message: escapeEmailHtml(lead.message || 'No message provided.')
     });
 
     await sendEmailWithFallback({
       from: `"Learnify Solutions Lead Alert" <${senderEmail}>`,
       to: adminEmail,
       replyTo: lead.email,
-      subject: `[New Lead Alert] ${lead.inquiryType.toUpperCase()} - ${lead.fullName} (${lead.company || 'Individual'})`,
+      subject: `[New Lead Alert] ${lead.inquiryType.toUpperCase()} - ${lead.fullName} (${lead.company || phoneMeta.country || 'Individual'})`,
       html: adminHtml,
     });
   } catch (adminErr: any) {
@@ -617,9 +710,13 @@ async function startServer() {
     }
 
     // 0. Canonicalize bare apex domain (non-www) to https://www.learnify-solutions.com in single 301 hop
+    // and prevent Railway staging/default hostnames from leaking into Google index
     const rawHost = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
     if (rawHost === 'learnify-solutions.com') {
       return res.redirect(301, `${SITE_BASE_URL}${req.originalUrl || reqPath}`);
+    }
+    if (rawHost.endsWith('.railway.app')) {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     }
 
     const normalizedPath = reqPath.replace(/\/+$/, '').toLowerCase() || '/';
@@ -1931,10 +2028,12 @@ ${regionalSitemaps}
     }
 
     const newLeadId = crypto.randomUUID();
+    const phoneMeta = normalizeAndIdentifyPhone(phone);
+    const normalizedPhone = phoneMeta.formatted === 'N/A' ? '' : phoneMeta.formatted;
 
     const newLeadUI = {
       id: newLeadId,
-      fullName, email, company, phone, inquiryType, selectedDomain, courseTitle, courseId, jobRole, preferredFormat, message,
+      fullName, email, company, phone: normalizedPhone, inquiryType, selectedDomain, courseTitle, courseId, jobRole, preferredFormat, message,
       createdAt: new Date().toISOString()
     };
 
@@ -1945,7 +2044,7 @@ ${regionalSitemaps}
         full_name: fullName,
         email: email,
         company: company || '',
-        phone: phone || '',
+        phone: normalizedPhone,
         inquiry_type: inquiryType || 'advisor',
         selected_domain: selectedDomain || 'General',
         course_title: courseTitle || null,
@@ -3177,7 +3276,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <h2>Featured Global Certification Courses</h2>
             <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
             <h2>Practice Mock Tests, Cheat Sheets &amp; Calculators</h2>
-            <ul>${EXAM_PREP_RESOURCES.slice(0, 12).map((r) => `<li><a href="/exam-prep/${escapeHtml(r.slug)}">${escapeHtml(r.title)}</a></li>`).join('')}</ul>
+            <ul>${EXAM_PREP_RESOURCES.map((r) => `<li><a href="/exam-prep/${escapeHtml(r.slug)}">${escapeHtml(r.title)}</a></li>`).join('')}</ul>
             <h2>Latest Global &amp; Regional IT Certification Blogs</h2>
             <ul>${allBlogs.map((g) => `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
             <h2>Regional Training Hubs (GBP / EUR / AED / ZAR)</h2>

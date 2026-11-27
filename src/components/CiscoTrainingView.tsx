@@ -29,6 +29,7 @@ import {
   BookmarkCheck,
   Check
 } from 'lucide-react';
+import { PhoneCountryInput } from './PhoneCountryInput';
 import { Course } from '../types';
 import { normalizeImageUrl, getSvgCourseFallback } from '../utils/imageHelper';
 import { SyllabusDownloadModal } from './SyllabusDownloadModal';
@@ -960,12 +961,10 @@ export const CiscoTrainingView: React.FC<CiscoTrainingViewProps> = ({
                       <label className="block text-xs font-semibold text-slate-300 mb-1">
                         Phone / WhatsApp
                       </label>
-                      <input
-                        type="tel"
+                      <PhoneCountryInput
+                        variant="dark"
                         value={quoteForm.phone}
-                        onChange={(e) => setQuoteForm({ ...quoteForm, phone: e.target.value })}
-                        placeholder="+1 555-0199"
-                        className="w-full px-3.5 py-2.5 rounded-lg bg-slate-800/90 border border-slate-700 text-white text-xs placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#ea6d24]"
+                        onChange={(val) => setQuoteForm({ ...quoteForm, phone: val })}
                       />
                     </div>
 

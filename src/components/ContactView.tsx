@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, MessageCircle, Mail } from 'lucide-react';
+import { PhoneCountryInput } from './PhoneCountryInput';
 
 interface ContactViewProps {
   onSubmitLead: (data: any) => Promise<void>;
@@ -174,13 +175,13 @@ export const ContactView: React.FC<ContactViewProps> = ({ onSubmitLead, onNaviga
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Phone Number</label>
-                    <input 
-                      type="tel" 
-                      placeholder="+1 (555) 000-0000"
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Phone Number *</label>
+                    <PhoneCountryInput
                       value={formData.phoneNumber}
-                      onChange={e => setFormData({...formData, phoneNumber: e.target.value})}
-                      className="w-full px-3 py-2 rounded-md border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-xs"
+                      onChange={(val) => setFormData({ ...formData, phoneNumber: val })}
+                      variant="soft"
+                      size="sm"
+                      required
                     />
                   </div>
                   <div>

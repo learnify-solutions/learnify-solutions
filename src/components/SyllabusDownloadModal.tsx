@@ -7,13 +7,13 @@ import {
   Building,
   User,
   Mail,
-  Phone,
   Briefcase,
   Layers,
   ArrowRight,
   ShieldCheck,
   RotateCw,
 } from 'lucide-react';
+import { PhoneCountryInput } from './PhoneCountryInput';
 import { Course } from '../types';
 import { submitLead } from '../services/cmsService';
 import { downloadCourseSyllabus } from '../utils/syllabusPdf';
@@ -209,28 +209,22 @@ export const SyllabusDownloadModal: React.FC<SyllabusDownloadModalProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                {/* Phone Number */}
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3">
+                <div className="sm:col-span-7">
                   <label htmlFor="syllabus-phone" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Phone / WhatsApp *
                   </label>
-                  <div className="relative">
-                    <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-                    <input
-                      id="syllabus-phone"
-                      type="tel"
-                      required
-                      placeholder="+91 98765 43210"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full pl-8 pr-2.5 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-orange-200 bg-white h-9"
-                    />
-                  </div>
+                  <PhoneCountryInput
+                    id="syllabus-phone"
+                    required
+                    size="sm"
+                    value={formData.phone}
+                    onChange={(val) => setFormData({ ...formData, phone: val })}
+                  />
                 </div>
 
                 {/* Company / College */}
-                <div>
+                <div className="sm:col-span-5">
                   <label htmlFor="syllabus-company" className="block text-[11px] font-semibold text-slate-700 mb-0.5">
                     Organization / Company
                   </label>

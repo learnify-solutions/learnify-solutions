@@ -4,7 +4,6 @@ import {
   Globe2,
   LockOpen,
   Mail,
-  Phone,
   ShieldCheck,
   User,
   Briefcase,
@@ -12,6 +11,7 @@ import {
 import { submitLead } from '../services/cmsService';
 import { trackLeadSubmission } from '../utils/analytics';
 import { ExamPrepResource } from '../types';
+import { PhoneCountryInput } from './PhoneCountryInput';
 
 export const EXAM_PREP_UNLOCK_KEY = 'learnify_exam_prep_unlocked_v1';
 
@@ -227,18 +227,12 @@ export const ExamPrepLeadGate: React.FC<ExamPrepLeadGateProps> = ({
             >
               Phone / WhatsApp *
             </label>
-            <div className="relative">
-              <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-              <input
-                id={`prep-gate-phone-${variant}`}
-                type="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+44 7700 900123 / +971 50..."
-                className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border border-slate-300 bg-white text-[#152e4d] focus:outline-none focus:ring-2 focus:ring-[#ea6d24] focus:border-transparent"
-              />
-            </div>
+            <PhoneCountryInput
+              id={`prep-gate-phone-${variant}`}
+              required
+              value={phone}
+              onChange={(val) => setPhone(val)}
+            />
           </div>
 
           <div>

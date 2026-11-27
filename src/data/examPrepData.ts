@@ -46,6 +46,13 @@ import {
   LINUX_NETWORKING_CHEAT_SHEET,
   TERRAFORM_IAC_CHEAT_SHEET,
 } from './examPrepResources2';
+import {
+  COMPTIA_ITF_PLUS_QUESTIONS,
+  AZURE_DP_900_QUESTIONS,
+  POWER_PLATFORM_PL_900_QUESTIONS,
+  CLOUD_ESSENTIALS_CLO_002_QUESTIONS,
+  COPILOT_MS_4018_QUESTIONS,
+} from './examPrepQuestionsExt7';
 
 export { CALCULATOR_REGIONS, CALCULATOR_COURSES, getRelatedExamPrepResources };
 
@@ -130,6 +137,21 @@ const EXAM_PREP_PAYLOAD_BY_SLUG: Record<string, ExamPrepPayload> = {
   },
   'terraform-iac-commands-cheat-sheet': {
     cheatSheetSections: TERRAFORM_IAC_CHEAT_SHEET,
+  },
+  'comptia-itf-plus-fc0-u61-practice-questions': {
+    questions: COMPTIA_ITF_PLUS_QUESTIONS,
+  },
+  'azure-dp-900-practice-questions': {
+    questions: AZURE_DP_900_QUESTIONS,
+  },
+  'power-platform-pl-900-practice-questions': {
+    questions: POWER_PLATFORM_PL_900_QUESTIONS,
+  },
+  'comptia-cloud-essentials-clo-002-practice-questions': {
+    questions: CLOUD_ESSENTIALS_CLO_002_QUESTIONS,
+  },
+  'microsoft-copilot-studio-ms-4018-practice-questions': {
+    questions: COPILOT_MS_4018_QUESTIONS,
   },
 };
 

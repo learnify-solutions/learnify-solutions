@@ -27,6 +27,7 @@ import {
   X
 } from 'lucide-react';
 import { SyllabusDownloadModal } from './SyllabusDownloadModal';
+import { PhoneCountryInput } from './PhoneCountryInput';
 
 interface CourseDetailViewProps {
   course: Course;
@@ -910,12 +911,12 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                     className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-slate-300 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-[#ea6d24] transition-colors"
                   />
                   
-                  <input
-                    type="tel"
-                    placeholder="Phone / WhatsApp"
+                  <PhoneCountryInput
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-slate-300 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-[#ea6d24] transition-colors"
+                    onChange={(val) => setFormData({ ...formData, phone: val })}
+                    variant="soft"
+                    size="sm"
+                    required
                   />
 
                   <button
@@ -1117,18 +1118,18 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Phone / WhatsApp</label>
-                      <input
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                    <div className="sm:col-span-7">
+                      <label className="block text-xs font-medium text-slate-700 mb-1">Phone / WhatsApp *</label>
+                      <PhoneCountryInput
                         value={reserveForm.phone}
-                        onChange={(e) => setReserveForm({ ...reserveForm, phone: e.target.value })}
-                        className="w-full px-3.5 py-2 text-xs rounded-lg border border-slate-300 bg-slate-50 focus:bg-white focus:outline-hidden focus:border-[#ea6d24] focus:ring-1 focus:ring-[#ea6d24]"
+                        onChange={(val) => setReserveForm({ ...reserveForm, phone: val })}
+                        variant="soft"
+                        size="sm"
+                        required
                       />
                     </div>
-                    <div>
+                    <div className="sm:col-span-5">
                       <label className="block text-xs font-medium text-slate-700 mb-1">Company (Optional)</label>
                       <input
                         type="text"

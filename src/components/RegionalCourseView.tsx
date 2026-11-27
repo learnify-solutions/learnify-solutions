@@ -25,6 +25,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { SyllabusDownloadModal } from './SyllabusDownloadModal';
+import { PhoneCountryInput } from './PhoneCountryInput';
 
 interface RegionalCourseViewProps {
   page: ResolvedRegionalCoursePage;
@@ -483,12 +484,11 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-[#ea6d24] focus:outline-hidden min-h-[42px]"
                   />
-                  <input
-                    type="tel"
-                    placeholder={`Phone (${region.phonePlaceholder})`}
+                  <PhoneCountryInput
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-[#ea6d24] focus:outline-hidden min-h-[42px]"
+                    onChange={(val) => setFormData({ ...formData, phone: val })}
+                    defaultRegion={region.code}
+                    required
                   />
                   <input
                     type="text"

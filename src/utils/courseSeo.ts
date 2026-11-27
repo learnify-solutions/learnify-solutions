@@ -66,7 +66,17 @@ export function buildCourseSeoMeta(course: Course): CourseSeoMeta {
   const aPlusBonus =
     course.id === 'course-comptia-a-plus' ? ' / 220-1201 & 220-1202 V15' : '';
 
-  const title = `${course.title}${codeTag}${copilotBonus} Course, Syllabus & Live Training (2026) | Learnify`;
+  const baseTitle = `${course.title}${codeTag}${copilotBonus}`;
+  const fullCandidate = `${baseTitle} Syllabus, Labs & Practice Test (2026) | Learnify`;
+  const mediumCandidate = `${baseTitle} Syllabus & Practice Test 2026 | Learnify`;
+  const compactCandidate = `${baseTitle} Course & Practice Test | Learnify`;
+
+  const title =
+    fullCandidate.length <= 68
+      ? fullCandidate
+      : mediumCandidate.length <= 68
+        ? mediumCandidate
+        : compactCandidate;
 
   const rawSummary = (course.summary || course.overview || `Master ${course.title} with hands-on labs.`).trim();
   const shortSummary =
