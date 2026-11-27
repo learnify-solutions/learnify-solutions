@@ -3,6 +3,21 @@ import { initialCmsData } from '../data/defaultCmsData';
 import { getSupabase, isSupabaseConfigured } from '../lib/supabase';
 
 export async function fetchCmsData(): Promise<CmsData> {
+  try {
+    const res = await fetch('/api/cms');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return {
+          ...initialCmsData,
+          ...json.data,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Backend API fetch notice:', err);
+  }
+
   if (isSupabaseConfigured) {
     try {
       const supabase = await getSupabase();
@@ -25,22 +40,8 @@ export async function fetchCmsData(): Promise<CmsData> {
         }
       }
     } catch (err) {
-      console.warn('Supabase client fetch notice, falling back to backend API:', err);
+      console.warn('Supabase fallback notice:', err);
     }
-  }
-
-  try {
-    const res = await fetch('/api/cms');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    if (json.success && json.data) {
-      return {
-        ...initialCmsData,
-        ...json.data,
-      };
-    }
-  } catch (err) {
-    console.warn('Backend API fetch error, using local fallback:', err);
   }
 
   return initialCmsData;
@@ -182,27 +183,6 @@ export async function deleteBlogPost(slug: string): Promise<BlogSummary[]> {
 export async function submitLead(
   lead: Omit<LeadSubmission, 'id' | 'createdAt'>
 ): Promise<{ success: boolean; message: string }> {
-  if (isSupabaseConfigured) {
-    try {
-      const supabase = await getSupabase();
-      if (supabase) {
-        await supabase.from('learnify_leads').insert([
-          {
-            full_name: lead.fullName,
-            email: lead.email,
-            company: lead.company,
-            phone: lead.phone,
-            inquiry_type: lead.inquiryType,
-            selected_domain: lead.selectedDomain,
-            message: lead.message,
-          },
-        ]);
-      }
-    } catch (err) {
-      console.warn('Supabase lead insert notice:', err);
-    }
-  }
-
   const res = await fetch('/api/leads', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

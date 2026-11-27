@@ -69,8 +69,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="lg:col-span-6 flex flex-col justify-center">
             {/* Eyebrow Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-[10px] sm:text-xs font-semibold text-slate-700 mb-4 border border-slate-200 w-fit">
-              <div className="w-2 h-2 rounded-full bg-[#ea6d24] animate-pulse" />
-              GLOBAL IT TRAINING & CERTIFICATION ECOSYSTEM
+              <div className="w-2 h-2 rounded-full bg-[#ea6d24]" />
+              GLOBAL IT TRAINING &amp; CERTIFICATION ECOSYSTEM
             </div>
 
             {/* Main Headline */}
@@ -127,8 +127,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </picture>
                 <div className="absolute inset-0 bg-linear-to-t from-[#152e4d]/40 via-transparent to-transparent" />
 
-                {/* Floating Glassmorphic Trust Card */}
-                <div className="absolute bottom-5 left-5 right-5 sm:right-auto bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-xl border border-white/40 flex items-center gap-3.5 max-w-sm">
+                {/* Floating Trust Card */}
+                <div className="absolute bottom-5 left-5 right-5 sm:right-auto bg-white/95 p-3.5 sm:p-4 rounded-2xl shadow-xl border border-slate-200/80 flex items-center gap-3.5 max-w-sm">
                   <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-[#ea6d24] shrink-0 font-bold">
                     <CheckCircle2 className="w-5 h-5 text-[#ea6d24]" />
                   </div>

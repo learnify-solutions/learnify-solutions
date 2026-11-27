@@ -8,17 +8,35 @@
     <link rel="preload" as="image" href="/logo-mobile.webp" type="image/webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/hero-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high" />
     <link rel="preload" as="image" href="/hero.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high" />
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X74RZNZBN3"></script>
+    <!-- Google tag (gtag.js) - deferred until page load idle or first interaction to protect Mobile LCP/TBT -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-X74RZNZBN3');
+      (function () {
+        var loaded = false;
+        function loadGtag() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-X74RZNZBN3';
+          document.head.appendChild(s);
+        }
+        window.addEventListener('pointerdown', loadGtag, { once: true, passive: true });
+        window.addEventListener('keydown', loadGtag, { once: true, passive: true });
+        window.addEventListener('scroll', loadGtag, { once: true, passive: true });
+        window.addEventListener('load', function () {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadGtag, { timeout: 2200 });
+          } else {
+            setTimeout(loadGtag, 1800);
+          }
+        }, { once: true });
+      })();
     </script>
     
     <!-- Favicons & App Touch Icons (Crisp Retina & High-DPI) -->

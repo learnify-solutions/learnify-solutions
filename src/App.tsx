@@ -1,18 +1,49 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { initialCmsData } from './data/defaultCmsData';
-import { sampleCourses } from './data/coursesData';
-import {
+import type {
   RegionCode,
-  REGION_CONFIGS,
   ResolvedRegionalCoursePage,
-  TARGET_REGIONAL_COURSES,
-  buildRegionalCoursePage,
-  getCourseHreflangAlternates,
-  getHubHreflangAlternates,
-  getRegionalAlternatesForCourse,
-  getRegionalCoursePages,
-  resolveRegionalRoute,
 } from './data/regionalSeoData';
+
+type RegionalSeoModule = typeof import('./data/regionalSeoData');
+let regionalSeoModulePromise: Promise<RegionalSeoModule> | null = null;
+let regionalSeoModuleCache: RegionalSeoModule | null = null;
+
+function loadRegionalSeo(): Promise<RegionalSeoModule> {
+  if (regionalSeoModuleCache) return Promise.resolve(regionalSeoModuleCache);
+  if (!regionalSeoModulePromise) {
+    regionalSeoModulePromise = import('./data/regionalSeoData').then((mod) => {
+      regionalSeoModuleCache = mod;
+      return mod;
+    });
+  }
+  return regionalSeoModulePromise;
+}
+
+async function findCourseByIdLazy(courseId: string, loadedCourses: Course[]): Promise<Course | null> {
+  const lower = courseId.toLowerCase();
+  const fromState = loadedCourses.find((c) => c.id.toLowerCase() === lower);
+  if (fromState) return fromState;
+  const mod = await import('./data/coursesData');
+  return mod.sampleCourses.find((c) => c.id.toLowerCase() === lower) || null;
+}
+
+function detectRegionalPathSync(pathname: string): { type: 'hub' | 'course'; region: RegionCode } | null {
+  const clean = (pathname || '').split('?')[0].split('#')[0].replace(/\/+$/, '').toLowerCase() || '/';
+  if (clean === '/ae' || clean === '/uae-it-training') return { type: 'hub', region: 'ae' };
+  if (clean === '/za' || clean === '/south-africa-it-training') return { type: 'hub', region: 'za' };
+  if (clean === '/uk' || clean === '/united-kingdom-it-training') return { type: 'hub', region: 'uk' };
+  if (clean === '/de' || clean === '/germany-it-training') return { type: 'hub', region: 'de' };
+  if (clean === '/nl' || clean === '/netherlands-it-training') return { type: 'hub', region: 'nl' };
+  if (clean === '/eu' || clean === '/europe-it-training') return { type: 'hub', region: 'eu' };
+  const prefixes: RegionCode[] = ['uk', 'eu', 'de', 'nl', 'ae', 'za'];
+  for (const code of prefixes) {
+    if (clean.startsWith(`/${code}/`) && clean.length > code.length + 2) {
+      return { type: 'course', region: code };
+    }
+  }
+  return null;
+}
 import {
   parseBlogRoutePath,
 } from './data/blogsData';
@@ -239,7 +270,7 @@ export default function App() {
         return blogMatch.type === 'hub' ? 'blogs_hub' : 'blog_detail';
       }
 
-      const regionalMatch = resolveRegionalRoute(path);
+      const regionalMatch = detectRegionalPathSync(path);
       if (regionalMatch) {
         return regionalMatch.type === 'hub' ? 'country_hub' : 'regional_course';
       }
@@ -278,21 +309,21 @@ export default function App() {
     return 'home';
   });
 
+  const [regionalSeoMod, setRegionalSeoMod] = useState<RegionalSeoModule | null>(
+    () => regionalSeoModuleCache
+  );
+
   const [regionalRegion, setRegionalRegion] = useState<RegionCode>(() => {
     if (typeof window !== 'undefined') {
-      const match = resolveRegionalRoute(window.location.pathname);
-      if (match) return match.region.code;
+      const match = detectRegionalPathSync(window.location.pathname);
+      if (match) return match.region;
     }
     return 'ae';
   });
 
-  const [selectedRegionalCourse, setSelectedRegionalCourse] = useState<ResolvedRegionalCoursePage | null>(() => {
-    if (typeof window !== 'undefined') {
-      const match = resolveRegionalRoute(window.location.pathname);
-      if (match && match.type === 'course') return match.page;
-    }
-    return null;
-  });
+  const [selectedRegionalCourse, setSelectedRegionalCourse] = useState<ResolvedRegionalCoursePage | null>(
+    null
+  );
 
   const [selectedExamPrep, setSelectedExamPrep] = useState<ExamPrepResource | null>(() => {
     if (typeof window === 'undefined') return null;
@@ -317,22 +348,7 @@ export default function App() {
     return Boolean(match && match.type === 'detail' && !getHydratedBlogForCurrentPath());
   });
 
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(() => {
-    if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      let courseId = '';
-      if (path.startsWith('/course/')) {
-        courseId = path.replace('/course/', '').replace(/\/$/, '');
-      } else if (hash.startsWith('#course-')) {
-        courseId = hash.replace('#course-', '');
-      }
-      if (courseId) {
-        return sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase()) || null;
-      }
-    }
-    return null;
-  });
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const [activeNavId, setActiveNavId] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -574,18 +590,28 @@ export default function App() {
             : 'IT courses catalog, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03, Kubernetes CKA, UK Europe UAE South Africa IT training',
           canonicalUrl: 'https://www.learnify-solutions.com/courses',
           ogUrl: 'https://www.learnify-solutions.com/courses',
-          hreflangAlternates: getHubHreflangAlternates(),
+          hreflangAlternates: regionalSeoMod ? regionalSeoMod.getHubHreflangAlternates() : undefined,
         };
       case 'country_hub': {
-        const region = REGION_CONFIGS[regionalRegion];
-        const hubPages = getRegionalCoursePages(regionalRegion);
+        if (!regionalSeoMod) {
+          const fallbackCanonical = `https://www.learnify-solutions.com/${regionalRegion}`;
+          return {
+            title: 'Regional IT Certification Training | Learnify Solutions',
+            description:
+              'Authorized CompTIA, Microsoft Azure, AWS & Kubernetes live certification bootcamps across UK, Europe (EU), Germany, Netherlands, UAE and South Africa.',
+            canonicalUrl: fallbackCanonical,
+            ogUrl: fallbackCanonical,
+          };
+        }
+        const region = regionalSeoMod.REGION_CONFIGS[regionalRegion];
+        const hubPages = regionalSeoMod.getRegionalCoursePages(regionalRegion);
         return {
           title: region.hubTitle,
           description: region.hubDescription,
           keywords: region.hubKeywords,
           canonicalUrl: `https://www.learnify-solutions.com${region.hubPath}`,
           ogUrl: `https://www.learnify-solutions.com${region.hubPath}`,
-          hreflangAlternates: getHubHreflangAlternates(),
+          hreflangAlternates: regionalSeoMod.getHubHreflangAlternates(),
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
@@ -914,7 +940,9 @@ export default function App() {
           canonicalUrl: p.canonicalUrl,
           ogUrl: p.canonicalUrl,
           ogImage: imgUrl,
-          hreflangAlternates: getCourseHreflangAlternates(p.alternateUrls),
+          hreflangAlternates: regionalSeoMod
+            ? regionalSeoMod.getCourseHreflangAlternates(p.alternateUrls)
+            : undefined,
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
@@ -977,7 +1005,10 @@ export default function App() {
         };
       }
       case 'course_detail': {
-        const courseAlternates = selectedCourse ? getRegionalAlternatesForCourse(selectedCourse.id) : null;
+        const courseAlternates =
+          selectedCourse && regionalSeoMod
+            ? regionalSeoMod.getRegionalAlternatesForCourse(selectedCourse.id)
+            : null;
         if (!selectedCourse) {
           const fallbackPath =
             typeof window !== 'undefined' ? window.location.pathname.replace(/\/+$/, '') : '/courses';
@@ -999,9 +1030,10 @@ export default function App() {
           ogImage: selectedCourse.imageUrl?.startsWith('http')
             ? selectedCourse.imageUrl
             : `https://www.learnify-solutions.com${selectedCourse.imageUrl || '/hero.webp'}`,
-          hreflangAlternates: courseAlternates
-            ? getCourseHreflangAlternates(courseAlternates)
-            : undefined,
+          hreflangAlternates:
+            courseAlternates && regionalSeoMod
+              ? regionalSeoMod.getCourseHreflangAlternates(courseAlternates)
+              : undefined,
           jsonLd: {
             '@context': 'https://schema.org',
             '@graph': [
@@ -1130,7 +1162,7 @@ export default function App() {
           ogUrl: 'https://www.learnify-solutions.com/',
         };
     }
-  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, blogSummaries, selectedExamPrep?.slug]);
+  }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, blogSummaries, selectedExamPrep?.slug, regionalSeoMod]);
 
   useSEO(seoConfig);
 
@@ -1219,18 +1251,32 @@ export default function App() {
         return;
       }
 
-      const regionalMatch = resolveRegionalRoute(pathname);
-      if (regionalMatch) {
-        setRegionalRegion(regionalMatch.region.code);
-        if (regionalMatch.type === 'hub') {
+      const regionalSync = detectRegionalPathSync(pathname);
+      if (regionalSync) {
+        setRegionalRegion(regionalSync.region);
+        setActiveNavId('nav-courses');
+        if (regionalSync.type === 'hub') {
           setSelectedRegionalCourse(null);
           setActivePage('country_hub');
-          setActiveNavId('nav-courses');
         } else {
-          setSelectedRegionalCourse(regionalMatch.page);
           setActivePage('regional_course');
-          setActiveNavId('nav-courses');
         }
+        loadRegionalSeo()
+          .then((mod) => {
+            setRegionalSeoMod(mod);
+            const regionalMatch = mod.resolveRegionalRoute(pathname);
+            if (regionalMatch) {
+              setRegionalRegion(regionalMatch.region.code);
+              if (regionalMatch.type === 'hub') {
+                setSelectedRegionalCourse(null);
+                setActivePage('country_hub');
+              } else {
+                setSelectedRegionalCourse(regionalMatch.page);
+                setActivePage('regional_course');
+              }
+            }
+          })
+          .catch(() => {});
         return;
       }
 
@@ -1242,11 +1288,15 @@ export default function App() {
         } else if (hash.startsWith('#course-')) {
           courseId = hash.replace('#course-', '');
         }
-        const matched = sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase());
-        if (matched) {
-          setSelectedCourse(matched);
+        if (courseId) {
           setActivePage('course_detail');
           setActiveNavId('nav-courses');
+          findCourseByIdLazy(courseId, courses)
+            .then((matched) => {
+              if (matched) setSelectedCourse(matched);
+            })
+            .catch(() => {});
+          loadRegionalSeo().then(setRegionalSeoMod).catch(() => {});
           return;
         }
       }
@@ -1308,7 +1358,16 @@ export default function App() {
         }
       });
     }
-  }, [isCiscoAuthorized, activePage]);
+    if (
+      !regionalSeoMod &&
+      (activePage === 'courses' ||
+        activePage === 'country_hub' ||
+        activePage === 'regional_course' ||
+        activePage === 'course_detail')
+    ) {
+      loadRegionalSeo().then(setRegionalSeoMod).catch(() => {});
+    }
+  }, [isCiscoAuthorized, activePage, regionalSeoMod]);
 
   // Safety guard: allow direct /course/course-cisco-* URLs for SEO/sitemap, only block accidental non-enterprise modal selection
   useEffect(() => {
@@ -1620,6 +1679,7 @@ export default function App() {
     setActiveNavId('nav-courses');
     if (typeof window !== 'undefined') window.history.pushState(null, '', `/${region}`);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    loadRegionalSeo().then(setRegionalSeoMod).catch(() => {});
   };
 
   const navigateToRegionalCourse = (page: ResolvedRegionalCoursePage) => {
@@ -1629,16 +1689,22 @@ export default function App() {
     setActiveNavId('nav-courses');
     if (typeof window !== 'undefined') window.history.pushState(null, '', `/${page.region.code}/${page.slug}`);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    loadRegionalSeo().then(setRegionalSeoMod).catch(() => {});
   };
 
   const navigateToRegionalPath = (path: string) => {
-    const match = resolveRegionalRoute(path);
-    if (!match) return;
-    if (match.type === 'hub') {
-      navigateToRegionalHub(match.region.code);
-    } else {
-      navigateToRegionalCourse(match.page);
-    }
+    loadRegionalSeo()
+      .then((mod) => {
+        setRegionalSeoMod(mod);
+        const match = mod.resolveRegionalRoute(path);
+        if (!match) return;
+        if (match.type === 'hub') {
+          navigateToRegionalHub(match.region.code);
+        } else {
+          navigateToRegionalCourse(match.page);
+        }
+      })
+      .catch(() => {});
   };
 
   const navigateToBlogsHub = () => {
@@ -1689,16 +1755,16 @@ export default function App() {
     const cleanHref = (href || '').split('?')[0].split('#')[0].replace(/\/+$/, '') || '/';
     if (cleanHref.startsWith('/course/')) {
       const courseId = cleanHref.slice('/course/'.length);
-      const list = courses.length > 0 ? courses : sampleCourses;
-      const matched =
-        list.find((c) => c.id.toLowerCase() === courseId.toLowerCase()) ||
-        sampleCourses.find((c) => c.id.toLowerCase() === courseId.toLowerCase());
-      if (matched) {
-        ensureCoursesLoaded();
-        handleSelectCourse(matched);
-        return;
-      }
-      handleOpenCoursesModal('all');
+      findCourseByIdLazy(courseId, courses)
+        .then((matched) => {
+          if (matched) {
+            ensureCoursesLoaded();
+            handleSelectCourse(matched);
+          } else {
+            handleOpenCoursesModal('all');
+          }
+        })
+        .catch(() => handleOpenCoursesModal('all'));
       return;
     }
     if (cleanHref === '/courses') {
@@ -1879,64 +1945,77 @@ export default function App() {
               }}
               onOpenAdvisorModal={handleOpenAdvisorModal}
             />
-          ) : activePage === 'regional_course' && selectedRegionalCourse ? (
-            /* Dedicated Country x Course SEO Page (/ae/:slug or /za/:slug) */
-            <RegionalCourseView
-              page={selectedRegionalCourse}
-              onNavigateHome={() => {
-                setActivePage('home');
-                setActiveNavId('nav-home');
-                if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onNavigateHub={navigateToRegionalHub}
-              onNavigateGuides={navigateToBlogsHub}
-              onNavigateGlobalCourse={(courseId) => {
-                const matched = sampleCourses.find((c) => c.id === courseId);
-                if (matched) handleSelectCourse(matched);
-              }}
-              onSwitchCourseRegion={(targetRegion, courseId) => {
-                const meta = TARGET_REGIONAL_COURSES.find((c) => c.courseId === courseId);
-                if (!meta) return;
-                const built = buildRegionalCoursePage(meta, targetRegion);
-                if (built) navigateToRegionalCourse(built);
-              }}
-              onNavigateRegionalCourse={navigateToRegionalCourse}
-              onNavigateLink={navigateToInternalHref}
-              onSubmitLead={async (data) => {
-                try {
-                  await submitLead(data);
-                  const updatedLeads = await fetchLeads();
-                  setLeads(updatedLeads);
-                } catch (err) {
-                  console.error('Failed to submit lead:', err);
-                }
-              }}
-            />
-          ) : activePage === 'course_detail' && selectedCourse ? (
-            /* Dedicated Course Detail Page */
-            <CourseDetailView
-              course={selectedCourse}
-              onBack={() => {
-                setActivePage('courses');
-                if (typeof window !== 'undefined') window.history.pushState(null, '', '/courses');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onNavigate={(page) => {
-                setActivePage(page as any);
-              }}
-              onNavigateRegionalPath={navigateToRegionalPath}
-              onNavigateLink={navigateToInternalHref}
-              onSubmitLead={async (data) => {
-                try {
-                  await submitLead(data);
-                  const updatedLeads = await fetchLeads();
-                  setLeads(updatedLeads);
-                } catch (err) {
-                  console.error('Failed to submit lead:', err);
-                }
-              }}
-            />
+          ) : activePage === 'regional_course' ? (
+            selectedRegionalCourse ? (
+              /* Dedicated Country x Course SEO Page (/ae/:slug or /za/:slug) */
+              <RegionalCourseView
+                page={selectedRegionalCourse}
+                onNavigateHome={() => {
+                  setActivePage('home');
+                  setActiveNavId('nav-home');
+                  if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onNavigateHub={navigateToRegionalHub}
+                onNavigateGuides={navigateToBlogsHub}
+                onNavigateGlobalCourse={(courseId) => {
+                  findCourseByIdLazy(courseId, courses).then((matched) => {
+                    if (matched) handleSelectCourse(matched);
+                  }).catch(() => {});
+                }}
+                onSwitchCourseRegion={(targetRegion, courseId) => {
+                  loadRegionalSeo()
+                    .then((mod) => {
+                      const meta = mod.TARGET_REGIONAL_COURSES.find((c) => c.courseId === courseId);
+                      if (!meta) return;
+                      const built = mod.buildRegionalCoursePage(meta, targetRegion);
+                      if (built) navigateToRegionalCourse(built);
+                    })
+                    .catch(() => {});
+                }}
+                onNavigateRegionalCourse={navigateToRegionalCourse}
+                onNavigateLink={navigateToInternalHref}
+                onSubmitLead={async (data) => {
+                  try {
+                    await submitLead(data);
+                    const updatedLeads = await fetchLeads();
+                    setLeads(updatedLeads);
+                  } catch (err) {
+                    console.error('Failed to submit lead:', err);
+                  }
+                }}
+              />
+            ) : (
+              <LoadingFallback />
+            )
+          ) : activePage === 'course_detail' ? (
+            selectedCourse ? (
+              /* Dedicated Course Detail Page */
+              <CourseDetailView
+                course={selectedCourse}
+                onBack={() => {
+                  setActivePage('courses');
+                  if (typeof window !== 'undefined') window.history.pushState(null, '', '/courses');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                onNavigate={(page) => {
+                  setActivePage(page as any);
+                }}
+                onNavigateRegionalPath={navigateToRegionalPath}
+                onNavigateLink={navigateToInternalHref}
+                onSubmitLead={async (data) => {
+                  try {
+                    await submitLead(data);
+                    const updatedLeads = await fetchLeads();
+                    setLeads(updatedLeads);
+                  } catch (err) {
+                    console.error('Failed to submit lead:', err);
+                  }
+                }}
+              />
+            ) : (
+              <LoadingFallback />
+            )
           ) : activePage === 'corporate_training' ? (
             /* Corporate Training Complete Flow */
             <CorporateTrainingView 
@@ -2004,92 +2083,94 @@ export default function App() {
               {/* 4. Stats Banner */}
               <StatsBar stats={cmsData.stats} />
 
-              {/* 5. Elevate Team's Performance Section */}
-              <PerformanceSection
-                title={cmsData.performanceSection.title}
-                description={cmsData.performanceSection.description}
-                ctaLabel={cmsData.performanceSection.ctaButton.label}
-                onCtaClick={() => handleOpenAdvisorModal('corporate_quote')}
-              />
+              <div className="defer-render">
+                {/* 5. Elevate Team's Performance Section */}
+                <PerformanceSection
+                  title={cmsData.performanceSection.title}
+                  description={cmsData.performanceSection.description}
+                  ctaLabel={cmsData.performanceSection.ctaButton.label}
+                  onCtaClick={() => handleOpenAdvisorModal('corporate_quote')}
+                />
 
-              {/* 6. Who We Are Section */}
-              <WhoWeAreSection
-                title={cmsData.whoWeAreSection.title}
-                description={cmsData.whoWeAreSection.description}
-                cards={cmsData.whoWeAreSection.cards}
-                ctaLabel={cmsData.whoWeAreSection.ctaButton.label}
-                onCtaClick={() => {
-                  setActivePage('about');
-                  setActiveNavId('nav-about');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              />
+                {/* 6. Who We Are Section */}
+                <WhoWeAreSection
+                  title={cmsData.whoWeAreSection.title}
+                  description={cmsData.whoWeAreSection.description}
+                  cards={cmsData.whoWeAreSection.cards}
+                  ctaLabel={cmsData.whoWeAreSection.ctaButton.label}
+                  onCtaClick={() => {
+                    setActivePage('about');
+                    setActiveNavId('nav-about');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
 
-              {/* Verified Live & Onsite Training Proofs */}
-              <TrainingProofSection onOpenAdvisorModal={handleOpenAdvisorModal} />
+                {/* Verified Live & Onsite Training Proofs */}
+                <TrainingProofSection onOpenAdvisorModal={handleOpenAdvisorModal} />
 
-              {/* What Corporate Teams Say Testimonials */}
-              <TestimonialsSection 
-                testimonialsTitle={cmsData.testimonialsTitle} 
-                testimonialsSubtitle={cmsData.testimonialsSubtitle} 
-                testimonials={cmsData.testimonials} 
-              />
+                {/* What Corporate Teams Say Testimonials */}
+                <TestimonialsSection 
+                  testimonialsTitle={cmsData.testimonialsTitle} 
+                  testimonialsSubtitle={cmsData.testimonialsSubtitle} 
+                  testimonials={cmsData.testimonials} 
+                />
 
-              {/* 7. Exploring Your Learning Options */}
-              <LearningOptionsSection
-                title={cmsData.learningOptionsSection.title}
-                cards={cmsData.learningOptionsSection.cards}
-                onSelectOption={(opt) => handleOpenAdvisorModal('advisor', opt.title)}
-              />
+                {/* 7. Exploring Your Learning Options */}
+                <LearningOptionsSection
+                  title={cmsData.learningOptionsSection.title}
+                  cards={cmsData.learningOptionsSection.cards}
+                  onSelectOption={(opt) => handleOpenAdvisorModal('advisor', opt.title)}
+                />
 
-              {/* 8. Why Choose Learnify? */}
-              <WhyChooseSection
-                title={cmsData.whyChooseSection.title}
-                subtitle={cmsData.whyChooseSection.subtitle}
-                cards={cmsData.whyChooseSection.cards}
-              />
+                {/* 8. Why Choose Learnify? */}
+                <WhyChooseSection
+                  title={cmsData.whyChooseSection.title}
+                  subtitle={cmsData.whyChooseSection.subtitle}
+                  cards={cmsData.whyChooseSection.cards}
+                />
 
-              {/* 9. Explore Technology Domains */}
-              <TechDomainsSection
-                title={cmsData.techDomainsSection.title}
-                subtitle={cmsData.techDomainsSection.subtitle}
-                viewAllText={cmsData.techDomainsSection.viewAllText}
-                viewAllHref={cmsData.techDomainsSection.viewAllHref}
-                domains={displayedDomains}
-                onSelectDomain={handleSelectDomain}
-                onViewAll={() => handleOpenCoursesModal('all')}
-              />
+                {/* 9. Explore Technology Domains */}
+                <TechDomainsSection
+                  title={cmsData.techDomainsSection.title}
+                  subtitle={cmsData.techDomainsSection.subtitle}
+                  viewAllText={cmsData.techDomainsSection.viewAllText}
+                  viewAllHref={cmsData.techDomainsSection.viewAllHref}
+                  domains={displayedDomains}
+                  onSelectDomain={handleSelectDomain}
+                  onViewAll={() => handleOpenCoursesModal('all')}
+                />
 
-              {/* 10. Pathway to Excellence Progress Bar */}
-              <PathwaySection
-                title={cmsData.pathwaySection.title}
-                subtitle={cmsData.pathwaySection.subtitle}
-                steps={cmsData.pathwaySection.steps}
-              />
+                {/* 10. Pathway to Excellence Progress Bar */}
+                <PathwaySection
+                  title={cmsData.pathwaySection.title}
+                  subtitle={cmsData.pathwaySection.subtitle}
+                  steps={cmsData.pathwaySection.steps}
+                />
 
-              {/* 10a. Homepage High-Demand Exam Prep & Calculators Section */}
-              <ExamPrepSection
-                onSelectResource={navigateToExamPrepSlug}
-                onViewExamPrepHub={navigateToExamPrepHub}
-              />
+                {/* 10a. Homepage High-Demand Exam Prep & Calculators Section */}
+                <ExamPrepSection
+                  onSelectResource={navigateToExamPrepSlug}
+                  onViewExamPrepHub={navigateToExamPrepHub}
+                />
 
-              {/* 10b. Homepage Editorial Certification Blogs Section */}
-              <BlogSection
-                summaries={blogSummaries}
-                isLoading={isLoadingBlogs}
-                onSelectBlog={navigateToBlogSlug}
-                onViewAllBlogs={navigateToBlogsHub}
-              />
+                {/* 10b. Homepage Editorial Certification Blogs Section */}
+                <BlogSection
+                  summaries={blogSummaries}
+                  isLoading={isLoadingBlogs}
+                  onSelectBlog={navigateToBlogSlug}
+                  onViewAllBlogs={navigateToBlogsHub}
+                />
 
-              {/* 11. Final CTA Banner */}
-              <FinalCtaSection
-                title={cmsData.finalCtaSection.title}
-                subtitle={cmsData.finalCtaSection.subtitle}
-                primaryCtaLabel={cmsData.finalCtaSection.primaryCta.label}
-                secondaryCtaLabel={cmsData.finalCtaSection.secondaryCta.label}
-                onPrimaryCta={() => handleOpenCoursesModal('all')}
-                onSecondaryCta={() => handleOpenAdvisorModal('demo')}
-              />
+                {/* 11. Final CTA Banner */}
+                <FinalCtaSection
+                  title={cmsData.finalCtaSection.title}
+                  subtitle={cmsData.finalCtaSection.subtitle}
+                  primaryCtaLabel={cmsData.finalCtaSection.primaryCta.label}
+                  secondaryCtaLabel={cmsData.finalCtaSection.secondaryCta.label}
+                  onPrimaryCta={() => handleOpenCoursesModal('all')}
+                  onSecondaryCta={() => handleOpenAdvisorModal('demo')}
+                />
+              </div>
             </>
           )}
         </Suspense>
@@ -2130,7 +2211,7 @@ export default function App() {
               setActivePage('corporate_training');
               setActiveNavId('nav-corporate');
               window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (link.href?.startsWith('/') && resolveRegionalRoute(link.href)) {
+            } else if (link.href?.startsWith('/') && detectRegionalPathSync(link.href)) {
               navigateToRegionalPath(link.href);
             } else if (link.label === 'UK Training' || link.label === 'UK Hub') {
               navigateToRegionalHub('uk');

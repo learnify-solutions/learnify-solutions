@@ -1041,40 +1041,54 @@ export function buildRegionalCoursePage(
   const examCodeText =
     course.examCode && !hasExamCodeInShortName ? ` (${course.examCode})` : '';
 
+  const compactCourseName = `${meta.shortName}${examCodeText}`
+    .replace('Microsoft Power BI Data Analyst (PL-300)', 'Power BI (PL-300)')
+    .replace('Microsoft Azure Administrator (AZ-104)', 'Microsoft Azure AZ-104')
+    .replace('Microsoft Azure AI Engineer (AI-102)', 'Microsoft Azure AI-102')
+    .replace('Microsoft Security Fundamentals (SC-900)', 'Microsoft SC-900')
+    .replace('Microsoft Power Platform Fundamentals (PL-900)', 'Power Platform PL-900')
+    .replace('Microsoft Azure Data Fundamentals (DP-900)', 'Azure Data DP-900')
+    .replace('Microsoft Azure AI Fundamentals (AI-900)', 'Azure AI-900')
+    .replace('Microsoft 365 Fundamentals (MS-900)', 'Microsoft 365 MS-900')
+    .replace('Microsoft 365 Copilot & Copilot Studio (MS-4018)', 'Microsoft Copilot MS-4018')
+    .replace('AWS Certified Solutions Architect', 'AWS Solutions Architect')
+    .replace('Certified Kubernetes Administrator (CKA)', 'Kubernetes CKA')
+    .replace('Certified Ethical Hacker (CEH v12)', 'CEH v12 Ethical Hacker');
+
   let seoTitle = '';
   let seoDescription = '';
   let seoKeywords = '';
   let h1Title = '';
 
   if (regionCode === 'ae') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Dubai & UAE (2026) | Learnify`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course & syllabus in Dubai, Abu Dhabi & Sharjah. ${region.timezone} evening & weekday batches, 24/7 cloud labs, AED corporate POs & 98.4% pass rate.`;
-    seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} Dubai, ${meta.shortName} Abu Dhabi, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, corporate IT training Dubai, Learnify Solutions`;
+    seoTitle = `${compactCourseName} Training Dubai & UAE (2026) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} course in Dubai, Abu Dhabi & Sharjah: ${region.timezone} evening batches, 24/7 cloud labs, AED exam fee guide, corporate POs & 98.4% pass rate.`;
+    seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} Dubai, ${meta.shortName} Abu Dhabi, Power BI certification pricing, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Dubai & UAE`;
   } else if (regionCode === 'za') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in South Africa (2026) | Learnify`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban. ${region.timezone} after-hours & weekday batches, 24/7 cloud labs & ZAR corporate POs.`;
+    seoTitle = `${compactCourseName} Course South Africa (2026) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban: ${region.timezone} evening batches, 24/7 cloud labs, ZAR corporate POs & free mock exam.`;
     seoKeywords = `${meta.zaFocusKeyword}, ${meta.shortName} Johannesburg, ${meta.shortName} Cape Town, ${meta.shortName} Pretoria, ${course.examCode || ''} South Africa, ${course.certificationVendor} training South Africa, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in South Africa`;
   } else if (regionCode === 'uk') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in London & UK (2026) | Learnify`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course & bootcamp in London, Manchester, Birmingham & Edinburgh. ${region.timezone} cohorts, 24/7 cloud sandbox labs & GBP corporate POs.`;
+    seoTitle = `${compactCourseName} Course UK & London (2026) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training in London, Manchester, Birmingham & Edinburgh: ${region.timezone} cohorts, 24/7 cloud sandbox labs, GBP PO invoicing & 98.4% pass rate.`;
     seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, ${course.examCode || ''} UK certification, ${course.certificationVendor} training London Manchester, corporate IT training GBP, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in London & UK`;
   } else if (regionCode === 'de') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Germany & DACH (2026) | Learnify`;
-    seoDescription = `Live English-language ${meta.shortName}${examCodeText} course in Frankfurt, Munich, Berlin & Zurich. ${region.timezone} schedules, 24/7 cloud labs & EUR corporate POs.`;
-    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Frankfurt Munich Berlin, ${course.examCode || ''} DACH certification, ${course.certificationVendor} training Germany EUR, Learnify Solutions`;
+    seoTitle = `${compactCourseName} Course Germany (2026) | Learnify`;
+    seoDescription = `Live English ${meta.shortName}${examCodeText} training in Frankfurt, Munich, Berlin & Zurich: ${region.timezone} schedules, 24/7 cloud labs, EUR SEPA POs & BSI C5 cloud readiness.`;
+    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Schulung Frankfurt Munich Berlin, enterprise kubernetes cka course, microsoft azure administrator schulung, ${course.examCode || ''} DACH certification, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Germany & DACH`;
   } else if (regionCode === 'nl') {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Netherlands & Benelux (2026) | Learnify`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels. ${region.timezone} batches, 24/7 cloud labs & EUR PO invoicing.`;
+    seoTitle = `${compactCourseName} Course Netherlands (2026) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels: ${region.timezone} batches, 24/7 cloud labs, EUR POs & 98.4% pass rate.`;
     seoKeywords = `${meta.shortName} training Netherlands, ${meta.shortName} Amsterdam Utrecht Eindhoven, ${course.examCode || ''} Benelux course, ${course.certificationVendor} training Netherlands EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Netherlands & Benelux`;
   } else {
-    seoTitle = `${meta.shortName}${examCodeText} Training in Europe (EU) (2026) | Learnify`;
-    seoDescription = `Live instructor-led ${meta.shortName}${examCodeText} course across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw. ${region.timezone} batches, 24/7 labs & EUR SEPA POs.`;
-    seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
+    seoTitle = `${compactCourseName} Training Europe EU (2026) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw: ${region.timezone} cohorts, 24/7 cloud labs, EUR SEPA POs & 98.4% pass rate.`;
+    seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid, enterprise kubernetes cka course, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Europe`;
   }
 

@@ -59,3 +59,11 @@ body {
   backface-visibility: hidden;
 }
 
+/* Skip offscreen layout and paint work on mobile initial load */
+@supports (content-visibility: auto) {
+  .defer-render {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 420px;
+  }
+}
+
