@@ -14,7 +14,7 @@ import {
   Search,
 } from 'lucide-react';
 import { ExamPrepResource } from '../types';
-import { EXAM_PREP_META } from '../data/examPrepMeta';
+import { getRelatedExamPrepResources } from '../data/examPrepMeta';
 import {
   ExamPrepLeadGate,
   ExamPrepUnlockedProfile,
@@ -116,10 +116,15 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
 
   const activeResource = resolvedResource || resource;
 
-  const otherResources = useMemo(
-    () => EXAM_PREP_META.filter((r) => r.slug !== activeResource?.slug).slice(0, 3),
-    [activeResource?.slug]
-  );
+  const otherResources = useMemo(() => {
+    if (!activeResource) return [];
+    return getRelatedExamPrepResources({
+      courseId: activeResource.relatedCourseId,
+      titleOrDomain: `${activeResource.topicTrack} ${activeResource.examCode} ${activeResource.title}`,
+      excludeSlug: activeResource.slug,
+      limit: 3,
+    });
+  }, [activeResource]);
 
   const interviewCategories = useMemo(() => {
     const items = activeResource?.interviewItems || [];

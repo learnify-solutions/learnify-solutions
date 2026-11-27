@@ -1184,14 +1184,19 @@ export function getRelatedExamPrepResources(opts: {
   courseId?: string;
   vendor?: string;
   titleOrDomain?: string;
+  excludeSlug?: string;
   limit?: number;
 }): ExamPrepResource[] {
   const limit = opts.limit ?? 3;
+  const excludeClean = (opts.excludeSlug || '').trim().toLowerCase();
   const hay = `${opts.courseId || ''} ${opts.vendor || ''} ${opts.titleOrDomain || ''}`.toLowerCase();
 
-  const scored = EXAM_PREP_META.map((item) => {
+  const scored = EXAM_PREP_META.filter(
+    (item) => !excludeClean || item.slug.toLowerCase() !== excludeClean
+  ).map((item) => {
     let score = 0;
     if (opts.courseId && item.relatedCourseId === opts.courseId) score += 100;
+    if (hay.includes(item.topicTrack.toLowerCase())) score += 28;
     if (hay.includes(item.examCode.toLowerCase().split(' ')[0])) score += 45;
     if (hay.includes('itf') || hay.includes('fc0-u61')) {
       if (item.slug.includes('itf-plus')) score += 50;
@@ -1214,13 +1219,13 @@ export function getRelatedExamPrepResources(opts: {
     if (hay.includes('security') || hay.includes('cyber') || hay.includes('ceh') || hay.includes('pentest') || hay.includes('cissp')) {
       if (item.topicTrack === 'Cybersecurity') score += 25;
     }
-    if (hay.includes('azure') || hay.includes('az-')) {
+    if (hay.includes('azure') || hay.includes('az-') || hay.includes('dp-') || hay.includes('ai-')) {
       if (item.slug.includes('azure')) score += 30;
     }
     if (hay.includes('aws')) {
       if (item.slug.includes('aws')) score += 30;
     }
-    if (hay.includes('network') || hay.includes('cisco') || hay.includes('ccna')) {
+    if (hay.includes('network') || hay.includes('cisco') || hay.includes('ccna') || hay.includes('subnet') || hay.includes('cidr')) {
       if (item.topicTrack === 'Networking & Infrastructure') score += 28;
     }
     if (hay.includes('power bi') || hay.includes('pl-') || hay.includes('ai-') || hay.includes('dp-') || hay.includes('data')) {

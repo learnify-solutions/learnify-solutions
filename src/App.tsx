@@ -674,6 +674,22 @@ export default function App() {
           };
         }
         const canonical = `https://www.learnify-solutions.com/exam-prep/${selectedExamPrep.slug}`;
+        const previewQuestionEntities =
+          selectedExamPrep.type === 'practice_test' &&
+          Array.isArray(selectedExamPrep.questions) &&
+          selectedExamPrep.questions.length > 0
+            ? selectedExamPrep.questions
+                .slice(0, selectedExamPrep.openPreviewCount || 2)
+                .map((q) => ({
+                  '@type': 'Question',
+                  'name': q.prompt,
+                  'eduQuestionType': 'Multiple choice',
+                  'acceptedAnswer': {
+                    '@type': 'Answer',
+                    'text': q.options[q.correctIndex] || '',
+                  },
+                }))
+            : undefined;
         const primaryEntity =
           selectedExamPrep.type === 'practice_test'
             ? {
@@ -686,6 +702,7 @@ export default function App() {
                   'alignmentType': 'assesses',
                   'targetName': selectedExamPrep.examCode,
                 },
+                ...(previewQuestionEntities ? { 'hasPart': previewQuestionEntities } : {}),
                 'provider': {
                   '@type': 'EducationalOrganization',
                   'name': 'Learnify Solutions',

@@ -802,6 +802,29 @@ async function startServer() {
       .map((a) => `    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`)
       .join('\n');
 
+  const findMatchingBlogsForTopic = (allBlogs: BlogPost[], query: string, limit: number = 3): BlogPost[] => {
+    const tokens = query
+      .toLowerCase()
+      .replace(/[^a-z0-9+_-]+/g, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length >= 2 && !['and', 'the', 'for', 'with', 'plus', 'exam', 'prep', 'course', 'training'].includes(t));
+    const scored = allBlogs.map((b) => {
+      const hay = `${b.slug} ${b.title} ${b.topicTrack || ''} ${b.category || ''} ${b.seoKeywords || ''}`.toLowerCase();
+      let score = 0;
+      for (const tok of tokens) {
+        if (hay.includes(tok)) {
+          score += tok.includes('-') || /\d/.test(tok) ? 18 : 6;
+        }
+      }
+      if (b.featured) score += 2;
+      return { b, score };
+    });
+    return scored
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map((entry) => entry.b);
+  };
+
   const buildRegionalSitemapXml = (code: RegionCode) => {
     const today = new Date().toISOString().split('T')[0];
     const reg = REGION_CONFIGS[code];
@@ -2448,6 +2471,20 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
         } else if (examPrepMatch && examPrepMatch.type === 'detail') {
           const item = examPrepMatch.resource;
           const canonicalUrl = `${SITE_BASE_URL}/exam-prep/${item.slug}`;
+          const previewCount = item.openPreviewCount || 2;
+          const previewQs = (item.questions || []).slice(0, previewCount);
+          const quizQuestionEntities =
+            item.type === 'practice_test' && previewQs.length > 0
+              ? previewQs.map((q) => ({
+                  '@type': 'Question',
+                  name: q.prompt,
+                  eduQuestionType: 'Multiple choice',
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: q.options[q.correctIndex] || '',
+                  },
+                }))
+              : undefined;
           const primaryEntity =
             item.type === 'practice_test'
               ? {
@@ -2460,6 +2497,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                     alignmentType: 'assesses',
                     targetName: item.examCode,
                   },
+                  ...(quizQuestionEntities ? { hasPart: quizQuestionEntities } : {}),
                   provider: {
                     '@type': 'EducationalOrganization',
                     name: 'Learnify Solutions',
@@ -2531,8 +2569,6 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const LETTERS = ['A', 'B', 'C', 'D'];
           let bodyHtml = '';
           if (item.type === 'practice_test') {
-            const previewCount = item.openPreviewCount || 2;
-            const previewQs = (item.questions || []).slice(0, previewCount);
             bodyHtml = `
               ${item.domainWeights ? `<h2>Official Exam Blueprint &amp; Domain Weights</h2><ul>${item.domainWeights.map((d) => `<li><strong>${escapeHtml(d.name)}:</strong> ${escapeHtml(d.weight)}</li>`).join('')}</ul>` : ''}
               <h2>Open Sample Practice Questions &amp; Rationales</h2>
@@ -2560,12 +2596,27 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             `;
           }
 
+          const relatedPrepTools = getRelatedExamPrepResources({
+            courseId: item.relatedCourseId,
+            titleOrDomain: `${item.topicTrack} ${item.examCode} ${item.title}`,
+            excludeSlug: item.slug,
+            limit: 4,
+          });
+          const relatedStudyBlogs = findMatchingBlogsForTopic(
+            allBlogs,
+            `${item.examCode} ${item.topicTrack} ${item.title}`,
+            3
+          );
+
           const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <nav><a href="/">Home</a> &gt; <a href="/exam-prep">Exam Prep</a> &gt; <span>${escapeHtml(item.shortTitle)}</span></nav>
             <h1>${escapeHtml(item.title)}</h1>
             <p>${escapeHtml(item.excerpt)}</p>
             <p><strong>Exam Code:</strong> ${escapeHtml(item.examCode)} | <strong>Track:</strong> ${escapeHtml(item.topicTrack)} | <strong>Recommended Course:</strong> <a href="/course/${escapeHtml(item.relatedCourseId)}">${escapeHtml(item.relatedCourseLabel)}</a></p>
             ${bodyHtml}
+            ${relatedPrepTools.length > 0 ? `<h2>Related Practice Exams &amp; Readiness Tools</h2><ul>${relatedPrepTools.map((rp) => `<li><a href="/exam-prep/${escapeHtml(rp.slug)}">${escapeHtml(rp.title)}</a> — ${escapeHtml(rp.examCode)}</li>`).join('')}</ul>` : ''}
+            ${relatedStudyBlogs.length > 0 ? `<h2>Related Certification Roadmaps &amp; Exam Guides</h2><ul>${relatedStudyBlogs.map((b) => `<li><a href="/blogs/${escapeHtml(b.slug)}">${escapeHtml(b.title)}</a></li>`).join('')}</ul>` : ''}
+            <p><strong>Live Instructor-Led Batches by Region:</strong> <a href="/uk">UK (GBP)</a> | <a href="/eu">Europe (EUR)</a> | <a href="/de">Germany (EUR)</a> | <a href="/nl">Netherlands (EUR)</a> | <a href="/ae">Dubai &amp; UAE (AED)</a> | <a href="/za">South Africa (ZAR)</a></p>
             ${item.faqs && item.faqs.length > 0 ? `<h2>Frequently Asked Questions</h2>${item.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}` : ''}
           </main>`;
 
@@ -2950,6 +3001,10 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <ul>${getRelatedExamPrepResources({ courseId: p.course.id, vendor: p.course.certificationVendor, titleOrDomain: `${p.course.title} ${p.course.examCode || ''}`, limit: 3 })
               .map((prep) => `<li><a href="/exam-prep/${escapeHtml(prep.slug)}">${escapeHtml(prep.title)}</a> — ${escapeHtml(prep.examCode)}</li>`)
               .join('')}</ul>
+            <h2>Related Certification Study Guides &amp; Roadmaps</h2>
+            <ul>${findMatchingBlogsForTopic(allBlogs, `${p.course.examCode || ''} ${p.course.certificationVendor} ${p.course.title}`, 2)
+              .map((b) => `<li><a href="/blogs/${escapeHtml(b.slug)}">${escapeHtml(b.title)}</a></li>`)
+              .join('')}</ul>
             <p><strong>Other Regional Editions:</strong> <a href="/course/${escapeHtml(p.course.id)}">Global Catalog</a> | <a href="/exam-prep/it-certification-exam-cost-salary-calculator">${escapeHtml(p.region.currency)} Exam Cost &amp; Salary Calculator</a> | ${siblingRegionLinks}</p>
           </main>`;
 
@@ -3092,6 +3147,10 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
               <h2>Free Practice Tests &amp; Study Resources</h2>
               <ul>${getRelatedExamPrepResources({ courseId: course.id, vendor: course.certificationVendor, titleOrDomain: `${course.title} ${course.examCode || ''}`, limit: 3 })
                 .map((prep) => `<li><a href="/exam-prep/${escapeHtml(prep.slug)}">${escapeHtml(prep.title)}</a> — ${escapeHtml(prep.examCode)}</li>`)
+                .join('')}</ul>
+              <h2>Related Certification Roadmaps &amp; Exam Guides</h2>
+              <ul>${findMatchingBlogsForTopic(allBlogs, `${course.examCode || ''} ${course.certificationVendor} ${course.title}`, 3)
+                .map((b) => `<li><a href="/blogs/${escapeHtml(b.slug)}">${escapeHtml(b.title)}</a></li>`)
                 .join('')}</ul>
             </main>`;
 
