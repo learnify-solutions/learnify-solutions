@@ -189,7 +189,7 @@ function getEditorialCoverSpec(
     return {
       trackEyebrow: 'Enterprise GenAI',
       coverHeadline: 'M365 Copilot Rollout Guide',
-      examCodes: ['MS-4018', 'Purview'],
+      examCodes: ['MS-4018', 'Copilot Studio'],
       subCaption: 'Data Governance · 90-Day KPI',
       footerMeta: 'Enterprise Deployment',
       motif: 'ai_nodes',
