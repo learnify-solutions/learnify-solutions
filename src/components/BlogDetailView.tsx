@@ -295,25 +295,25 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
           )}
 
           {/* High-Converting Mid-Article Action Strip (Mobile & Desktop) */}
-          <section className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-            <div className="space-y-1">
+          <section className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col xl:flex-row xl:items-center justify-between gap-6 shadow-xs">
+            <div className="space-y-1.5 flex-1 min-w-0">
               <p className="text-xs font-bold uppercase tracking-wider text-[#ea6d24]">
                 {targetHub
                   ? `${REGION_CONFIGS[targetHub].shortName} Cohorts · ${REGION_CONFIGS[targetHub].currency} Corporate POs`
                   : '2026 Syllabus, Exam Prep & Live Labs'}
               </p>
-              <h2 className="text-base sm:text-lg font-bold text-[#152e4d]">
+              <h2 className="text-lg sm:text-xl font-bold text-[#152e4d]">
                 Ready to turn this guide into a first-attempt pass?
               </h2>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs sm:text-sm text-slate-600">
                 Get free syllabus guidance, batch schedules, and 1-on-1 pricing tailored to your timezone.
               </p>
             </div>
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => onOpenAdvisorModal('advisor', post.title)}
-                className="px-4 py-2.5 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer whitespace-nowrap min-h-[40px]"
+                className="px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
               >
                 Get Free Syllabus &amp; Quote
               </button>
@@ -324,7 +324,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
                     e.preventDefault();
                     onNavigateLink(`/exam-prep/${relatedPrepTools[0].slug}`);
                   }}
-                  className="px-4 py-2.5 rounded-xl border border-[#152e4d]/20 bg-[#f8fafc] hover:border-[#ea6d24] text-[#152e4d] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap min-h-[40px] inline-flex items-center gap-1.5"
+                  className="px-5 py-3 rounded-xl border border-[#152e4d]/20 bg-[#f8fafc] hover:border-[#ea6d24] text-[#152e4d] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap min-h-[44px] inline-flex items-center gap-1.5"
                 >
                   <span>Try {relatedPrepTools[0].examCode} Practice Test</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#ea6d24]" />
@@ -336,7 +336,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
                     e.preventDefault();
                     onNavigateLink(post.relatedRegionalLinks[0].href);
                   }}
-                  className="px-4 py-2.5 rounded-xl border border-[#152e4d]/20 bg-[#f8fafc] hover:border-[#ea6d24] text-[#152e4d] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap min-h-[40px] inline-flex items-center gap-1.5"
+                  className="px-5 py-3 rounded-xl border border-[#152e4d]/20 bg-[#f8fafc] hover:border-[#ea6d24] text-[#152e4d] text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap min-h-[44px] inline-flex items-center gap-1.5"
                 >
                   <span>Explore Bootcamp</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#ea6d24]" />
