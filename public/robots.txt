@@ -40,4 +40,9 @@ Sitemap: https://www.learnify-solutions.com/sitemap-eu.xml
 Sitemap: https://www.learnify-solutions.com/sitemap-de.xml
 Sitemap: https://www.learnify-solutions.com/sitemap-nl.xml
 Sitemap: https://www.learnify-solutions.com/sitemap-ae.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-sa.xml
 Sitemap: https://www.learnify-solutions.com/sitemap-za.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-ao.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-ng.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-sg.xml
+Sitemap: https://www.learnify-solutions.com/sitemap-in.xml

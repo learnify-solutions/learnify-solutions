@@ -118,6 +118,49 @@ function getAllBlogsList(): BlogPost[] {
   return getMergedBlogs([...customBlogsStore, ...legacyCmsBlogs]);
 }
 
+function isCiscoCatalogCourse(course: Course): boolean {
+  const vendor = (course.certificationVendor || '').toLowerCase();
+  const domain = (course.domain || '').toLowerCase();
+  const id = (course.id || '').toLowerCase();
+  return vendor === 'cisco' || domain === 'cisco networking' || id.startsWith('course-cisco');
+}
+
+function getCiscoStudyRedirectTarget(rawIdOrPath: string): string {
+  const val = rawIdOrPath.toLowerCase();
+  if (val.includes('ccna')) return '/exam-prep/cisco-ccna-200-301-practice-questions';
+  if (val.includes('encor')) return '/exam-prep/cisco-ccnp-encor-350-401-practice-questions';
+  if (
+    val.includes('enarsi') ||
+    val.includes('sdwan') ||
+    val.includes('ensdwi') ||
+    val.includes('enwlsi') ||
+    val.includes('enwlsd') ||
+    val.includes('ensld') ||
+    val.includes('enauto') ||
+    val.includes('spcor') ||
+    val.includes('spri') ||
+    val.includes('spvi')
+  ) {
+    return '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions';
+  }
+  if (
+    val.includes('scor') ||
+    val.includes('sise') ||
+    val.includes('cyberops') ||
+    val.includes('sncf') ||
+    val.includes('svpn') ||
+    val.includes('sauto') ||
+    val.includes('cbrcor') ||
+    val.includes('cbrfir')
+  ) {
+    return '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions';
+  }
+  if (val.includes('devasc') || val.includes('devcor')) {
+    return '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap';
+  }
+  return '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap';
+}
+
 async function runCmsSupabaseSync(): Promise<void> {
   if (!supabase) return;
   if (cmsSyncInFlight) return cmsSyncInFlight;
@@ -710,36 +753,37 @@ async function startServer() {
     '/courses/microsoft': '/courses',
     '/courses/comptia': '/courses',
     '/courses/aws': '/courses',
-    '/courses/cisco': '/cisco-training',
+    '/courses/cisco': '/exam-prep/cisco-ccna-200-301-practice-questions',
+    '/cisco-training': '/exam-prep/cisco-ccna-200-301-practice-questions',
     '/events': '/blogs',
-    '/scor': '/course/course-cisco-scor',
-    '/spcor': '/course/course-cisco-spcor',
-    '/ccna': '/course/course-cisco-ccna',
-    '/cyberops': '/course/course-cisco-cyberops',
-    '/devasc': '/course/course-cisco-devasc',
-    '/encor': '/course/course-cisco-ccnp-encor',
-    '/enarsi': '/course/course-cisco-ccnp-enarsi',
-    '/sdwan': '/course/course-cisco-sdwan',
-    '/ensdwi': '/course/course-cisco-sdwan',
-    '/ensld': '/course/course-cisco-ensld',
-    '/enauto': '/course/course-cisco-enauto',
-    '/sncf': '/course/course-cisco-sncf',
-    '/sise': '/course/course-cisco-sise',
-    '/svpn': '/course/course-cisco-svpn',
-    '/sauto': '/course/course-cisco-sauto',
-    '/spri': '/course/course-cisco-spri',
-    '/spvi': '/course/course-cisco-spvi',
-    '/enwlsd': '/course/course-cisco-enwlsd',
-    '/enwlsi': '/course/course-cisco-enwlsi',
-    '/devcor': '/course/course-cisco-devcor',
-    '/clcor': '/course/course-cisco-clcor',
-    '/clica': '/course/course-cisco-clica',
-    '/claccm': '/course/course-cisco-claccm',
-    '/cbrcor': '/course/course-cisco-cbrcor',
-    '/cbrfir': '/course/course-cisco-cbrfir',
-    '/dccor': '/course/course-cisco-dccor',
-    '/dcid': '/course/course-cisco-dcid',
-    '/dcacio': '/course/course-cisco-dcacio',
+    '/scor': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/spcor': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/ccna': '/exam-prep/cisco-ccna-200-301-practice-questions',
+    '/cyberops': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/devasc': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/encor': '/exam-prep/cisco-ccnp-encor-350-401-practice-questions',
+    '/enarsi': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/sdwan': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/ensdwi': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/ensld': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/enauto': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/sncf': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/sise': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/svpn': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/sauto': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/spri': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/spvi': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/enwlsd': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/enwlsi': '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+    '/devcor': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/clcor': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/clica': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/claccm': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/cbrcor': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/cbrfir': '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+    '/dccor': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/dcid': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
+    '/dcacio': '/blogs/cisco-ccna-200-301-ccnp-encor-2026-study-roadmap',
     '/home': '/',
     '/privacy-policy': '/privacy',
     '/contact-us': '/contact',
@@ -764,12 +808,12 @@ async function startServer() {
     '/amsterdam': '/nl',
     '/rotterdam': '/nl',
     '/corporate': '/corporate-training',
-    '/cisco': '/cisco-training',
+    '/cisco': '/exam-prep/cisco-ccna-200-301-practice-questions',
     '/course/course-azure-ai-102': '/course/course-ms-ai-102',
     '/course/course-ceh-v12': '/course/course-comptia-pentest-plus',
     '/course/course-azure-900': '/course/course-ms-900',
     '/course/course-azure-305': '/course/course-azure-104',
-    '/cisco-certified-network-associate-and-ccna-the-essential-cisco-networking-certification': '/course/course-cisco-ccna',
+    '/cisco-certified-network-associate-and-ccna-the-essential-cisco-networking-certification': '/exam-prep/cisco-ccna-200-301-practice-questions',
   };
 
   app.use((req, res, next) => {
@@ -800,8 +844,13 @@ async function startServer() {
     const normalizedPath = reqPath.replace(/\/+$/, '').toLowerCase() || '/';
 
     // 1. Exact legacy WordPress / Cisco short-slug redirects -> new Learnify URLs (single hop, strips legacy query params)
-    if (LEGACY_301_REDIRECTS[normalizedPath]) {
+    const isEnterpriseCatalogBypass =
+      req.query.catalog === 'enterprise' || req.query.catalog === 'cisco';
+    if (!isEnterpriseCatalogBypass && LEGACY_301_REDIRECTS[normalizedPath]) {
       return res.redirect(301, LEGACY_301_REDIRECTS[normalizedPath]);
+    }
+    if (!isEnterpriseCatalogBypass && normalizedPath.startsWith('/course/course-cisco')) {
+      return res.redirect(301, getCiscoStudyRedirectTarget(normalizedPath));
     }
 
     // 2. Old LearnDash /courses/<slug> & /courses/<slug>/lessons/<lesson> & /events/* & WP category/tag/author archives (single hop)
@@ -995,7 +1044,6 @@ ${prepEntries.join('\n')}
       { loc: '', priority: '1.0', changefreq: 'daily' },
       { loc: '/courses', priority: '0.98', changefreq: 'daily' },
       { loc: '/corporate-training', priority: '0.95', changefreq: 'weekly' },
-      { loc: '/cisco-training', priority: '0.95', changefreq: 'weekly' },
       { loc: '/blogs', priority: '0.96', changefreq: 'daily' },
       { loc: '/exam-prep', priority: '0.97', changefreq: 'weekly' },
       ...EXAM_PREP_RESOURCES.map((item) => ({
@@ -1016,13 +1064,11 @@ ${prepEntries.join('\n')}
     ];
 
     const flagshipIds = [
-      'course-cisco-ccna',
       'course-comptia-security-plus',
       'course-azure-104',
       'course-aws-solutions',
       'course-kubernetes-cka',
       'course-comptia-a-plus',
-      'course-cisco-ccnp-encor',
       'course-comptia-pentest-plus',
       'course-comptia-network-plus',
       'course-comptia-itf-plus',
@@ -1037,7 +1083,9 @@ ${prepEntries.join('\n')}
       'course-ms-4018-copilot',
     ];
 
-    const courseRoutes = coursesStore.map((c) => {
+    const courseRoutes = coursesStore
+      .filter((c) => !isCiscoCatalogCourse(c))
+      .map((c) => {
       const isFlagship = flagshipIds.includes(c.id);
       const priority = isFlagship ? '0.95' : '0.90';
       const cleanImg = c.imageUrl?.startsWith('http')
@@ -1196,11 +1244,6 @@ ${regionalSitemaps}
           "path": "/corporate-training",
           "method": "GET",
           "description": "Enterprise cohort and group upskilling solutions."
-        },
-        {
-          "path": "/cisco-training",
-          "method": "GET",
-          "description": "Specialized Cisco CCNA & CCNP certification bootcamps."
         }
       ]
     };
@@ -1293,7 +1336,7 @@ ${regionalSitemaps}
         ...ALL_REGION_CODES.map((code) => `${SITE_BASE_URL}/${code}`),
         ...EXAM_PREP_RESOURCES.map((r) => `${SITE_BASE_URL}/exam-prep/${r.slug}`),
         ...allBlogsForPing.slice(0, 40).map((b) => `${SITE_BASE_URL}/blogs/${b.slug}`),
-        ...coursesStore.slice(0, 20).map((c) => `${SITE_BASE_URL}/course/${c.id}`),
+        ...coursesStore.filter((c) => !isCiscoCatalogCourse(c)).slice(0, 22).map((c) => `${SITE_BASE_URL}/course/${c.id}`),
       ])
     ).slice(0, 100);
 
@@ -3258,7 +3301,13 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     </head>`;
 
             const regionalLinksHtml = courseAlternates
-              ? `<p><strong>Regional Editions:</strong> <a href="${escapeHtml(courseAlternates.uk.replace(SITE_BASE_URL, ''))}">UK (GBP)</a> | <a href="${escapeHtml(courseAlternates.eu.replace(SITE_BASE_URL, ''))}">Europe (EUR)</a> | <a href="${escapeHtml(courseAlternates.de.replace(SITE_BASE_URL, ''))}">Germany (EUR)</a> | <a href="${escapeHtml(courseAlternates.nl.replace(SITE_BASE_URL, ''))}">Netherlands (EUR)</a> | <a href="${escapeHtml(courseAlternates.ae.replace(SITE_BASE_URL, ''))}">Dubai &amp; UAE (AED)</a> | <a href="${escapeHtml(courseAlternates.za.replace(SITE_BASE_URL, ''))}">South Africa (ZAR)</a></p>`
+              ? `<p><strong>Regional Editions:</strong> ${ALL_REGION_CODES.map((code) => {
+                  const targetUrl = courseAlternates[code];
+                  if (!targetUrl) return '';
+                  return `<a href="${escapeHtml(targetUrl.replace(SITE_BASE_URL, ''))}">${escapeHtml(REGION_CONFIGS[code].shortName)} (${escapeHtml(REGION_CONFIGS[code].currency)})</a>`;
+                })
+                  .filter(Boolean)
+                  .join(' | ')}</p>`
               : '';
 
             const ssrFallbackHtml = `<main style="max-width:1050px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
@@ -3328,10 +3377,11 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else if (cleanPath === '/courses') {
           const canonicalUrl = `${SITE_BASE_URL}/courses`;
-          const title = '50+ Official IT & Cloud Certification Courses (CompTIA, Microsoft Azure, AWS, Kubernetes) | Learnify';
-          const desc = 'Browse 50+ vendor-authorized courses in CompTIA Security+ SY0-701, A+ 220-1201/1202 & 220-1101/1102, ITF+ FC0-U61, Microsoft Azure AZ-104, AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03 & Kubernetes CKA across UK, EU, UAE & SA.';
-          const keywords = 'CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, Cisco CCNA 200-301, AWS SAA-C03, Kubernetes CKA, UK Europe UAE South Africa IT training';
-          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Courses</span></nav><h1>50+ Official IT &amp; Cloud Certification Courses Catalog</h1><p>${escapeHtml(desc)}</p><p><strong>Regional Programs:</strong> <a href="/uk">UK (London) Hub</a> | <a href="/eu">Europe (EU) Hub</a> | <a href="/de">Germany &amp; DACH Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">Dubai &amp; UAE Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/exam-prep">Exam Prep &amp; Mock Tests</a> | <a href="/cisco-training">Cisco Training</a></p><h2>All Certification Programs</h2><ul>${coursesStore.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)} (${escapeHtml(c.duration)})</li>`).join('')}</ul></main>`;
+          const title = 'Authorized IT & Cloud Certification Courses (CompTIA, Microsoft Azure, AWS, Kubernetes) | Learnify';
+          const desc = 'Browse vendor-authorized courses in CompTIA Security+ SY0-701, A+ 220-1201/1202 & 220-1101/1102, ITF+ FC0-U61, Microsoft Azure AZ-104, AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03 & Kubernetes CKA across UK, EU, UAE, Saudi, Africa & APAC.';
+          const keywords = 'CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, PL-900, PL-300, SC-900, MS-4018 Copilot Studio, AWS SAA-C03, Kubernetes CKA, UK Europe UAE Saudi Angola Nigeria Singapore India South Africa IT training';
+          const publicCourses = coursesStore.filter((c) => !isCiscoCatalogCourse(c));
+          const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Courses</span></nav><h1>Authorized IT &amp; Cloud Certification Courses Catalog</h1><p>${escapeHtml(desc)}</p><p><strong>Regional Programs:</strong> <a href="/uk">UK (London) Hub</a> | <a href="/eu">Europe (EU) Hub</a> | <a href="/de">Germany &amp; DACH Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">Dubai &amp; UAE Hub</a> | <a href="/sa">Saudi &amp; GCC Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/ao">Angola &amp; Luanda Hub</a> | <a href="/ng">Nigeria &amp; Kenya Hub</a> | <a href="/sg">Singapore &amp; APAC Hub</a> | <a href="/in">India Hub</a> | <a href="/exam-prep">Exam Prep &amp; Mock Tests</a></p><h2>All Certification Programs</h2><ul>${publicCourses.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)} (${escapeHtml(c.duration)})</li>`).join('')}</ul></main>`;
           html = replaceHreflangBlock(stripHomeHeroPreloads(html), getHubHreflangAlternates())
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
@@ -3370,6 +3420,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const ciscoList = coursesStore.filter((c) => c.certificationVendor === 'Cisco');
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><nav><a href="/">Home</a> &gt; <span>Cisco Training</span></nav><h1>Cisco Authorized Certification Training</h1><p>${escapeHtml(desc)}</p><ul>${ciscoList.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.duration)}</li>`).join('')}</ul><p><a href="/exam-prep/cisco-ccna-200-301-practice-questions">Free CCNA 200-301 Practice Exam</a> | <a href="/exam-prep/ipv4-subnetting-cidr-cheat-sheet-calculator">IPv4 Subnetting &amp; CIDR Calculator</a></p></main>`;
           html = stripHreflangBlock(stripHomeHeroPreloads(html))
+            .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`)
             .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
             .replace(/<meta name="title" content=".*?" \/>/, `<meta name="title" content="${title}" />`)
             .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`)
@@ -3414,8 +3465,6 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<head>/, `<head><meta name="robots" content="noindex, nofollow" />`);
         } else if (cleanPath === '/' || cleanPath === '') {
           const flagshipIds = [
-            'course-cisco-ccna',
-            'course-cisco-ccnp-encor',
             'course-comptia-security-plus',
             'course-comptia-a-plus',
             'course-comptia-network-plus',
