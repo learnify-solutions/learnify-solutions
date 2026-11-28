@@ -163,8 +163,7 @@ export const ExamPrepHubView: React.FC<ExamPrepHubViewProps> = ({
               </h1>
               <p className="text-base text-slate-600 leading-relaxed max-w-3xl">
                 Prepare for CompTIA Security+ (SY0-701), Microsoft Azure (AZ-104 &amp; AI-102), AWS
-                SAA-C03, Power BI (PL-300), Network+, and Kubernetes CKA with scenario exams, printable
-                port/kubectl references, interview Q&amp;As, and local fee estimators.
+                SAA-C03, Power BI (PL-300), Network+, Cisco CCNA / CCNP ENCOR / SD-WAN / SCOR, and Kubernetes CKA with scenario exams, CLI cheat sheets, interview Q&amp;As, and fee calculators.
               </p>
             </div>
 
@@ -179,7 +178,7 @@ export const ExamPrepHubView: React.FC<ExamPrepHubViewProps> = ({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search SY0-701, AZ-104, kubectl, ports..."
+                  placeholder="Search SY0-701, CCNA, ENCOR, SD-WAN, AZ-104..."
                   className="w-full pl-10 pr-9 py-3 text-sm rounded-xl border border-slate-300 bg-[#f8fafc] text-[#152e4d] placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-[#ea6d24] transition-colors"
                 />
                 {searchQuery && (

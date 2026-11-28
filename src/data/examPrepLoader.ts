@@ -150,6 +150,22 @@ export async function loadExamPrepResourceClient(slug: string): Promise<ExamPrep
       const m = await import('./examPrepResources2');
       return { ...meta, cheatSheetSections: m.ENTERPRISE_ROUTING_SWITCHING_SECURITY_CLI_CHEAT_SHEET };
     }
+    case 'cisco-ccnp-encor-350-401-practice-questions': {
+      const m = await import('./examPrepQuestionsCisco');
+      return { ...meta, questions: m.CISCO_ENCOR_350_401_QUESTIONS };
+    }
+    case 'cisco-enarsi-sdwan-300-415-practice-questions': {
+      const m = await import('./examPrepQuestionsCisco');
+      return { ...meta, questions: m.CISCO_ENARSI_SDWAN_QUESTIONS };
+    }
+    case 'cisco-security-scor-ise-cyberops-practice-questions': {
+      const m = await import('./examPrepQuestionsCisco');
+      return { ...meta, questions: m.CISCO_SCOR_ISE_CYBEROPS_QUESTIONS };
+    }
+    case 'cisco-network-engineer-interview-questions': {
+      const m = await import('./examPrepResources2');
+      return { ...meta, interviewItems: m.CISCO_NETWORK_INTERVIEW_QA };
+    }
     default:
       return meta;
   }

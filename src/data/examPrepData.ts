@@ -48,7 +48,13 @@ import {
   POWER_BI_PL_300_DAX_CHEAT_SHEET,
   AZURE_AZ_104_LAB_CLI_CHEAT_SHEET,
   ENTERPRISE_ROUTING_SWITCHING_SECURITY_CLI_CHEAT_SHEET,
+  CISCO_NETWORK_INTERVIEW_QA,
 } from './examPrepResources2';
+import {
+  CISCO_ENCOR_350_401_QUESTIONS,
+  CISCO_ENARSI_SDWAN_QUESTIONS,
+  CISCO_SCOR_ISE_CYBEROPS_QUESTIONS,
+} from './examPrepQuestionsCisco';
 import {
   COMPTIA_ITF_PLUS_QUESTIONS,
   AZURE_DP_900_QUESTIONS,
@@ -178,6 +184,18 @@ const EXAM_PREP_PAYLOAD_BY_SLUG: Record<string, ExamPrepPayload> = {
   },
   'enterprise-routing-switching-sdwan-security-cli-cheat-sheet': {
     cheatSheetSections: ENTERPRISE_ROUTING_SWITCHING_SECURITY_CLI_CHEAT_SHEET,
+  },
+  'cisco-ccnp-encor-350-401-practice-questions': {
+    questions: CISCO_ENCOR_350_401_QUESTIONS,
+  },
+  'cisco-enarsi-sdwan-300-415-practice-questions': {
+    questions: CISCO_ENARSI_SDWAN_QUESTIONS,
+  },
+  'cisco-security-scor-ise-cyberops-practice-questions': {
+    questions: CISCO_SCOR_ISE_CYBEROPS_QUESTIONS,
+  },
+  'cisco-network-engineer-interview-questions': {
+    interviewItems: CISCO_NETWORK_INTERVIEW_QA,
   },
 };
 

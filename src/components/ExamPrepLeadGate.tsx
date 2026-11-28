@@ -43,15 +43,22 @@ interface ExamPrepLeadGateProps {
   onLeadSubmitted?: () => void;
   variant?: 'inline' | 'modal';
   onCloseModal?: () => void;
+  customHeaderLabel?: string;
+  customTitle?: string;
+  customDescription?: string;
+  customSubmitLabel?: string;
 }
 
 const REGION_OPTIONS = [
   'United Kingdom (GMT / GBP)',
   'Europe (Germany / Netherlands / EU)',
-  'UAE & Middle East (Dubai / Riyadh)',
-  'South Africa (Johannesburg / Cape Town)',
+  'UAE & Middle East (Dubai / Abu Dhabi)',
+  'Saudi Arabia & GCC (Riyadh / Jeddah / Doha)',
+  'Angola & West Africa (Luanda / Lagos / Abuja)',
+  'South & East Africa (Johannesburg / Nairobi)',
+  'Singapore & APAC (SGT)',
+  'India (IST / Bengaluru / Hyderabad / NCR)',
   'United States & Canada',
-  'India & APAC',
   'Other (Specify custom city / country)',
 ];
 
@@ -61,6 +68,10 @@ export const ExamPrepLeadGate: React.FC<ExamPrepLeadGateProps> = ({
   onLeadSubmitted,
   variant = 'inline',
   onCloseModal,
+  customHeaderLabel,
+  customTitle,
+  customDescription,
+  customSubmitLabel,
 }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -138,13 +149,14 @@ export const ExamPrepLeadGate: React.FC<ExamPrepLeadGateProps> = ({
       <div className="bg-[#152e4d] text-white px-6 py-5 sm:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <p className="text-xs font-bold uppercase tracking-wider text-[#f7944d]">
-            Interactive Exam Prep Access
+            {customHeaderLabel || 'Interactive Exam Prep Access'}
           </p>
           <h3 className="text-lg sm:text-xl font-extrabold leading-snug">
-            Unlock Full {resource.examCode} Simulator &amp; Domain Scorecard
+            {customTitle || `Unlock Full ${resource.examCode} Simulator & Domain Scorecard`}
           </h3>
           <p className="text-xs sm:text-sm text-slate-300">
-            Complete quick registration once to access all {resource.questionCountLabel}, timed mock testing, and answer rationales across every quiz.
+            {customDescription ||
+              `Complete quick registration once to access all ${resource.questionCountLabel}, timed mock testing, and answer rationales across every quiz.`}
           </p>
         </div>
         <div className="hidden sm:flex w-12 h-12 rounded-xl bg-white/10 border border-white/15 items-center justify-center shrink-0">
@@ -318,7 +330,11 @@ export const ExamPrepLeadGate: React.FC<ExamPrepLeadGateProps> = ({
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60 min-h-[44px]"
             >
               <LockOpen className="w-4 h-4" />
-              <span>{isSubmitting ? 'Unlocking Simulator...' : 'Start Practice Exam'}</span>
+              <span>
+                {isSubmitting
+                  ? 'Submitting...'
+                  : customSubmitLabel || 'Start Practice Exam'}
+              </span>
             </button>
           </div>
         </div>

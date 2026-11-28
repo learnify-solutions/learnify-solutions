@@ -2532,9 +2532,9 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const canonicalUrl = `${SITE_BASE_URL}/exam-prep`;
           const title = 'IT Certification Practice Tests, Cheat Sheets, Interview Q&A & Salary Tool | Learnify';
           const desc =
-            'Free CompTIA Security+ (SY0-701), Microsoft Azure (AZ-104), AWS (SAA-C03), Power BI (PL-300), Network+ & AI-102 practice simulators, cheat sheets, interview banks & salary ROI calculator.';
+            'Free CompTIA Security+ (SY0-701), Microsoft Azure (AZ-104), AWS (SAA-C03), Power BI (PL-300), Network+, Cisco CCNA, CCNP ENCOR, SD-WAN & SCOR practice simulators, CLI cheat sheets, interview banks & salary ROI calculator.';
           const keywords =
-            'CompTIA Security+ SY0-701 practice questions, Azure AZ-104 mock test, AWS SAA-C03 sample questions, Network+ port numbers cheat sheet, kubectl commands cheat sheet, IT certification salary calculator 2026';
+            'CompTIA Security+ SY0-701 practice questions, Cisco CCNA 200-301 practice test, CCNP ENCOR 350-401 mock exam, Cisco SD-WAN 300-415 questions, SCOR 350-701 CyberOps practice test, Azure AZ-104 mock test, AWS SAA-C03 sample questions, Network+ CLI cheat sheet';
           const schemaObj = {
             '@context': 'https://schema.org',
             '@graph': [

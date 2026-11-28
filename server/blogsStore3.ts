@@ -94,24 +94,24 @@ export const PHASE3_SEO_BLOGS: BlogPost[] = [
     ],
     relatedRegionalLinks: [
       {
+        label: 'Cisco CCNP ENCOR (350-401) Practice Exam',
+        href: '/exam-prep/cisco-ccnp-encor-350-401-practice-questions',
+        subtitle: '30 scenario Qs on OSPF, BGP, VXLAN, SD-Access & RESTCONF',
+      },
+      {
+        label: 'Cisco ENARSI (300-410) & SD-WAN (300-415) Mock Exam',
+        href: '/exam-prep/cisco-enarsi-sdwan-300-415-practice-questions',
+        subtitle: 'Redistribution loops, MPLS L3VPN, DMVPN, OMP & TLOC BFD tests',
+      },
+      {
         label: 'Free CCNA (200-301) Practice Exam (45 Scenarios)',
         href: '/exam-prep/cisco-ccna-200-301-practice-questions',
         subtitle: 'Interactive OSPF, RSTP, VLAN & longest-prefix-match simulator',
       },
       {
-        label: 'Enterprise Routing, Switching & Security CLI Cheat Sheet',
-        href: '/exam-prep/enterprise-routing-switching-sdwan-security-cli-cheat-sheet',
-        subtitle: 'OSPF, BGP, VLAN, NAT, 802.1X & firewall verification commands',
-      },
-      {
-        label: 'CompTIA Network+ (N10-009) Live Instructor Course',
-        href: '/course/course-comptia-network-plus',
-        subtitle: 'Authorized vendor-neutral networking foundation & lab cohort',
-      },
-      {
-        label: 'Interactive IPv4 Subnetting & CIDR Calculator',
-        href: '/exam-prep/ipv4-subnetting-cidr-cheat-sheet-calculator',
-        subtitle: 'Drill /16 to /30 subnet sizing for routing tables',
+        label: 'Cisco Network Engineer Interview Q&A Bank',
+        href: '/exam-prep/cisco-network-engineer-interview-questions',
+        subtitle: '16 senior interview questions on BGP, OSPF, SD-WAN & ISE',
       },
     ],
     faqs: [
@@ -218,14 +218,14 @@ export const PHASE3_SEO_BLOGS: BlogPost[] = [
     ],
     relatedRegionalLinks: [
       {
+        label: 'Cisco SCOR (350-701), ISE (300-715) & CyberOps Mock Exam',
+        href: '/exam-prep/cisco-security-scor-ise-cyberops-practice-questions',
+        subtitle: '30 scenario Qs on 802.1X EAP-TLS, pxGrid CoA, Snort IPS & PCAPs',
+      },
+      {
         label: 'CompTIA Security+ (SY0-701) Practice Exam',
         href: '/exam-prep/comptia-security-plus-sy0-701-practice-questions',
         subtitle: '45 Zero Trust, SIEM, cryptography & incident response scenarios',
-      },
-      {
-        label: 'SOC Analyst Tier-1/Tier-2 Interview Q&A Bank',
-        href: '/exam-prep/comptia-security-soc-interview-questions',
-        subtitle: 'Mitigate Phishing, Kerberoasting, SIEM tuning & packet triage',
       },
       {
         label: 'Enterprise Routing, Switching & Security CLI Cheat Sheet',
@@ -233,9 +233,9 @@ export const PHASE3_SEO_BLOGS: BlogPost[] = [
         subtitle: 'ACL, NAT, IKEv2 IPsec, RADIUS & 802.1X debug commands',
       },
       {
-        label: 'CompTIA Security+ (SY0-701) Live Course',
-        href: '/course/course-comptia-security-plus',
-        subtitle: 'Authorized live Blue Team bootcamp with browser labs',
+        label: 'Cisco Network Engineer Interview Q&A Bank',
+        href: '/exam-prep/cisco-network-engineer-interview-questions',
+        subtitle: 'ISE, IKEv2 IPsec, Snort IPS, BGP & SD-WAN interview Q&As',
       },
     ],
     faqs: [

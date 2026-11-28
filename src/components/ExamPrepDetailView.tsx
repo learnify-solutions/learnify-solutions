@@ -608,6 +608,46 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
           />
         )}
 
+        {/* Exam-Prep Study Pack Lead Capture for Cheat Sheets, Interview Q&As & Calculators */}
+        {activeResource.type !== 'practice_test' && (
+          <div id="study-pack-lead-capture" className="scroll-mt-24">
+            {unlockedProfile ? (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+                    Study Pack Access Active · {unlockedProfile.fullName}
+                  </p>
+                  <h3 className="text-base sm:text-lg font-bold text-[#152e4d]">
+                    Want 1-on-1 Lab Walkthrough or Custom {activeResource.examCode} Coaching?
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600">
+                    Schedule a live mentor review for your target exam dates, EVE-NG / cloud sandbox topologies, and personalized mock exam diagnostics.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onOpenAdvisorModal('advisor', `${activeResource.title} — 1-on-1 Study Plan`)
+                  }
+                  className="px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer shrink-0"
+                >
+                  Book Free 1-on-1 Study Call
+                </button>
+              </div>
+            ) : (
+              <ExamPrepLeadGate
+                resource={activeResource}
+                onUnlocked={(profile) => setUnlockedProfile(profile)}
+                onLeadSubmitted={onLeadSubmitted}
+                customHeaderLabel="Free Study Plan & Lab Guidance"
+                customTitle={`Get ${activeResource.examCode} Study Roadmap, Lab Tips & Advisor Prep Plan`}
+                customDescription="Studying for this exam or upcoming technical interviews? Share your details once to unlock all interactive practice simulators sitewide and request a personalized 30-day preparation plan."
+                customSubmitLabel="Get Free Study Plan & Unlock Tools"
+              />
+            )}
+          </div>
+        )}
+
         {/* Recommended Official Course + Regional Hubs Strip */}
         <section className="bg-[#152e4d] text-white rounded-2xl p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
@@ -616,7 +656,7 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
             </p>
             <h2 className="text-xl sm:text-2xl font-extrabold">{activeResource.relatedCourseLabel}</h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Learnify pairs live instructor mentorship, 24/7 hands-on labs, and exam readiness drills across UK (GBP), Europe (EUR), UAE (AED), and South Africa (ZAR).
+              Learnify pairs live 1-on-1 instructor mentorship, 24/7 browser hands-on labs, and exam readiness drills across UK, Europe, UAE, Saudi Arabia, Angola, Nigeria, South Africa, Singapore &amp; India.
             </p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-xs text-slate-300">
               <span className="inline-flex items-center gap-1 text-white font-semibold">
@@ -629,7 +669,12 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
                 { label: 'Germany', href: '/de' },
                 { label: 'Netherlands', href: '/nl' },
                 { label: 'UAE', href: '/ae' },
+                { label: 'Saudi & GCC', href: '/sa' },
+                { label: 'Angola', href: '/ao' },
+                { label: 'Nigeria & Kenya', href: '/ng' },
                 { label: 'South Africa', href: '/za' },
+                { label: 'Singapore', href: '/sg' },
+                { label: 'India', href: '/in' },
               ].map((hub, idx) => (
                 <React.Fragment key={hub.href}>
                   {idx > 0 && <span aria-hidden="true">·</span>}
@@ -657,7 +702,12 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
               }}
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-[#152e4d] hover:bg-orange-50 font-bold text-sm transition-colors"
             >
-              <span>View Course</span>
+              <span>
+                {activeResource.slug.includes('cisco') ||
+                activeResource.slug.includes('routing-switching-sdwan')
+                  ? 'Explore Authorized Track'
+                  : 'View Course'}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </a>
             <button
@@ -666,7 +716,12 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white font-bold text-sm transition-colors cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>Talk to Advisor</span>
+              <span>
+                {activeResource.slug.includes('cisco') ||
+                activeResource.slug.includes('routing-switching-sdwan')
+                  ? 'Request 1-on-1 Exam Prep Mentor'
+                  : 'Talk to Advisor'}
+              </span>
             </button>
           </div>
         </section>

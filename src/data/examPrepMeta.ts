@@ -1270,6 +1270,145 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
       },
     ],
   },
+  {
+    slug: 'cisco-ccnp-encor-350-401-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'ENCOR 350-401',
+    title: 'Cisco CCNP ENCOR (350-401) Practice Exam & Enterprise Core Simulator (2026)',
+    shortTitle: 'Cisco CCNP ENCOR 350-401 Practice Exam',
+    excerpt:
+      'Practice enterprise Dual-Stack OSPF/eBGP, LISP/VXLAN SD-Access fabric, VRF-Lite, QoS DSCP queuing, CoPP, Wireless FlexConnect, and Python/RESTCONF JSON automation across 30 ENCOR scenarios.',
+    seoTitle: 'Cisco CCNP ENCOR 350-401 Practice Questions & Free Simulator (2026) | Learnify',
+    seoDescription:
+      'Free Cisco CCNP Enterprise Core (ENCOR 350-401) practice questions covering Architecture, Virtualization, OSPF/BGP Infrastructure, Security, and Python/NETCONF/RESTCONF Automation.',
+    seoKeywords:
+      'Cisco CCNP ENCOR 350-401 practice questions, ENCOR 350-401 mock exam, CCNP Enterprise Core simulator, SD-Access LISP VXLAN questions, RESTCONF Python ENCOR',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '80% Target (~825/1000)',
+    relatedCourseId: 'course-comptia-network-plus',
+    relatedCourseLabel: '1-on-1 Enterprise Networking Prep & Authorized Network+ Track',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    domainWeights: [
+      { name: 'Architecture & SD-Access / SD-WAN', weight: '15%' },
+      { name: 'Virtualization (VRF, VXLAN, LISP)', weight: '10%' },
+      { name: 'Infrastructure (OSPF, BGP, Layer 2, Wireless)', weight: '30%' },
+      { name: 'Network Assurance & Telemetry', weight: '10%' },
+      { name: 'Security & Python/RESTCONF Automation', weight: '35%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'What are the highest-yield topics on CCNP ENCOR (350-401)?',
+        a: 'Infrastructure routing (OSPF reference bandwidth, eBGP Local Preference & AS-Path, HSRPv2, RSTP BPDU Guard) plus Security (CoPP, TrustSec SGT) and Automation (RESTCONF HTTP verbs, NETCONF TCP 830, Python dict/JSON parsing, EEM applets) carry the heaviest weight.',
+      },
+      {
+        q: 'Can I request 1-on-1 lab mentorship for ENCOR 350-401 alongside practice tests?',
+        a: 'Yes. Unlock the simulator above or click Request 1-on-1 Lab Mentorship below to schedule a custom virtual lab study roadmap with our senior network advisors.',
+      },
+    ],
+  },
+  {
+    slug: 'cisco-enarsi-sdwan-300-415-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'ENARSI · SD-WAN 300-415',
+    title: 'Cisco CCNP ENARSI (300-410) & SD-WAN ENSDWI (300-415) Practice Exam',
+    shortTitle: 'Cisco ENARSI & SD-WAN 300-415 Mock Test',
+    excerpt:
+      'Drill mutual redistribution route-map loops, BGP communities & Route Reflectors, MPLS L3VPN RD/RT, DMVPN Phase 3, and SD-WAN vSmart OMP, TLOCs & Application-Aware Routing SLA failovers.',
+    seoTitle: 'Cisco ENARSI 300-410 & SD-WAN 300-415 Practice Questions (2026) | Learnify',
+    seoDescription:
+      'Scenario practice test for Cisco CCNP ENARSI (300-410) and SD-WAN ENSDWI (300-415) covering BGP filtering, redistribution tags, MPLS VPNs, DMVPN, OMP routing, and AAR policies.',
+    seoKeywords:
+      'Cisco ENARSI 300-410 practice questions, Cisco SD-WAN 300-415 mock exam, ENSDWI practice test, OMP TLOC BFD questions, BGP route-map troubleshooting',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '80% Target (~825/1000)',
+    relatedCourseId: 'course-comptia-network-plus',
+    relatedCourseLabel: '1-on-1 Routing / SD-WAN Lab Prep & Authorized Network+ Track',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    domainWeights: [
+      { name: 'Mutual Redistribution & Routing Loops', weight: '25%' },
+      { name: 'BGP Policy, Communities & Route Reflectors', weight: '25%' },
+      { name: 'SD-WAN OMP, TLOCs & vManage Policies', weight: '30%' },
+      { name: 'MPLS L3VPN, DMVPN Phase 3 & Infrastructure Sec', weight: '20%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Why test ENARSI (300-410) and SD-WAN ENSDWI (300-415) troubleshooting together?',
+        a: 'Modern enterprises migrating from MPLS WAN to dual-ISP SD-WAN must run BGP/OSPF underlay peering alongside vSmart OMP overlay policies and BFD SLA failover simultaneously.',
+      },
+    ],
+  },
+  {
+    slug: 'cisco-security-scor-ise-cyberops-practice-questions',
+    type: 'practice_test',
+    topicTrack: 'Cybersecurity',
+    examCode: 'SCOR · ISE · CyberOps',
+    title: 'Cisco Security Core (SCOR 350-701), ISE (300-715) & CyberOps (200-201) Practice Exam',
+    shortTitle: 'Cisco SCOR, ISE 300-715 & CyberOps Mock Test',
+    excerpt:
+      'Practice 802.1X EAP-TLS/MAB & RADIUS CoA in ISE, Secure Firewall Snort IPS & Prefilter Fastpath, IKEv2 NAT-T VPNs, pxGrid SOAR automation, plus CyberOps PCAP & Windows forensic triage.',
+    seoTitle: 'Cisco SCOR 350-701, ISE 300-715 & CyberOps 200-201 Practice Questions | Learnify',
+    seoDescription:
+      'Free scenario mock test covering Cisco Security Core (SCOR 350-701), Identity Services Engine (SISE 300-715), Firepower NGFW (300-710), and CyberOps Associate (CBROPS 200-201).',
+    seoKeywords:
+      'Cisco SCOR 350-701 practice questions, Cisco ISE SISE 300-715 practice test, CyberOps CBROPS 200-201 mock exam, Firepower 300-710 questions, 802.1X RADIUS CoA',
+    durationLabel: '45 Min Timed',
+    questionCountLabel: '30 Scenario Qs',
+    passingScoreLabel: '78% Target (~825/1000)',
+    relatedCourseId: 'course-comptia-security-plus',
+    relatedCourseLabel: '1-on-1 Security Lab Prep & Authorized Security+ Track',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    domainWeights: [
+      { name: 'ISE 802.1X, MAB, Profiling & pxGrid CoA', weight: '30%' },
+      { name: 'NGFW Prefilter, Snort IPS & SSL Decrypt', weight: '25%' },
+      { name: 'IKEv2 IPsec, SAML VPN & PKI / Cryptography', weight: '20%' },
+      { name: 'CyberOps SOC Forensics, PCAP & Kill Chain', weight: '25%' },
+    ],
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'How does CompTIA Security+ (SY0-701) compare with SCOR (350-701) and CBROPS (200-201)?',
+        a: 'CompTIA Security+ establishes vendor-neutral Zero Trust, SIEM, and cryptography fundamentals, while SCOR/SISE/CBROPS dive into platform-specific 802.1X switch enforcement, pxGrid RADIUS CoA, Snort IPS, and PCAP forensics.',
+      },
+    ],
+  },
+  {
+    slug: 'cisco-network-engineer-interview-questions',
+    type: 'interview_qa',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'CCNA · CCNP · SD-WAN',
+    title: 'Cisco Network Engineer Interview Questions & Answers (2026 Technical Bank)',
+    shortTitle: 'Cisco Network Engineer Interview Q&As',
+    excerpt:
+      '16 senior-level interview questions and model answers spanning 802.1Q/RSTP, OSPF EXSTART MTU issues, BGP Best Path & eBGP multihop, mutual redistribution tags, SD-WAN OMP/AAR, ISE 802.1X, IKEv2 IPsec & VXLAN EVPN.',
+    seoTitle: 'Cisco Network Engineer Interview Questions & Answers (CCNA / CCNP / SD-WAN) | Learnify',
+    seoDescription:
+      'Prepare for NOC, Network Engineer, and Senior Architect technical interviews with 16 Cisco CCNA/CCNP/SD-WAN/ISE scenario Q&As and follow-up tips.',
+    seoKeywords:
+      'Cisco network engineer interview questions, CCNA CCNP interview Q&A 2026, BGP OSPF interview questions, Cisco SD-WAN ISE interview prep, Learnify Solutions',
+    durationLabel: 'Self-Paced Review',
+    questionCountLabel: '16 Deep Q&As',
+    passingScoreLabel: 'Interview Readiness',
+    relatedCourseId: 'course-comptia-network-plus',
+    relatedCourseLabel: '1-on-1 Interview Prep & Authorized Networking Track',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    openPreviewCount: 3,
+    faqs: [
+      {
+        q: 'What follow-up topics do interviewers test most on Senior Network Engineer loops?',
+        a: 'Expect whiteboarding on OSPF EXSTART MTU mismatches, BGP Local Preference vs AS-Path Prepend, mutual redistribution tagging loops, SD-WAN vSmart vs vBond separation, and step-by-step IKEv2 Phase 1/2 diagnostics.',
+      },
+    ],
+  },
 ];
 
 export function getExamPrepMetaBySlug(slug: string): ExamPrepResource | null {
@@ -1325,8 +1464,38 @@ export function getRelatedExamPrepResources(opts: {
     if (hay.includes('aws')) {
       if (item.slug.includes('aws')) score += 30;
     }
-    if (hay.includes('network') || hay.includes('cisco') || hay.includes('ccna') || hay.includes('subnet') || hay.includes('cidr')) {
-      if (item.topicTrack === 'Networking & Infrastructure') score += 28;
+    if (
+      hay.includes('network') ||
+      hay.includes('cisco') ||
+      hay.includes('ccna') ||
+      hay.includes('ccnp') ||
+      hay.includes('encor') ||
+      hay.includes('enarsi') ||
+      hay.includes('sdwan') ||
+      hay.includes('sd-wan') ||
+      hay.includes('bgp') ||
+      hay.includes('ospf') ||
+      hay.includes('subnet') ||
+      hay.includes('cidr') ||
+      hay.includes('dccor') ||
+      hay.includes('clcor') ||
+      hay.includes('spcor')
+    ) {
+      if (item.topicTrack === 'Networking & Infrastructure') score += 38;
+      if (item.slug.includes('cisco') || item.slug.includes('routing-switching')) score += 24;
+    }
+    if (
+      hay.includes('scor') ||
+      hay.includes('sise') ||
+      hay.includes('ise') ||
+      hay.includes('cyberops') ||
+      hay.includes('cbrops') ||
+      hay.includes('firepower') ||
+      hay.includes('sncf')
+    ) {
+      if (item.slug.includes('scor-ise-cyberops') || item.slug.includes('routing-switching-sdwan-security')) {
+        score += 55;
+      }
     }
     if (hay.includes('power bi') || hay.includes('pl-') || hay.includes('ai-') || hay.includes('dp-') || hay.includes('data')) {
       if (item.topicTrack === 'Data & AI') score += 28;
