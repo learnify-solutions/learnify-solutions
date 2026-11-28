@@ -202,7 +202,12 @@ export const BlogsHubView: React.FC<BlogsHubViewProps> = ({
                 <option value="de">Germany &amp; DACH (EUR)</option>
                 <option value="nl">Netherlands &amp; Benelux (EUR)</option>
                 <option value="ae">Middle East &amp; UAE (AED)</option>
+                <option value="sa">Saudi Arabia &amp; GCC (SAR)</option>
                 <option value="za">South Africa (ZAR)</option>
+                <option value="ao">Angola &amp; Luanda (USD)</option>
+                <option value="ng">Nigeria &amp; East Africa (USD)</option>
+                <option value="sg">Singapore &amp; APAC (SGD)</option>
+                <option value="in">India GCC &amp; Career (INR)</option>
               </select>
             </div>
           </div>

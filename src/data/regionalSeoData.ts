@@ -3,9 +3,32 @@ import { sampleCourses } from './coursesData';
 
 export const SITE_BASE_URL = 'https://www.learnify-solutions.com';
 
-export type RegionCode = 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu';
+export type RegionCode =
+  | 'ae'
+  | 'za'
+  | 'uk'
+  | 'de'
+  | 'nl'
+  | 'eu'
+  | 'ao'
+  | 'sa'
+  | 'ng'
+  | 'sg'
+  | 'in';
 
-export const ALL_REGION_CODES: RegionCode[] = ['uk', 'eu', 'de', 'nl', 'ae', 'za'];
+export const ALL_REGION_CODES: RegionCode[] = [
+  'uk',
+  'eu',
+  'de',
+  'nl',
+  'ae',
+  'sa',
+  'za',
+  'ao',
+  'ng',
+  'sg',
+  'in',
+];
 
 export interface RegionBatchSchedule {
   name: string;
@@ -30,7 +53,7 @@ export interface RegionConfig {
   primaryCitiesLabel: string;
   businessDistricts: string;
   timezone: string;
-  currency: 'AED' | 'ZAR' | 'GBP' | 'EUR';
+  currency: 'AED' | 'ZAR' | 'GBP' | 'EUR' | 'SAR' | 'SGD' | 'INR' | 'USD';
   complianceContext: string;
   keyIndustries: string[];
   invoicingNote: string;
@@ -457,6 +480,356 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
       {
         q: 'Are recordings provided in case of schedule conflicts or power/connectivity interruptions?',
         a: 'Yes! Every live session is recorded in HD and uploaded immediately to your portal with 365-day replay access plus dedicated 1-on-1 doubt clearing.',
+      },
+    ],
+  },
+  ao: {
+    code: 'ao',
+    countryName: 'Angola & Southern Africa',
+    shortName: 'Angola',
+    switcherLabel: 'Angola (Luanda & USD)',
+    hreflang: 'en-AO',
+    geoRegionMeta: 'AO',
+    phonePlaceholder: '+244...',
+    hubPath: '/ao',
+    hubTitle: 'CompTIA, Microsoft Azure & AWS Online Training in Angola & Luanda | Learnify Solutions',
+    hubDescription:
+      'Live online & corporate CompTIA (Security+, A+, Network+), Microsoft Azure (AZ-104, AI-102, DP-900, PL-300), AWS & Kubernetes bootcamps in Luanda, Benguela, Lobito & Cabinda. WAT (UTC+1) schedules, browser cloud labs & USD corporate POs.',
+    hubKeywords:
+      'CompTIA training in Angola, CompTIA online training Luanda, CompTIA Security+ Angola, CompTIA A+ training Angola, Microsoft Azure AZ-104 training Angola, AWS training Luanda Angola, Power BI training Angola, corporate IT training Luanda',
+    cities: ['Luanda', 'Benguela', 'Lobito', 'Lubango', 'Cabinda', 'Huambo', 'Soyo'],
+    primaryCitiesLabel: 'Luanda, Benguela, Lobito, Cabinda & Lubango',
+    businessDistricts: 'Luanda Bay / Baixa de Luanda, Talatona Enterprise Hub, Belas Business Park, Cabinda Energy Zone & Soyo LNG Corridor',
+    timezone: 'WAT (UTC+1)',
+    currency: 'USD',
+    complianceContext: 'Banco Nacional de Angola (BNA) banking IT resilience, Angola Personal Data Protection Law (APD), telecom security & oil-and-gas OT/IT infrastructure controls',
+    keyIndustries: [
+      'Oil, Gas, LNG & Energy Infrastructure (Luanda / Cabinda / Soyo)',
+      'Angolan Commercial Banking & Mobile Payments (Talatona / Baixa)',
+      'Telecommunications, Subsea Fiber & ISP Networks',
+      'Mining, Port Logistics & Maritime Freight (Lobito / Benguela)',
+      'Multinational Engineering & EPC Contractors',
+    ],
+    invoicingNote:
+      'Supports USD international wire transfers, multi-seat corporate Purchase Orders (POs), and group training vouchers for Angolan and multinational companies.',
+    examCenterNote:
+      'Full exam voucher & readiness support for Pearson VUE Authorized Testing Centers in Luanda and OnVUE proctored online exams from Angola.',
+    schedules: [
+      {
+        name: 'Angola & WAT Weekday Intensive',
+        timing: '09:00 AM – 05:00 PM WAT',
+        cadence: 'Monday to Friday (5 Days)',
+        format: 'Live Instructor-Led Online / Private Corporate',
+      },
+      {
+        name: 'Luanda Evening Executive Cohort',
+        timing: '06:30 PM – 09:30 PM WAT',
+        cadence: '3 Evenings/Week (3–4 Weeks)',
+        format: 'Live Instructor-Led Online',
+      },
+      {
+        name: 'Angola Weekend Certification Track',
+        timing: '09:30 AM – 02:30 PM WAT',
+        cadence: 'Saturday & Sunday (4 Weeks)',
+        format: 'Live Interactive Bootcamp',
+      },
+    ],
+    hubFaqs: [
+      {
+        q: 'Can professionals and corporate teams in Luanda and Angola join CompTIA, Azure, and AWS training live online?',
+        a: 'Yes. Learnify delivers live instructor-led online cohorts timed strictly to West Africa Time (WAT / UTC+1) so engineers across Luanda, Talatona, Cabinda, Lobito, and Benguela can attend without travel.',
+      },
+      {
+        q: 'Do you require heavy laptops or local VMs for CompTIA, Azure, and Cloud labs in Angola?',
+        a: 'No. All 24/7 cloud sandbox labs run cleanly inside any standard Chrome or Edge browser over standard office or 4G/fibre internet, with zero local virtual machines needed.',
+      },
+      {
+        q: 'Can Angolan energy, banking, and telecom companies book private team batches via Corporate PO?',
+        a: 'Yes. We provide official USD pro-forma invoices, corporate Purchase Order (PO) onboarding, multi-seat team discounts, and dedicated technical instructors for private company cohorts in Angola.',
+      },
+      {
+        q: 'Are CompTIA and Microsoft exams aligned to English vendor terminology?',
+        a: 'Yes. Training covers the official English exam terminology tested at Pearson VUE Luanda and online OnVUE proctored exams so Angolan engineers pass on their first attempt.',
+      },
+    ],
+  },
+  sa: {
+    code: 'sa',
+    countryName: 'Saudi Arabia & Gulf (GCC)',
+    shortName: 'Saudi Arabia',
+    switcherLabel: 'Saudi & GCC (SAR)',
+    hreflang: 'en-SA',
+    geoRegionMeta: 'SA',
+    phonePlaceholder: '+966...',
+    hubPath: '/sa',
+    hubTitle: 'CompTIA, Microsoft Azure, Power BI & AWS Training in Riyadh & Saudi Arabia | Learnify',
+    hubDescription:
+      'Live online & corporate CompTIA Security+, Microsoft Azure (AZ-104, AI-102, Copilot MS-4018), Power BI (PL-300), AWS & Kubernetes bootcamps in Riyadh, Jeddah, Dammam, Khobar, Doha & Muscat. AST (UTC+3) schedules & SAR corporate POs.',
+    hubKeywords:
+      'CompTIA Security+ training Riyadh, Microsoft Azure AZ-104 training Saudi Arabia, Power BI training Riyadh Jeddah, AWS training Saudi Arabia, Kubernetes CKA Riyadh, corporate IT training KSA, IT certification Doha Qatar Muscat',
+    cities: ['Riyadh', 'Jeddah', 'Dammam', 'Al Khobar', 'NEOM / Tabuk', 'Doha', 'Muscat'],
+    primaryCitiesLabel: 'Riyadh, Jeddah, Dammam, Al Khobar & Doha',
+    businessDistricts: 'King Abdullah Financial District (KAFD Riyadh), Olaya IT Corridor, Jeddah Gate, Dhahran Techno Valley, Jubail Industrial City & West Bay Doha',
+    timezone: 'AST (UTC+3)',
+    currency: 'SAR',
+    complianceContext: 'Saudi NCA Essential Cybersecurity Controls (ECC), SAMA Cybersecurity Framework, Saudi PDPL & Vision 2030 Cloud-First mandates',
+    keyIndustries: [
+      'Energy, Aramco Supply Chain & Petrochemicals (Dhahran / Jubail)',
+      'Vision 2030 Giga-Projects, Smart Cities & Digital Infrastructure (Riyadh / NEOM)',
+      'SAMA-Regulated Banking, FinTech & Insurance (KAFD / Jeddah)',
+      'Government Ministries, Healthcare & Telecom Operators',
+      'Regional GCC Financial & Enterprise Hubs (Doha / Muscat)',
+    ],
+    invoicingNote:
+      'Supports official Saudi & GCC corporate Purchase Orders (POs), SAR / USD corporate invoicing, and multi-seat enterprise licensing.',
+    examCenterNote:
+      'Structured readiness for Pearson VUE Authorized Test Centers in Riyadh, Jeddah, Al Khobar, Doha, and Muscat, plus OnVUE online proctored exams.',
+    schedules: [
+      {
+        name: 'KSA & GCC Weekday Intensive',
+        timing: '09:00 AM – 05:00 PM AST',
+        cadence: 'Sunday to Thursday (5 Days)',
+        format: 'Live Virtual / Corporate Onsite KSA',
+      },
+      {
+        name: 'Riyadh Evening Executive Track',
+        timing: '07:00 PM – 10:00 PM AST',
+        cadence: '3 Evenings/Week (3–4 Weeks)',
+        format: 'Live Instructor-Led Online',
+      },
+      {
+        name: 'Saudi Weekend Bootcamp',
+        timing: '10:00 AM – 03:00 PM AST',
+        cadence: 'Friday & Saturday (4 Weeks)',
+        format: 'Live Interactive Bootcamp',
+      },
+    ],
+    hubFaqs: [
+      {
+        q: 'Do Saudi Arabia & GCC batches follow Sunday–Thursday workweek and AST (UTC+3) timings?',
+        a: 'Yes. All Saudi Arabia, Qatar, and Oman cohorts align to AST (UTC+3) with Sunday–Thursday full-day corporate options, Riyadh/Jeddah after-work evening classes, and Friday–Saturday weekend bootcamps.',
+      },
+      {
+        q: 'How do your CompTIA and Microsoft Azure courses align with Saudi NCA ECC and SAMA frameworks?',
+        a: 'Our CompTIA Security+, AZ-104, AWS Security, and SC-900 labs focus heavily on Zero Trust identity, encryption key management, SOC log monitoring, and Saudi data residency practices.',
+      },
+      {
+        q: 'Can KSA enterprises pay in SAR or USD via official Corporate Purchase Orders?',
+        a: 'Yes. Corporate L&D and procurement teams in Riyadh, Jeddah, Dhahran, and Doha can onboard teams via official Purchase Orders (POs) and commercial bank wire transfers.',
+      },
+      {
+        q: 'Do you offer private team cohorts for Microsoft 365 Copilot and Power BI PL-300 in Riyadh?',
+        a: 'Yes. Private enterprise cohorts for Power BI (PL-300), Microsoft 365 Copilot Studio (MS-4018), Azure AI-102, and Kubernetes CKA are among our fastest-growing GCC corporate programs.',
+      },
+    ],
+  },
+  ng: {
+    code: 'ng',
+    countryName: 'Nigeria, Kenya & Africa',
+    shortName: 'Nigeria & East Africa',
+    switcherLabel: 'Nigeria & Kenya (USD)',
+    hreflang: 'en-NG',
+    geoRegionMeta: 'NG',
+    phonePlaceholder: '+234...',
+    hubPath: '/ng',
+    hubTitle: 'CompTIA, Microsoft Azure & AWS Online Training in Lagos, Nigeria & Nairobi | Learnify',
+    hubDescription:
+      'Live online CompTIA Security+, A+, Network+, Microsoft Azure (AZ-104, AI-102, PL-300), AWS & Kubernetes certification bootcamps in Lagos, Abuja, Port Harcourt, Nairobi & Accra. WAT/EAT cohorts & 24/7 cloud labs.',
+    hubKeywords:
+      'CompTIA training Lagos Nigeria, Microsoft Azure AZ-104 training Nigeria, AWS Solutions Architect course Lagos, CompTIA Security+ Nairobi Kenya, Power BI training Lagos Abuja, corporate IT training Nigeria Ghana',
+    cities: ['Lagos', 'Abuja', 'Port Harcourt', 'Nairobi', 'Mombasa', 'Accra', 'Kigali'],
+    primaryCitiesLabel: 'Lagos, Abuja, Nairobi & Accra',
+    businessDistricts: 'Victoria Island & Ikoyi (Lagos), Central Business District (Abuja), Westlands & Upper Hill (Nairobi) & Airport City (Accra)',
+    timezone: 'WAT / EAT (UTC+1/+3)',
+    currency: 'USD',
+    complianceContext: 'CBN Cybersecurity Risk Guidelines, Nigeria Data Protection Act (NDPA), Kenya Data Protection Act & West/East African FinTech security compliance',
+    keyIndustries: [
+      'Commercial Banking, FinTech & Digital Payments (Victoria Island / Nairobi)',
+      'Telecoms, Towers & Cloud Connectivity Providers',
+      'Oil, Gas & Energy Engineering (Port Harcourt / Lagos)',
+      'Enterprise Software & Global Outsourcing Hubs (Kenya / Nigeria / Ghana)',
+      'Public Sector & Healthcare IT Modernization',
+    ],
+    invoicingNote:
+      'Supports USD corporate invoicing, official company Purchase Orders (POs), and multi-seat team packages for organizations across Nigeria, Kenya, and Ghana.',
+    examCenterNote:
+      'Complete readiness for Pearson VUE Authorized Testing Centers in Lagos, Abuja, Nairobi, and Accra, plus flexible OnVUE online proctored exams.',
+    schedules: [
+      {
+        name: 'West & East Africa Weekday Intensive',
+        timing: '09:00 AM – 05:00 PM WAT',
+        cadence: 'Monday to Friday (5 Days)',
+        format: 'Live Virtual / Corporate Cohort',
+      },
+      {
+        name: 'Lagos & Nairobi Evening Flex Track',
+        timing: '06:30 PM – 09:30 PM WAT',
+        cadence: '3 Evenings/Week (3–4 Weeks)',
+        format: 'Live Instructor-Led Online',
+      },
+      {
+        name: 'Africa Weekend Certification Track',
+        timing: '09:30 AM – 02:30 PM WAT',
+        cadence: 'Saturday & Sunday (4 Weeks)',
+        format: 'Live Interactive Bootcamp',
+      },
+    ],
+    hubFaqs: [
+      {
+        q: 'Are CompTIA, AWS, and Microsoft Azure cohorts accessible from Lagos, Abuja, Nairobi, and Accra?',
+        a: 'Yes. Live classes run smoothly across WAT (UTC+1) and EAT (UTC+3) with low-bandwidth browser labs and instant HD session recordings included for 365 days.',
+      },
+      {
+        q: 'Can FinTech and banking teams in Nigeria and Kenya request corporate group pricing?',
+        a: 'Yes. Engineering and security teams of 5+ engineers qualify for corporate group discounts, private cohorts tailored to FinTech/CBN/NDPA controls, and formal USD PO invoicing.',
+      },
+      {
+        q: 'Which certifications carry the highest hiring demand in Lagos and Nairobi?',
+        a: 'CompTIA Security+ (SY0-701), Microsoft Azure Administrator (AZ-104), AWS Solutions Architect (SAA-C03), Power BI (PL-300), and Kubernetes (CKA) are top priorities across banking, telecom, and remote global tech roles.',
+      },
+      {
+        q: 'Do learners get 24/7 cloud lab access without needing an expensive laptop?',
+        a: 'Yes. Every program runs 100% inside browser cloud sandboxes—any standard laptop with Chrome or Edge is enough.',
+      },
+    ],
+  },
+  sg: {
+    code: 'sg',
+    countryName: 'Singapore & APAC',
+    shortName: 'Singapore',
+    switcherLabel: 'Singapore & APAC (SGD)',
+    hreflang: 'en-SG',
+    geoRegionMeta: 'SG',
+    phonePlaceholder: '+65...',
+    hubPath: '/sg',
+    hubTitle: 'CompTIA, Microsoft Azure, Kubernetes & AWS Training in Singapore | Learnify Solutions',
+    hubDescription:
+      'Live instructor-led CompTIA Security+, Microsoft Azure (AZ-104, AI-102, Copilot MS-4018), Power BI (PL-300), AWS & Kubernetes (CKA) bootcamps in Singapore, Kuala Lumpur & APAC. SGT (UTC+8) cohorts & SGD corporate invoicing.',
+    hubKeywords:
+      'CompTIA Security+ training Singapore, Microsoft Azure AZ-104 Singapore, Power BI training Singapore, AWS Solutions Architect course Singapore, Kubernetes CKA training Singapore, corporate IT training Singapore SGD',
+    cities: ['Singapore', 'Jurong East', 'Marina Bay', 'Changi Business Park', 'Kuala Lumpur', 'Jakarta', 'Manila'],
+    primaryCitiesLabel: 'Singapore, Kuala Lumpur & APAC Tech Hubs',
+    businessDistricts: 'Marina Bay Financial Centre, Raffles Place, One-North Tech Hub, Changi Business Park & KL Sentral',
+    timezone: 'SGT (UTC+8)',
+    currency: 'SGD',
+    complianceContext: 'Singapore MAS Technology Risk Management (TRM), Personal Data Protection Act (PDPA), CSA cybersecurity baselines & multi-cloud governance',
+    keyIndustries: [
+      'Banking, Wealth Management & APAC FinTech (Marina Bay / Raffles Place)',
+      'Cloud Hyperscalers, SaaS & Regional HQ Engineering (One-North)',
+      'Maritime Logistics, Aviation & Smart Port Operations',
+      'Healthcare Tech, Pharma & Telecom Enterprises',
+      'Managed Security Service Providers (MSSPs) across ASEAN',
+    ],
+    invoicingNote:
+      'Supports corporate Purchase Orders (POs), SGD / USD enterprise invoicing, and multi-seat regional APAC team packages.',
+    examCenterNote:
+      'Full readiness for Pearson VUE Authorized Testing Centers across Singapore and Kuala Lumpur, plus OnVUE online proctoring.',
+    schedules: [
+      {
+        name: 'Singapore Weekday Intensive Bootcamp',
+        timing: '09:00 AM – 05:00 PM SGT',
+        cadence: 'Monday to Friday (5 Days)',
+        format: 'Live Virtual / Private Corporate',
+      },
+      {
+        name: 'Singapore Evening Executive Cohort',
+        timing: '07:00 PM – 10:00 PM SGT',
+        cadence: '3 Evenings/Week (3–4 Weeks)',
+        format: 'Live Instructor-Led Online',
+      },
+      {
+        name: 'APAC Weekend Certification Track',
+        timing: '09:30 AM – 02:30 PM SGT',
+        cadence: 'Saturday & Sunday (4 Weeks)',
+        format: 'Live Interactive Bootcamp',
+      },
+    ],
+    hubFaqs: [
+      {
+        q: 'Are Singapore & ASEAN classes scheduled in SGT (UTC+8)?',
+        a: 'Yes. All APAC batches run strictly in Singapore Standard Time (UTC+8), covering daytime corporate bootcamps as well as evening and weekend schedules for working professionals.',
+      },
+      {
+        q: 'Can Singapore enterprises procure team cohorts via Corporate Purchase Orders in SGD?',
+        a: 'Yes. Corporate HR and IT departments can issue official Purchase Orders (POs) and settle corporate invoices in SGD or USD.',
+      },
+      {
+        q: 'Do your cloud and security labs align with Singapore MAS TRM and PDPA controls?',
+        a: 'Yes. AWS Security (SCS-C02), Azure Administrator (AZ-104), and CompTIA Security+ labs emphasize KMS encryption, IAM Zero Trust, audit logging, and ap-southeast-1 cloud resilience.',
+      },
+      {
+        q: 'Are 24/7 browser sandboxes and 365-day replays included for every APAC participant?',
+        a: 'Yes. Every seat includes 24/7 cloud sandbox labs, mock exam drills, and 365-day HD session recordings.',
+      },
+    ],
+  },
+  in: {
+    code: 'in',
+    countryName: 'India Corporate & Career Hub',
+    shortName: 'India',
+    switcherLabel: 'India (INR)',
+    hreflang: 'en-IN',
+    geoRegionMeta: 'IN',
+    phonePlaceholder: '+91...',
+    hubPath: '/in',
+    hubTitle: 'CompTIA, Microsoft Azure, AWS & Kubernetes Training in India (Bengaluru, Mumbai, NCR) | Learnify',
+    hubDescription:
+      'Live instructor-led CompTIA Security+, Microsoft Azure (AZ-104, AI-102, DP-100, PL-300), AWS & Kubernetes CKA bootcamps across Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR & Chennai. IST batches, INR corporate GST invoicing & 24/7 cloud labs.',
+    hubKeywords:
+      'CompTIA Security+ training Bengaluru, Microsoft Azure AZ-104 training India, Power BI PL-300 course Bengaluru Mumbai, AWS Solutions Architect training Hyderabad Pune, Kubernetes CKA bootcamp India, corporate IT training Delhi NCR',
+    cities: ['Bengaluru', 'Hyderabad', 'Pune', 'Mumbai', 'Delhi NCR (Gurugram / Noida)', 'Chennai'],
+    primaryCitiesLabel: 'Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR & Chennai',
+    businessDistricts: 'Bengaluru Outer Ring Road / Whitefield, HITEC City (Hyderabad), Hinjewadi (Pune), BKC (Mumbai), Cyber City (Gurugram) & Tidel Park (Chennai)',
+    timezone: 'IST (UTC+5:30)',
+    currency: 'INR',
+    complianceContext: 'CERT-In cybersecurity directives, RBI IT Governance frameworks, India DPDP Act & global GCC delivery center compliance',
+    keyIndustries: [
+      'Global Capability Centers (GCCs) & Enterprise IT Services (Bengaluru / Hyderabad)',
+      'FinTech, Capital Markets & BFSI Tech Hubs (Mumbai / Gurugram)',
+      'Cloud Consultancies, SaaS Product Teams & DevOps Practices (Pune / Bengaluru)',
+      'Telecom, E-Commerce & Digital Platforms',
+      'Enterprise Cybersecurity & Managed SOC Centers (Chennai / Noida)',
+    ],
+    invoicingNote:
+      'Supports INR corporate invoicing, Purchase Orders (POs), bulk seat pricing for GCC & enterprise teams, and multi-batch annual upskilling contracts.',
+    examCenterNote:
+      'Full exam voucher & readiness coverage for Pearson VUE Authorized Test Centers in Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR & Chennai, plus OnVUE online exams.',
+    schedules: [
+      {
+        name: 'India Weekday Corporate Bootcamp',
+        timing: '09:30 AM – 05:30 PM IST',
+        cadence: 'Monday to Friday (5 Days)',
+        format: 'Live Virtual / Corporate GCC Cohort',
+      },
+      {
+        name: 'IST Evening Career Track',
+        timing: '07:30 PM – 10:00 PM IST',
+        cadence: '3 Evenings/Week (4 Weeks)',
+        format: 'Live Instructor-Led Online',
+      },
+      {
+        name: 'India Weekend Fast-Track Bootcamp',
+        timing: '10:00 AM – 03:00 PM IST',
+        cadence: 'Saturday & Sunday (4 Weeks)',
+        format: 'Live Interactive Cohort',
+      },
+    ],
+    hubFaqs: [
+      {
+        q: 'Do you offer IST evening and weekend batches for working engineers in Bengaluru, Hyderabad, Pune, and NCR?',
+        a: 'Yes. Our IST cohorts include weekday full-time corporate sessions as well as 7:30 PM IST evening and weekend bootcamps tailored for working IT engineers across India.',
+      },
+      {
+        q: 'Do you support corporate POs and INR invoicing for Indian IT companies and GCCs?',
+        a: 'Yes. We offer customized INR corporate group proposals, official Purchase Orders (POs), and bulk enterprise seat licensing for GCCs and product teams across India.',
+      },
+      {
+        q: 'Which tracks are most in demand among Indian GCCs and cloud consulting teams?',
+        a: 'Microsoft Azure Administrator (AZ-104), Azure AI Engineer (AI-102), Power BI (PL-300), AWS Solutions Architect (SAA-C03), CompTIA Security+ (SY0-701), and Kubernetes (CKA & CKS).',
+      },
+      {
+        q: 'Are browser cloud sandboxes and mock exam simulators included without needing high-spec laptops?',
+        a: 'Yes. All hands-on labs run directly inside 24/7 browser-based cloud sandboxes—so any standard Windows, Mac, or Linux laptop works seamlessly.',
       },
     ],
   },
@@ -906,18 +1279,23 @@ export const TARGET_REGIONAL_COURSES: RegionalCourseMeta[] = [
   },
 ];
 
-const EUROPEAN_SLUG_SUFFIX: Record<'uk' | 'de' | 'nl' | 'eu', string> = {
+const REGIONAL_SLUG_SUFFIX: Record<Exclude<RegionCode, 'ae' | 'za'>, string> = {
   uk: 'uk',
   de: 'germany',
   nl: 'netherlands',
   eu: 'europe',
+  ao: 'angola',
+  sa: 'saudi-arabia',
+  ng: 'nigeria',
+  sg: 'singapore',
+  in: 'india',
 };
 
 export function getRegionalCourseSlug(meta: RegionalCourseMeta, regionCode: RegionCode): string {
   if (regionCode === 'ae') return meta.aeSlug;
   if (regionCode === 'za') return meta.zaSlug;
   const stem = meta.aeSlug.replace(/-(dubai-uae|uae)$/, '');
-  return `${stem}-${EUROPEAN_SLUG_SUFFIX[regionCode]}`;
+  return `${stem}-${REGIONAL_SLUG_SUFFIX[regionCode]}`;
 }
 
 export function getRegionalCourseIndustryAngle(
@@ -938,6 +1316,21 @@ export function getRegionalCourseIndustryAngle(
   if (regionCode === 'nl') {
     return `Designed for Netherlands and Benelux organizations across Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels—aligning ${meta.shortName} execution with ${reg.complianceContext}.`;
   }
+  if (regionCode === 'ao') {
+    return `Built for Angolan professionals and energy, banking & telecom teams in Luanda, Benguela, Lobito & Cabinda—connecting ${meta.shortName} cloud labs with ${reg.complianceContext} and English vendor exam terminology.`;
+  }
+  if (regionCode === 'sa') {
+    return `Engineered for Saudi Arabia & GCC engineering teams across Riyadh, Jeddah, Dammam, Khobar, Doha & Muscat—mapping ${meta.shortName} directly to ${reg.complianceContext}.`;
+  }
+  if (regionCode === 'ng') {
+    return `Structured for West & East African IT, FinTech & telecom professionals in Lagos, Abuja, Nairobi & Accra—pairing ${meta.shortName} hands-on ${course.certificationVendor} execution with ${reg.complianceContext}.`;
+  }
+  if (regionCode === 'sg') {
+    return `Designed for Singapore & ASEAN engineering teams across Marina Bay, One-North, Changi & Kuala Lumpur—connecting ${meta.shortName} production labs with ${reg.complianceContext}.`;
+  }
+  if (regionCode === 'in') {
+    return `Tailored for India GCCs and cloud professionals in Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR & Chennai—aligning ${meta.shortName} labs directly with ${reg.complianceContext}.`;
+  }
   return `Structured for European enterprises across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw—pairing ${meta.shortName} hands-on ${course.certificationVendor} mastery with ${reg.complianceContext}.`;
 }
 
@@ -953,20 +1346,22 @@ export function getRegionalCourseRoleDemand(meta: RegionalCourseMeta, regionCode
       return meta.deRoleDemand || `${meta.categoryTag} Engineer & Specialist (Frankfurt / Munich / Berlin)`;
     case 'nl':
       return meta.nlRoleDemand || `${meta.categoryTag} Engineer & Specialist (Amsterdam / Utrecht / Eindhoven)`;
+    case 'ao':
+      return `${meta.categoryTag} Engineer, Cloud & Security Specialist (Luanda / Cabinda / Lobito, Angola)`;
+    case 'sa':
+      return `${meta.categoryTag} Architect, Lead Engineer & Specialist (Riyadh / Jeddah / Khobar / Doha)`;
+    case 'ng':
+      return `${meta.categoryTag} Engineer, FinTech & Cloud Specialist (Lagos / Abuja / Nairobi / Accra)`;
+    case 'sg':
+      return `${meta.categoryTag} Architect & Senior Platform Specialist (Singapore / Marina Bay / KL)`;
+    case 'in':
+      return `${meta.categoryTag} Engineer & GCC Technical Lead (Bengaluru / Hyderabad / Pune / Mumbai / NCR)`;
     case 'eu':
       return meta.euRoleDemand || `${meta.categoryTag} Engineer & Specialist (Dublin / Paris / Europe)`;
   }
 }
 
-export interface RegionalAlternateUrls {
-  global: string;
-  ae: string;
-  za: string;
-  uk: string;
-  de: string;
-  nl: string;
-  eu: string;
-}
+export type RegionalAlternateUrls = { global: string } & Record<RegionCode, string>;
 
 export interface ResolvedRegionalCoursePage {
   region: RegionConfig;
@@ -989,12 +1384,10 @@ export function getHubHreflangAlternates(): Array<{ hreflang: string; href: stri
   return [
     { hreflang: 'x-default', href: `${SITE_BASE_URL}/courses` },
     { hreflang: 'en', href: `${SITE_BASE_URL}/courses` },
-    { hreflang: 'en-AE', href: `${SITE_BASE_URL}/ae` },
-    { hreflang: 'en-ZA', href: `${SITE_BASE_URL}/za` },
-    { hreflang: 'en-GB', href: `${SITE_BASE_URL}/uk` },
-    { hreflang: 'en-DE', href: `${SITE_BASE_URL}/de` },
-    { hreflang: 'en-NL', href: `${SITE_BASE_URL}/nl` },
-    { hreflang: 'en-IE', href: `${SITE_BASE_URL}/eu` },
+    ...ALL_REGION_CODES.map((code) => ({
+      hreflang: REGION_CONFIGS[code].hreflang,
+      href: `${SITE_BASE_URL}${REGION_CONFIGS[code].hubPath}`,
+    })),
   ];
 }
 
@@ -1004,12 +1397,10 @@ export function getCourseHreflangAlternates(
   return [
     { hreflang: 'x-default', href: alternates.global },
     { hreflang: 'en', href: alternates.global },
-    { hreflang: 'en-AE', href: alternates.ae },
-    { hreflang: 'en-ZA', href: alternates.za },
-    { hreflang: 'en-GB', href: alternates.uk },
-    { hreflang: 'en-DE', href: alternates.de },
-    { hreflang: 'en-NL', href: alternates.nl },
-    { hreflang: 'en-IE', href: alternates.eu },
+    ...ALL_REGION_CODES.map((code) => ({
+      hreflang: REGION_CONFIGS[code].hreflang,
+      href: alternates[code],
+    })),
   ];
 }
 
@@ -1024,7 +1415,7 @@ export function buildRegionalCoursePage(
   const slug = getRegionalCourseSlug(meta, regionCode);
   const canonicalUrl = `${SITE_BASE_URL}/${regionCode}/${slug}`;
 
-  const alternateUrls: RegionalAlternateUrls = {
+  const alternateUrls = {
     global: `${SITE_BASE_URL}/course/${course.id}`,
     ae: `${SITE_BASE_URL}/ae/${getRegionalCourseSlug(meta, 'ae')}`,
     za: `${SITE_BASE_URL}/za/${getRegionalCourseSlug(meta, 'za')}`,
@@ -1032,7 +1423,12 @@ export function buildRegionalCoursePage(
     de: `${SITE_BASE_URL}/de/${getRegionalCourseSlug(meta, 'de')}`,
     nl: `${SITE_BASE_URL}/nl/${getRegionalCourseSlug(meta, 'nl')}`,
     eu: `${SITE_BASE_URL}/eu/${getRegionalCourseSlug(meta, 'eu')}`,
-  };
+    ao: `${SITE_BASE_URL}/ao/${getRegionalCourseSlug(meta, 'ao')}`,
+    sa: `${SITE_BASE_URL}/sa/${getRegionalCourseSlug(meta, 'sa')}`,
+    ng: `${SITE_BASE_URL}/ng/${getRegionalCourseSlug(meta, 'ng')}`,
+    sg: `${SITE_BASE_URL}/sg/${getRegionalCourseSlug(meta, 'sg')}`,
+    in: `${SITE_BASE_URL}/in/${getRegionalCourseSlug(meta, 'in')}`,
+  } as RegionalAlternateUrls;
 
   const hasExamCodeInShortName = Boolean(
     course.examCode &&
@@ -1061,46 +1457,71 @@ export function buildRegionalCoursePage(
   let h1Title = '';
 
   if (regionCode === 'ae') {
-    seoTitle = `${compactCourseName} Training Dubai & UAE (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} course in Dubai, Abu Dhabi & Sharjah: ${region.timezone} evening batches, browser cloud labs (no local VM needed), AED pricing, corporate PO quote & 98.4% pass rate.`;
-    seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} Dubai, ${meta.shortName} Abu Dhabi, Power BI certification pricing, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, Learnify Solutions`;
-    h1Title = `${meta.shortName}${examCodeText} Certification Training in Dubai & UAE`;
+    seoTitle = `${compactCourseName} Online Training in Dubai & UAE | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training in Dubai, Abu Dhabi & Sharjah: ${region.timezone} evening batches, browser cloud labs (no local VM needed), AED pricing, corporate PO quote & 98.4% pass rate.`;
+    seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} online training in Dubai, ${meta.shortName} Abu Dhabi, ${meta.shortName} Sharjah, Power BI certification pricing, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Online Training in Dubai & UAE`;
   } else if (regionCode === 'za') {
-    seoTitle = `${compactCourseName} Course South Africa (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban: ${region.timezone} evening batches, browser cloud labs, ZAR pricing & corporate PO quote.`;
-    seoKeywords = `${meta.zaFocusKeyword}, ${meta.shortName} Johannesburg, ${meta.shortName} Cape Town, ${meta.shortName} Pretoria, ${course.examCode || ''} South Africa, ${course.certificationVendor} training South Africa, Learnify Solutions`;
+    seoTitle = `${compactCourseName} Training in Johannesburg, Cape Town & SA | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training in Johannesburg, Sandton, Cape Town, Pretoria & Durban: ${region.timezone} evening batches, browser cloud labs, ZAR pricing & corporate PO quote.`;
+    seoKeywords = `${meta.zaFocusKeyword}, ${meta.shortName} Johannesburg, ${meta.shortName} Cape Town, ${meta.shortName} Pretoria, ${meta.shortName} Durban, ${course.examCode || ''} South Africa, ${course.certificationVendor} training South Africa, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in South Africa`;
   } else if (regionCode === 'uk') {
     if (meta.courseId === 'course-kubernetes-cka') {
-      seoTitle = `Enterprise Kubernetes CKA Course UK · Pricing & Corporate Quote | Learnify`;
-      seoDescription = `Live Enterprise Kubernetes CKA & CKS training in London, Manchester & UK: GMT/BST cohorts, 24/7 browser cluster sandboxes, GBP pricing & instant corporate team PO quote.`;
+      seoTitle = `Enterprise Kubernetes CKA Course London & UK · Pricing & Quote | Learnify`;
+      seoDescription = `Live Enterprise Kubernetes CKA & CKS training in London, Manchester, Birmingham & UK: GMT/BST cohorts, 24/7 browser cluster sandboxes, GBP pricing & instant corporate team PO quote.`;
     } else if (meta.courseId === 'course-ms-pl-300') {
-      seoTitle = `Power BI (PL-300) Course UK · 2026 Pricing & Corporate Quote | Learnify`;
-      seoDescription = `Live Power BI Data Analyst (PL-300) training in London & UK: GMT/BST cohorts, £113 exam fee guidance, 24/7 DAX labs, GBP pricing & instant corporate PO quote.`;
+      seoTitle = `Power BI (PL-300) Training in London & UK · Pricing & Quote | Learnify`;
+      seoDescription = `Live Power BI Data Analyst (PL-300) training in London, Manchester & UK: GMT/BST cohorts, £113 exam fee guidance, 24/7 DAX labs, GBP pricing & instant corporate PO quote.`;
     } else {
-      seoTitle = `${compactCourseName} Course UK & London (2026) | Learnify`;
+      seoTitle = `${compactCourseName} Training in London & UK (2026) | Learnify`;
       seoDescription = `Live ${meta.shortName}${examCodeText} training in London, Manchester, Birmingham & Edinburgh: ${region.timezone} cohorts, browser cloud sandbox labs (no VM needed), GBP PO quote & 98.4% pass rate.`;
     }
-    seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, enterprise kubernetes cka course, power bi certification pricing, ${course.examCode || ''} UK certification, ${course.certificationVendor} training London Manchester, corporate IT training GBP, Learnify Solutions`;
+    seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, ${meta.shortName} Manchester Birmingham Edinburgh, enterprise kubernetes cka course, power bi certification pricing, ${course.examCode || ''} UK certification, corporate IT training GBP, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in London & UK`;
   } else if (regionCode === 'de') {
     if (meta.courseId === 'course-azure-104') {
-      seoTitle = `Azure AZ-104 Course Germany · Cloud Labs (No VM Needed) | Learnify`;
+      seoTitle = `Azure AZ-104 Course Frankfurt, Munich & Germany (No VM Needed) | Learnify`;
       seoDescription = `Live English Azure Administrator (AZ-104) training in Frankfurt, Munich, Berlin & Zurich: browser cloud sandbox included (no local VM required / keine lokale VM nötig), CET schedule & EUR SEPA PO quote.`;
     } else if (meta.courseId === 'course-kubernetes-cka') {
-      seoTitle = `Enterprise Kubernetes CKA Course Germany · Pricing & Quote | Learnify`;
+      seoTitle = `Enterprise Kubernetes CKA Course Berlin, Munich & Germany · Quote | Learnify`;
       seoDescription = `Enterprise Kubernetes CKA & CKS training in Berlin, Munich, Frankfurt & Zurich: browser cluster labs (no local VM), CET cohorts, EUR pricing & SEPA corporate PO quote.`;
     } else {
-      seoTitle = `${compactCourseName} Course Germany (2026) | Learnify`;
+      seoTitle = `${compactCourseName} Training in Frankfurt, Berlin & Germany | Learnify`;
       seoDescription = `Live English ${meta.shortName}${examCodeText} training in Frankfurt, Munich, Berlin & Zurich: browser cloud labs (no local VM needed), CET schedules, EUR SEPA PO quote & BSI C5 readiness.`;
     }
-    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Schulung Frankfurt Munich Berlin, enterprise kubernetes cka course, mit welcher machine kurs az 104, microsoft azure administrator schulung, ${course.examCode || ''} DACH certification, Learnify Solutions`;
+    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Frankfurt Munich Berlin Zurich, enterprise kubernetes cka course, mit welcher machine kurs az 104, microsoft azure administrator schulung, ${course.examCode || ''} DACH certification, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Germany & DACH`;
   } else if (regionCode === 'nl') {
-    seoTitle = `${compactCourseName} Course Netherlands (2026) | Learnify`;
+    seoTitle = `${compactCourseName} Training in Amsterdam & Netherlands | Learnify`;
     seoDescription = `Live ${meta.shortName}${examCodeText} training in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels: ${region.timezone} batches, 24/7 cloud labs (no local VM), EUR pricing & corporate PO quote.`;
-    seoKeywords = `${meta.shortName} training Netherlands, ${meta.shortName} Amsterdam Utrecht Eindhoven, ${course.examCode || ''} Benelux course, ${course.certificationVendor} training Netherlands EUR, Learnify Solutions`;
+    seoKeywords = `${meta.shortName} training Netherlands, ${meta.shortName} Amsterdam Rotterdam Utrecht Eindhoven, ${course.examCode || ''} Benelux course, ${course.certificationVendor} training Netherlands EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Netherlands & Benelux`;
+  } else if (regionCode === 'ao') {
+    seoTitle = `${compactCourseName} Online Training in Angola & Luanda | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} online training in Angola (Luanda, Benguela, Lobito & Cabinda): WAT (UTC+1) schedules, 24/7 browser cloud labs (no local VM needed), USD corporate PO quotes & 98.4% pass rate.`;
+    seoKeywords = `${meta.shortName} training in Angola, ${meta.shortName} online training Angola, ${meta.shortName} course Luanda, ${course.certificationVendor} training Angola, ${course.examCode || ''} Luanda certification, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Online Training in Angola & Luanda`;
+  } else if (regionCode === 'sa') {
+    seoTitle = `${compactCourseName} Training in Riyadh, Saudi Arabia & Doha | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} online & corporate training in Riyadh, Jeddah, Dammam, Khobar, Doha & Muscat: AST (UTC+3) cohorts, browser cloud labs, SAR corporate POs & Vision 2030/NCA readiness.`;
+    seoKeywords = `${meta.shortName} training Riyadh, ${meta.shortName} Saudi Arabia, ${meta.shortName} Jeddah Khobar Doha, ${course.certificationVendor} training KSA, ${course.examCode || ''} Saudi corporate quote, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Certification Training in Saudi Arabia & GCC`;
+  } else if (regionCode === 'ng') {
+    seoTitle = `${compactCourseName} Online Training in Lagos, Nigeria & Nairobi | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training across Lagos, Abuja, Port Harcourt, Nairobi & Accra: WAT/EAT cohorts, 24/7 browser cloud sandboxes, corporate POs & 98.4% first-attempt pass rate.`;
+    seoKeywords = `${meta.shortName} training Nigeria, ${meta.shortName} course Lagos Abuja, ${meta.shortName} training Nairobi Kenya, ${meta.shortName} Accra, ${course.certificationVendor} training West East Africa, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Online Training in Lagos, Nigeria & East Africa`;
+  } else if (regionCode === 'sg') {
+    seoTitle = `${compactCourseName} Training in Singapore & APAC (SGT) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} bootcamp in Singapore, Marina Bay, Changi & Kuala Lumpur: SGT (UTC+8) cohorts, 24/7 browser cloud labs, SGD corporate PO quote & MAS TRM alignment.`;
+    seoKeywords = `${meta.shortName} training Singapore, ${meta.shortName} course Singapore, ${meta.shortName} Kuala Lumpur APAC, ${course.certificationVendor} bootcamp SGD, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Certification Training in Singapore & APAC`;
+  } else if (regionCode === 'in') {
+    seoTitle = `${compactCourseName} Training in Bengaluru, Mumbai & India (IST) | Learnify`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} online & corporate training in Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR & Chennai: IST evening/weekend cohorts, 24/7 cloud labs & INR corporate PO quotes.`;
+    seoKeywords = `${meta.shortName} training Bengaluru, ${meta.shortName} course India, ${meta.shortName} Hyderabad Pune Mumbai Delhi NCR, ${course.certificationVendor} corporate training India, Learnify Solutions`;
+    h1Title = `${meta.shortName}${examCodeText} Certification Training in India`;
   } else {
     if (meta.courseId === 'course-kubernetes-cka') {
       seoTitle = `Enterprise Kubernetes CKA Course Europe · Pricing & Quote | Learnify`;
@@ -1109,7 +1530,7 @@ export function buildRegionalCoursePage(
       seoTitle = `${compactCourseName} Training Europe EU (2026) | Learnify`;
       seoDescription = `Live ${meta.shortName}${examCodeText} training across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw: ${region.timezone} cohorts, 24/7 browser cloud labs, EUR SEPA PO quote & 98.4% pass rate.`;
     }
-    seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid, enterprise kubernetes cka course, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
+    seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid Stockholm Warsaw, enterprise kubernetes cka course, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Europe`;
   }
 
@@ -1176,6 +1597,11 @@ export function getRegionalAlternatesForCourse(courseId: string): RegionalAltern
     de: `${SITE_BASE_URL}/de/${getRegionalCourseSlug(meta, 'de')}`,
     nl: `${SITE_BASE_URL}/nl/${getRegionalCourseSlug(meta, 'nl')}`,
     eu: `${SITE_BASE_URL}/eu/${getRegionalCourseSlug(meta, 'eu')}`,
+    ao: `${SITE_BASE_URL}/ao/${getRegionalCourseSlug(meta, 'ao')}`,
+    sa: `${SITE_BASE_URL}/sa/${getRegionalCourseSlug(meta, 'sa')}`,
+    ng: `${SITE_BASE_URL}/ng/${getRegionalCourseSlug(meta, 'ng')}`,
+    sg: `${SITE_BASE_URL}/sg/${getRegionalCourseSlug(meta, 'sg')}`,
+    in: `${SITE_BASE_URL}/in/${getRegionalCourseSlug(meta, 'in')}`,
   };
 }
 
@@ -1203,6 +1629,21 @@ export function resolveRegionalRoute(pathname: string): RegionalRouteMatch | nul
   }
   if (clean === '/eu' || clean === '/europe-it-training') {
     return { type: 'hub', region: REGION_CONFIGS.eu };
+  }
+  if (clean === '/ao' || clean === '/angola-it-training') {
+    return { type: 'hub', region: REGION_CONFIGS.ao };
+  }
+  if (clean === '/sa' || clean === '/saudi-arabia-it-training') {
+    return { type: 'hub', region: REGION_CONFIGS.sa };
+  }
+  if (clean === '/ng' || clean === '/nigeria-it-training') {
+    return { type: 'hub', region: REGION_CONFIGS.ng };
+  }
+  if (clean === '/sg' || clean === '/singapore-it-training') {
+    return { type: 'hub', region: REGION_CONFIGS.sg };
+  }
+  if (clean === '/in' || clean === '/india-it-training') {
+    return { type: 'hub', region: REGION_CONFIGS.in };
   }
 
   for (const code of ALL_REGION_CODES) {

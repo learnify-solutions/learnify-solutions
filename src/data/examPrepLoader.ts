@@ -146,6 +146,10 @@ export async function loadExamPrepResourceClient(slug: string): Promise<ExamPrep
       const m = await import('./examPrepResources2');
       return { ...meta, cheatSheetSections: m.AZURE_AZ_104_LAB_CLI_CHEAT_SHEET };
     }
+    case 'enterprise-routing-switching-sdwan-security-cli-cheat-sheet': {
+      const m = await import('./examPrepResources2');
+      return { ...meta, cheatSheetSections: m.ENTERPRISE_ROUTING_SWITCHING_SECURITY_CLI_CHEAT_SHEET };
+    }
     default:
       return meta;
   }

@@ -400,6 +400,34 @@ export const RegionalCourseView: React.FC<RegionalCourseViewProps> = ({
               </div>
             </div>
 
+            {/* City-Wise Online & Corporate Availability */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h2 className="text-xl font-bold text-[#152e4d] flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-[#ea6d24]" />
+                  <span>{meta.shortName} City-Wise Live Training ({region.shortName})</span>
+                </h2>
+                <button
+                  type="button"
+                  onClick={scrollToInquiryForm}
+                  className="text-xs font-semibold text-[#ea6d24] hover:underline text-left sm:text-right cursor-pointer"
+                >
+                  Request {region.currency} City Quote &rarr;
+                </button>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Available live online in {region.timezone} and as private onsite/virtual team workshops across every major hub in {region.countryName}:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {region.cities.map((city) => (
+                  <div key={city} className="rounded-xl border border-slate-200 bg-[#f8fafc] px-3.5 py-2.5">
+                    <p className="text-xs font-bold text-[#152e4d]">{meta.shortName} — {city}</p>
+                    <p className="text-[11px] text-slate-600">{region.timezone} · 24/7 Cloud Labs</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Learning Objectives */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
               <h2 className="text-xl font-bold text-[#152e4d] flex items-center gap-2">

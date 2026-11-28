@@ -36,7 +36,12 @@ function detectRegionalPathSync(pathname: string): { type: 'hub' | 'course'; reg
   if (clean === '/de' || clean === '/germany-it-training') return { type: 'hub', region: 'de' };
   if (clean === '/nl' || clean === '/netherlands-it-training') return { type: 'hub', region: 'nl' };
   if (clean === '/eu' || clean === '/europe-it-training') return { type: 'hub', region: 'eu' };
-  const prefixes: RegionCode[] = ['uk', 'eu', 'de', 'nl', 'ae', 'za'];
+  if (clean === '/ao' || clean === '/angola-it-training') return { type: 'hub', region: 'ao' };
+  if (clean === '/sa' || clean === '/saudi-arabia-it-training') return { type: 'hub', region: 'sa' };
+  if (clean === '/ng' || clean === '/nigeria-it-training') return { type: 'hub', region: 'ng' };
+  if (clean === '/sg' || clean === '/singapore-it-training') return { type: 'hub', region: 'sg' };
+  if (clean === '/in' || clean === '/india-it-training') return { type: 'hub', region: 'in' };
+  const prefixes: RegionCode[] = ['uk', 'eu', 'de', 'nl', 'ae', 'sa', 'za', 'ao', 'ng', 'sg', 'in'];
   for (const code of prefixes) {
     if (clean.startsWith(`/${code}/`) && clean.length > code.length + 2) {
       return { type: 'course', region: code };

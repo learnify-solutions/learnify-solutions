@@ -1237,6 +1237,39 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
       },
     ],
   },
+  {
+    slug: 'enterprise-routing-switching-sdwan-security-cli-cheat-sheet',
+    type: 'cheat_sheet',
+    topicTrack: 'Networking & Infrastructure',
+    examCode: 'Routing · SD-WAN · Security CLI',
+    title: 'Enterprise Routing, Switching, SD-WAN & 802.1X Security CLI Cheat Sheet (2026)',
+    shortTitle: 'Routing, SD-WAN & Security CLI Sheet',
+    excerpt:
+      'Independent diagnostic CLI reference for 802.1Q VLANs, RSTP, LACP, OSPFv2, eBGP, VRF-Lite, SD-WAN OMP, 802.1X NAC, and IKEv2 IPsec VPN troubleshooting.',
+    seoTitle: 'Enterprise Routing, Switching, SD-WAN & Security CLI Cheat Sheet (2026) | Learnify',
+    seoDescription:
+      'Searchable & copy-ready network engineering CLI cheat sheet covering 802.1Q trunks, RSTP, OSPF, BGP, VRF, SD-WAN OMP, 802.1X NAC, and IKEv2 IPsec commands.',
+    seoKeywords:
+      'CCNA CLI cheat sheet, CCNP ENCOR BGP OSPF commands, SD-WAN vManage CLI commands, 802.1X ISE troubleshooting CLI, IKEv2 IPsec show crypto commands, Learnify Solutions',
+    durationLabel: 'Quick Reference',
+    questionCountLabel: '14 Copy-Ready Commands',
+    passingScoreLabel: 'Independent Lab Guide',
+    relatedCourseId: 'course-comptia-network-plus',
+    relatedCourseLabel: 'Authorized CompTIA Network+ (N10-009) & Networking Labs',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    openPreviewCount: 2,
+    faqs: [
+      {
+        q: 'Does this CLI cheat sheet cover associate and core enterprise routing commands?',
+        a: 'Yes—it spans Layer 2 trunk/STP/LACP verification, OSPF & eBGP neighbor states, VRF-Lite isolation, SD-WAN OMP control tunnels, 802.1X port NAC, and IKEv2 IPsec diagnostics.',
+      },
+      {
+        q: 'Is this an official vendor course catalog item?',
+        a: 'No. This is an independent technical engineering CLI reference built for network administrators and exam candidates. Authorized public courses are listed in Learnify’s main course catalog, and private mentorship requests are available via our technical advisors.',
+      },
+    ],
+  },
 ];
 
 export function getExamPrepMetaBySlug(slug: string): ExamPrepResource | null {

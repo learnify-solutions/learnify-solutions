@@ -207,6 +207,61 @@ export const Footer: React.FC<FooterProps> = ({
               >
                 South Africa Hub
               </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/ao"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Angola Training', href: '/ao' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Angola Hub
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/sa"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Saudi Arabia Training', href: '/sa' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Saudi &amp; GCC Hub
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/ng"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Nigeria Training', href: '/ng' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Nigeria &amp; Kenya Hub
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/sg"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'Singapore Training', href: '/sg' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                Singapore Hub
+              </a>
+              <span aria-hidden="true">·</span>
+              <a
+                href="/in"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLinkClick && onLinkClick({ label: 'India Training', href: '/in' });
+                }}
+                className="hover:text-orange-300 underline underline-offset-4 transition-colors"
+              >
+                India Hub
+              </a>
             </div>
           </div>
 

@@ -108,7 +108,7 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
   const [blogForm, setBlogForm] = useState<{
     title: string;
     slug: string;
-    region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'global';
+    region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'ao' | 'sa' | 'ng' | 'sg' | 'in' | 'global';
     topicTrack: BlogTopicTrack;
     coverImage: string;
     category: string;
@@ -552,13 +552,21 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
       return;
     }
 
-    const regionLabelMap: Record<'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'global', string> = {
+    const regionLabelMap: Record<
+      'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'ao' | 'sa' | 'ng' | 'sg' | 'in' | 'global',
+      string
+    > = {
       ae: 'Dubai & UAE',
+      sa: 'Saudi Arabia & GCC',
       za: 'South Africa & Gauteng',
       uk: 'United Kingdom & London',
       de: 'Germany & DACH',
       nl: 'Netherlands & Benelux',
       eu: 'UK & Europe',
+      ao: 'Angola & Luanda',
+      ng: 'Nigeria & East Africa',
+      sg: 'Singapore & APAC',
+      in: 'India GCC & Career',
       global: 'Global Enterprise',
     };
 
@@ -2123,21 +2131,43 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                     <select
                       value={blogForm.region}
                       onChange={(e) => {
-                        const r = e.target.value as 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'global';
+                        const r = e.target.value as
+                          | 'ae'
+                          | 'za'
+                          | 'uk'
+                          | 'de'
+                          | 'nl'
+                          | 'eu'
+                          | 'ao'
+                          | 'sa'
+                          | 'ng'
+                          | 'sg'
+                          | 'in'
+                          | 'global';
                         const defaultCities =
                           r === 'ae'
                             ? 'Dubai, Abu Dhabi, Sharjah'
-                            : r === 'za'
-                              ? 'Johannesburg, Sandton, Midrand, Pretoria, Cape Town'
-                              : r === 'uk'
-                                ? 'London, Manchester, Birmingham, Edinburgh'
-                                : r === 'de'
-                                  ? 'Frankfurt, Munich, Berlin, Hamburg, Zurich'
-                                  : r === 'nl'
-                                    ? 'Amsterdam, Rotterdam, Utrecht, Eindhoven, Brussels'
-                                    : r === 'eu'
-                                      ? 'Dublin, Paris, Madrid, Milan, Stockholm, Warsaw'
-                                      : 'Global Remote, North America, Europe, UK, UAE, South Africa';
+                            : r === 'sa'
+                              ? 'Riyadh, Jeddah, Dammam, Al Khobar, Doha'
+                              : r === 'za'
+                                ? 'Johannesburg, Sandton, Midrand, Pretoria, Cape Town'
+                                : r === 'uk'
+                                  ? 'London, Manchester, Birmingham, Edinburgh'
+                                  : r === 'de'
+                                    ? 'Frankfurt, Munich, Berlin, Hamburg, Zurich'
+                                    : r === 'nl'
+                                      ? 'Amsterdam, Rotterdam, Utrecht, Eindhoven, Brussels'
+                                      : r === 'eu'
+                                        ? 'Dublin, Paris, Madrid, Milan, Stockholm, Warsaw'
+                                        : r === 'ao'
+                                          ? 'Luanda, Benguela, Lobito, Cabinda'
+                                          : r === 'ng'
+                                            ? 'Lagos, Abuja, Port Harcourt, Nairobi, Accra'
+                                            : r === 'sg'
+                                              ? 'Singapore, Kuala Lumpur, Jakarta, Manila'
+                                              : r === 'in'
+                                                ? 'Bengaluru, Hyderabad, Pune, Mumbai, Delhi NCR, Chennai'
+                                                : 'Global Remote, North America, Europe, UK, UAE, Saudi Arabia, Angola, South Africa, Singapore';
                         setBlogForm((prev) => ({
                           ...prev,
                           region: r,
@@ -2152,7 +2182,12 @@ export const BackendCmsDrawer: React.FC<BackendCmsDrawerProps> = ({
                       <option value="de">Germany &amp; DACH (EUR / CET)</option>
                       <option value="nl">Netherlands &amp; Benelux (EUR / CET)</option>
                       <option value="ae">Dubai &amp; UAE (AED / GST)</option>
+                      <option value="sa">Saudi Arabia &amp; GCC (SAR / AST)</option>
                       <option value="za">South Africa &amp; Gauteng (ZAR / SAST)</option>
+                      <option value="ao">Angola &amp; Luanda (USD / WAT)</option>
+                      <option value="ng">Nigeria &amp; East Africa (USD / WAT-EAT)</option>
+                      <option value="sg">Singapore &amp; APAC (SGD / SGT)</option>
+                      <option value="in">India GCC &amp; Career (INR / IST)</option>
                     </select>
                   </div>
 

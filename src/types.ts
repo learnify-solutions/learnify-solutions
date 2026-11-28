@@ -249,7 +249,7 @@ export type BlogTopicTrack =
 
 export interface BlogSummary {
   slug: string;
-  region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'global';
+  region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'ao' | 'sa' | 'ng' | 'sg' | 'in' | 'global';
   regionLabel: string;
   topicTrack: BlogTopicTrack;
   category: string;
@@ -266,7 +266,7 @@ export interface BlogSummary {
 
 export interface BlogPost {
   slug: string;
-  region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'global';
+  region: 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu' | 'ao' | 'sa' | 'ng' | 'sg' | 'in' | 'global';
   regionLabel: string;
   topicTrack?: BlogTopicTrack;
   category: string;

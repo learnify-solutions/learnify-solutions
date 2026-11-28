@@ -369,6 +369,44 @@ export const CountryHubView: React.FC<CountryHubViewProps> = ({
         </div>
       </section>
 
+      {/* 2b. City-Wise Live Online & Corporate Training Coverage */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-[#152e4d]">
+                City-Wise Online &amp; Corporate Training Across {region.countryName}
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                Join live {region.timezone} instructor-led cohorts or book private team workshops across major business hubs—with browser cloud sandboxes and {region.currency} Purchase Orders.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenAdvisorModal('corporate_quote', `${region.shortName} City Corporate Training`)}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#152e4d] hover:bg-[#0f223a] text-white text-xs font-semibold transition-colors cursor-pointer shrink-0 min-h-[40px]"
+            >
+              <span>Check Batch Dates for Your City</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#ea6d24]" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-1">
+            {region.cities.map((city) => (
+              <div
+                key={city}
+                className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#f8fafc] border border-slate-200"
+              >
+                <MapPin className="w-4 h-4 text-[#ea6d24] shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-[#152e4d] leading-snug">{city}</p>
+                  <p className="text-xs text-slate-600">Live Online &amp; Corporate ({region.timezone})</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 3. Local Schedules & Industries */}
       <section className="bg-white border-y border-slate-200 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12">

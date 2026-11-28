@@ -27,6 +27,7 @@ export const COUNTRY_DIAL_OPTIONS: CountryDialOption[] = [
   { iso: 'TN', dial: '+216', label: 'Tunisia (+216)', placeholder: '94 479 918' },
   { iso: 'EG', dial: '+20', label: 'Egypt (+20)', placeholder: '10 1234 5678' },
   { iso: 'NG', dial: '+234', label: 'Nigeria (+234)', placeholder: '802 123 4567' },
+  { iso: 'AO', dial: '+244', label: 'Angola (+244)', placeholder: '923 123 456' },
   { iso: 'KE', dial: '+254', label: 'Kenya (+254)', placeholder: '712 345678' },
   { iso: 'PK', dial: '+92', label: 'Pakistan (+92)', placeholder: '300 1234567' },
   { iso: 'MY', dial: '+60', label: 'Malaysia (+60)', placeholder: '12 345 6789' },
@@ -44,12 +45,16 @@ export const COUNTRY_DIAL_OPTIONS: CountryDialOption[] = [
 
 const REGION_TO_DIAL: Record<string, string> = {
   ae: '+971',
+  sa: '+966',
   za: '+27',
+  ao: '+244',
+  ng: '+234',
   uk: '+44',
   gb: '+44',
   de: '+49',
   nl: '+31',
   eu: '+49',
+  sg: '+65',
   us: '+1',
   in: '+91',
 };
@@ -60,6 +65,7 @@ function detectBrowserDialCode(): string {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
     if (tz.includes('Dubai') || tz.includes('Abu_Dhabi')) return '+971';
     if (tz.includes('Johannesburg')) return '+27';
+    if (tz.includes('Luanda')) return '+244';
     if (tz.includes('London')) return '+44';
     if (tz.includes('Kolkata') || tz.includes('Calcutta')) return '+91';
     if (tz.includes('Berlin') || tz.includes('Munich')) return '+49';

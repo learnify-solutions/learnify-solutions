@@ -333,3 +333,146 @@ export const AZURE_AZ_104_LAB_CLI_CHEAT_SHEET: CheatSheetSection[] = [
   },
 ];
 
+export const ENTERPRISE_ROUTING_SWITCHING_SECURITY_CLI_CHEAT_SHEET: CheatSheetSection[] = [
+  {
+    id: 'l2-vlan-rstp-cli',
+    title: 'Layer 2 Switching, 802.1Q Trunking, EtherChannel & RSTP Verification',
+    subtitle:
+      'Essential campus switching verification commands for 802.1Q trunks, native VLAN consistency, LACP bundling, and Spanning Tree root inspection.',
+    headers: ['Troubleshooting Goal', 'IOS / Enterprise Switch CLI', 'Lab & Exam Verification Note'],
+    rows: [
+      {
+        cells: [
+          'Inspect 802.1Q Trunk Allowed VLANs & Native VLAN',
+          'show interfaces trunk',
+          'Verify Mode (on/desirable), Encapsulation (802.1q), Status (trunking), and Native VLAN match both sides',
+        ],
+        copyText: 'show interfaces trunk',
+      },
+      {
+        cells: [
+          'Check Spanning Tree Root Bridge & Port Roles',
+          'show spanning-tree vlan 10',
+          'Confirm lowest Bridge ID owns Root; verify Designated vs Root vs Alternate/Blocking port states',
+        ],
+        copyText: 'show spanning-tree vlan 10',
+      },
+      {
+        cells: [
+          'Verify LACP / PAgP Port-Channel Bundle Health',
+          'show etherchannel summary',
+          'Look for (SU) = Layer 2 In Use and (P) = Bundled in port-channel; (I) indicates standalone mismatch',
+        ],
+        copyText: 'show etherchannel summary',
+      },
+      {
+        cells: [
+          'Inspect Switch MAC Address Table by VLAN',
+          'show mac address-table vlan 20',
+          'Confirms physical port learning and helps pinpoint asymmetric Layer 2 loops',
+        ],
+        copyText: 'show mac address-table vlan 20',
+      },
+    ],
+  },
+  {
+    id: 'l3-ospf-bgp-vrf-sdwan-cli',
+    title: 'OSPF, BGP, VRF & SD-WAN Control Plane Verification (CCNA / ENCOR / ENARSI / ENSDWI)',
+    subtitle:
+      'Fast diagnostic commands for routing tables, OSPF adjacency states, eBGP prefix exchange, VRF isolation, and SD-WAN OMP peering.',
+    headers: ['Routing / Overlay Check', 'Verification CLI Command', 'Diagnostic Clues'],
+    rows: [
+      {
+        cells: [
+          'Verify Longest Prefix Match & Administrative Distance',
+          'show ip route',
+          'Remember: longest prefix (/28 beats /24) always wins before Administrative Distance (OSPF 110, eBGP 20)',
+        ],
+        copyText: 'show ip route',
+      },
+      {
+        cells: [
+          'Confirm OSPF Adjacency State (FULL / DR / BDR)',
+          'show ip ospf neighbor',
+          'Stuck in EXSTART/EXCHANGE usually indicates MTU mismatch; stuck in INIT signals one-way ACL or hello drop',
+        ],
+        copyText: 'show ip ospf neighbor',
+      },
+      {
+        cells: [
+          'Inspect BGP Peer Session & Received Prefix Count',
+          'show ip bgp summary',
+          'State showing a number = Established + prefixes received; Idle/Active indicates TCP 179 or neighbor IP failure',
+        ],
+        copyText: 'show ip bgp summary',
+      },
+      {
+        cells: [
+          'Inspect Isolated VRF Routing Table',
+          'show ip route vrf CORP-WAN',
+          'Prevents cross-tenant routing leaks in multi-VRF enterprise and MPLS L3VPN cores',
+        ],
+        copyText: 'show ip route vrf CORP-WAN',
+      },
+      {
+        cells: [
+          'SD-WAN: Verify Control Connections (vSmart / vBond / vManage)',
+          'show sdwan control connections',
+          'Confirms DTLS/TLS control tunnels across WAN TLOC transports are Up before checking OMP routes',
+        ],
+        copyText: 'show sdwan control connections',
+      },
+      {
+        cells: [
+          'SD-WAN: Inspect OMP Routes & TLOC Next-Hops',
+          'show sdwan omp routes',
+          'C,R,I status flags confirm Chosen, Resolved, and Installed overlay service paths',
+        ],
+        copyText: 'show sdwan omp routes',
+      },
+    ],
+  },
+  {
+    id: 'security-dot1x-ipsec-acl-cli',
+    title: 'Network Security, IKEv2 IPsec VPN, NAT & 802.1X NAC Troubleshooting (SCOR / SISE)',
+    subtitle:
+      'Command-line checks for 802.1X switchport authentication, IKEv2 crypto tunnels, ACL hit counters, and PAT translations.',
+    headers: ['Security Domain', 'Verification Command', 'Operational Insight'],
+    rows: [
+      {
+        cells: [
+          'Verify 802.1X & MAB Switchport Auth Sessions',
+          'show authentication sessions interface Gi1/0/10 details',
+          'Confirms EAP-TLS / MAB Authc Success, dACL pushed from RADIUS, and Security Group Tag (SGT)',
+        ],
+        copyText: 'show authentication sessions interface Gi1/0/10 details',
+      },
+      {
+        cells: [
+          'Check IKEv2 Phase 1 & Phase 2 Crypto Tunnels',
+          'show crypto ikev2 sa detail && show crypto ipsec sa',
+          'Verify READY state plus incrementing #pkts encaps / #pkts decaps counters on both tunnel peers',
+        ],
+        copyText: 'show crypto ikev2 sa detail',
+      },
+      {
+        cells: [
+          'Inspect ACL Permit/Deny Packet Match Counters',
+          'show access-lists',
+          'Remember implicit deny any at the bottom of every ACL; check match increments live during ping tests',
+        ],
+        copyText: 'show access-lists',
+      },
+      {
+        cells: [
+          'Verify Active NAT / PAT Translations',
+          'show ip nat translations',
+          'Confirms Inside Local -> Inside Global source translation across enterprise internet edges',
+        ],
+        copyText: 'show ip nat translations',
+      },
+    ],
+  },
+];
+
+

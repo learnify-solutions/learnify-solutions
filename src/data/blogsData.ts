@@ -160,6 +160,101 @@ export function getDefaultRegionalLinksForRegion(
       },
     ];
   }
+  if (region === 'ao') {
+    return [
+      {
+        label: 'CompTIA Security+ (SY0-701) Angola & Luanda',
+        href: '/ao/comptia-security-plus-training-angola',
+        subtitle: 'Live WAT online bootcamps & 24/7 cloud labs in Luanda, Lobito & Cabinda',
+      },
+      {
+        label: 'CompTIA A+ Online Training Angola',
+        href: '/ao/comptia-a-plus-training-angola',
+        subtitle: 'Core 1 & Core 2 live instructor cohorts with USD corporate POs',
+      },
+      {
+        label: 'Microsoft Azure AZ-104 Angola & Luanda',
+        href: '/ao/microsoft-azure-az-104-training-angola',
+        subtitle: 'Zero local VM needed—browser Azure cloud sandboxes included',
+      },
+    ];
+  }
+  if (region === 'sa') {
+    return [
+      {
+        label: 'CompTIA Security+ (SY0-701) Riyadh & Saudi Arabia',
+        href: '/sa/comptia-security-plus-training-saudi-arabia',
+        subtitle: 'Saudi NCA ECC & SAMA security training in AST (UTC+3) / SAR POs',
+      },
+      {
+        label: 'Microsoft Azure AZ-104 Saudi Arabia & Doha',
+        href: '/sa/microsoft-azure-az-104-training-saudi-arabia',
+        subtitle: 'Vision 2030 cloud infrastructure cohorts in Riyadh, Jeddah & Khobar',
+      },
+      {
+        label: 'Power BI (PL-300) Training Riyadh & GCC',
+        href: '/sa/microsoft-power-bi-pl-300-training-saudi-arabia',
+        subtitle: 'Enterprise DAX & executive BI dashboards across Saudi & Qatar',
+      },
+    ];
+  }
+  if (region === 'ng') {
+    return [
+      {
+        label: 'CompTIA Security+ (SY0-701) Lagos, Nigeria & Nairobi',
+        href: '/ng/comptia-security-plus-training-nigeria',
+        subtitle: 'CBN & NDPA aligned SOC defense bootcamps in WAT/EAT',
+      },
+      {
+        label: 'AWS Solutions Architect (SAA-C03) Lagos & Africa',
+        href: '/ng/aws-solutions-architect-saa-c03-training-nigeria',
+        subtitle: 'Multi-AZ AWS cloud labs for Nigerian & Kenyan engineering teams',
+      },
+      {
+        label: 'Microsoft Azure AZ-104 Nigeria & East Africa',
+        href: '/ng/microsoft-azure-az-104-training-nigeria',
+        subtitle: 'Browser sandbox labs for Lagos, Abuja, Nairobi & Accra',
+      },
+    ];
+  }
+  if (region === 'sg') {
+    return [
+      {
+        label: 'Kubernetes CKA & CKS Training Singapore & APAC',
+        href: '/sg/kubernetes-cka-cks-training-singapore',
+        subtitle: 'Live SGT cluster labs & SGD corporate Purchase Order quotes',
+      },
+      {
+        label: 'Microsoft Azure AZ-104 Singapore & KL',
+        href: '/sg/microsoft-azure-az-104-training-singapore',
+        subtitle: 'MAS TRM & ap-southeast-1 cloud engineering in SGT (UTC+8)',
+      },
+      {
+        label: 'CompTIA Security+ (SY0-701) Singapore',
+        href: '/sg/comptia-security-plus-training-singapore',
+        subtitle: 'Zero Trust & SOC defense bootcamp for Singapore enterprises',
+      },
+    ];
+  }
+  if (region === 'in') {
+    return [
+      {
+        label: 'Microsoft Azure AZ-104 Bengaluru, Mumbai & India',
+        href: '/in/microsoft-azure-az-104-training-india',
+        subtitle: 'IST evening & weekend bootcamps with INR GST corporate POs',
+      },
+      {
+        label: 'Power BI (PL-300) Training India GCCs',
+        href: '/in/microsoft-power-bi-pl-300-training-india',
+        subtitle: 'DAX, Power Query & enterprise reporting in Bengaluru, Pune & NCR',
+      },
+      {
+        label: 'CompTIA Security+ (SY0-701) Training India',
+        href: '/in/comptia-security-plus-training-india',
+        subtitle: 'CERT-In aligned SOC & Zero Trust bootcamp in IST',
+      },
+    ];
+  }
   return [
     {
       label: 'Microsoft Azure Administrator (AZ-104)',

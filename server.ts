@@ -1227,7 +1227,15 @@ ${regionalSitemaps}
 - [IT Certification Exam Prep Hub (Mock Tests, Cheat Sheets & Calculator)](${SITE_BASE_URL}/exam-prep)
 - [Global IT Certification Blogs & Roadmaps](${SITE_BASE_URL}/blogs)
 - [UAE & Dubai Training Hub](${SITE_BASE_URL}/ae)
+- [Saudi Arabia & GCC Training Hub](${SITE_BASE_URL}/sa)
 - [South Africa Training Hub](${SITE_BASE_URL}/za)
+- [Angola & Luanda Training Hub](${SITE_BASE_URL}/ao)
+- [Nigeria & East Africa Training Hub](${SITE_BASE_URL}/ng)
+- [Singapore & APAC Training Hub](${SITE_BASE_URL}/sg)
+- [India GCC & Career Hub](${SITE_BASE_URL}/in)
+- [UK & London Training Hub](${SITE_BASE_URL}/uk)
+- [Germany & DACH Training Hub](${SITE_BASE_URL}/de)
+- [Netherlands & Benelux Training Hub](${SITE_BASE_URL}/nl)
 - [Corporate Training Solutions](${SITE_BASE_URL}/corporate-training)
 - [Contact & Corporate Admissions](${SITE_BASE_URL}/contact)
 `;
@@ -2730,7 +2738,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             ${bodyHtml}
             ${relatedPrepTools.length > 0 ? `<h2>Related Practice Exams &amp; Readiness Tools</h2><ul>${relatedPrepTools.map((rp) => `<li><a href="/exam-prep/${escapeHtml(rp.slug)}">${escapeHtml(rp.title)}</a> — ${escapeHtml(rp.examCode)}</li>`).join('')}</ul>` : ''}
             ${relatedStudyBlogs.length > 0 ? `<h2>Related Certification Roadmaps &amp; Exam Guides</h2><ul>${relatedStudyBlogs.map((b) => `<li><a href="/blogs/${escapeHtml(b.slug)}">${escapeHtml(b.title)}</a></li>`).join('')}</ul>` : ''}
-            <p><strong>Live Instructor-Led Batches by Region:</strong> <a href="/uk">UK (GBP)</a> | <a href="/eu">Europe (EUR)</a> | <a href="/de">Germany (EUR)</a> | <a href="/nl">Netherlands (EUR)</a> | <a href="/ae">Dubai &amp; UAE (AED)</a> | <a href="/za">South Africa (ZAR)</a></p>
+            <p><strong>Live Instructor-Led Batches by Region:</strong> <a href="/uk">UK (GBP)</a> | <a href="/eu">Europe (EUR)</a> | <a href="/de">Germany (EUR)</a> | <a href="/nl">Netherlands (EUR)</a> | <a href="/ae">Dubai &amp; UAE (AED)</a> | <a href="/sa">Saudi &amp; GCC (SAR)</a> | <a href="/za">South Africa (ZAR)</a> | <a href="/ao">Angola &amp; Luanda (USD)</a> | <a href="/ng">Nigeria &amp; Kenya (USD)</a> | <a href="/sg">Singapore (SGD)</a> | <a href="/in">India (INR)</a></p>
             ${item.faqs && item.faqs.length > 0 ? `<h2>Frequently Asked Questions</h2>${item.faqs.map((f) => `<div><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></div>`).join('')}` : ''}
           </main>`;
 
@@ -2795,7 +2803,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <nav><a href="/">Home</a> &gt; <span>Blogs</span></nav>
             <h1>Global IT Certification Blogs, Roadmaps &amp; Exam Insights</h1>
             <p>${escapeHtml(desc)}</p>
-            <p><a href="/courses">All Certification Courses</a> | <a href="/uk">UK Hub (GBP)</a> | <a href="/eu">Europe Hub (EUR)</a> | <a href="/de">Germany Hub (EUR)</a> | <a href="/nl">Netherlands Hub (EUR)</a> | <a href="/ae">UAE Hub (AED)</a> | <a href="/za">South Africa Hub (ZAR)</a></p>
+            <p><a href="/courses">All Certification Courses</a> | <a href="/uk">UK (GBP)</a> | <a href="/eu">Europe (EUR)</a> | <a href="/de">Germany (EUR)</a> | <a href="/nl">Netherlands (EUR)</a> | <a href="/ae">Dubai &amp; UAE (AED)</a> | <a href="/sa">Saudi &amp; GCC (SAR)</a> | <a href="/za">South Africa (ZAR)</a> | <a href="/ao">Angola &amp; Luanda (USD)</a> | <a href="/ng">Nigeria &amp; Kenya (USD)</a> | <a href="/sg">Singapore (SGD)</a> | <a href="/in">India (INR)</a></p>
             <ul>${allBlogs.map(
               (g) =>
                 `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a> — ${escapeHtml(g.topicTrack || g.category)} (${escapeHtml(g.regionLabel)})</li>`
@@ -2948,6 +2956,10 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                 '@id': `${SITE_BASE_URL}/#organization`,
                 name: 'Learnify Solutions',
                 url: SITE_BASE_URL,
+                areaServed: [
+                  { '@type': 'Country', name: region.countryName },
+                  ...region.cities.map((c) => ({ '@type': 'City', name: c })),
+                ],
               },
               {
                 '@type': 'ItemList',
@@ -3045,10 +3057,16 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
                 hasCourseInstance: {
                   '@type': 'CourseInstance',
                   courseMode: 'online',
-                  location: {
-                    '@type': 'Country',
-                    name: p.region.countryName,
-                  },
+                  location: [
+                    {
+                      '@type': 'Country',
+                      name: p.region.countryName,
+                    },
+                    ...p.region.cities.map((city) => ({
+                      '@type': 'City',
+                      name: city,
+                    })),
+                  ],
                 },
                 teaches: p.course.learningObjectives || [p.course.title],
                 offers: {
@@ -3441,24 +3459,34 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
           const deLinks = pickPriorityRegional('de');
           const nlLinks = pickPriorityRegional('nl');
           const aeLinks = pickPriorityRegional('ae');
+          const saLinks = pickPriorityRegional('sa');
           const zaLinks = pickPriorityRegional('za');
+          const aoLinks = pickPriorityRegional('ao');
+          const ngLinks = pickPriorityRegional('ng');
+          const sgLinks = pickPriorityRegional('sg');
+          const inLinks = pickPriorityRegional('in');
           const ssrFallbackHtml = `<main style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;">
             <h1>Learnify Solutions — Authorized Global IT &amp; Cloud Certification Training</h1>
-            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on cloud labs for Microsoft Azure, Power BI, CompTIA, AWS, Kubernetes, and Cybersecurity across United Kingdom, Europe (Germany, Netherlands, EU), UAE &amp; Middle East, South Africa, North America, and Asia-Pacific.</p>
-            <nav><a href="/courses">All Courses</a> | <a href="/exam-prep">Exam Prep &amp; Mock Tests</a> | <a href="/blogs">Blogs &amp; Roadmaps</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/uk">UK Hub</a> | <a href="/eu">Europe Hub</a> | <a href="/de">Germany Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">UAE Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/contact">Contact</a></nav>
+            <p>Live instructor-led training, 1-on-1 bootcamps, and 24/7 hands-on cloud labs for Microsoft Azure, Power BI, CompTIA, AWS, Kubernetes, and Cybersecurity across United Kingdom, Europe (Germany, Netherlands, EU), UAE &amp; Saudi Arabia, Angola, Nigeria &amp; South Africa, Singapore &amp; India, and North America.</p>
+            <nav><a href="/courses">All Courses</a> | <a href="/exam-prep">Exam Prep &amp; Mock Tests</a> | <a href="/blogs">Blogs &amp; Roadmaps</a> | <a href="/corporate-training">Corporate Training</a> | <a href="/uk">UK Hub</a> | <a href="/eu">Europe Hub</a> | <a href="/de">Germany Hub</a> | <a href="/nl">Netherlands Hub</a> | <a href="/ae">UAE Hub</a> | <a href="/sa">Saudi &amp; GCC Hub</a> | <a href="/za">South Africa Hub</a> | <a href="/ao">Angola Hub</a> | <a href="/ng">Nigeria &amp; Kenya Hub</a> | <a href="/sg">Singapore Hub</a> | <a href="/in">India Hub</a> | <a href="/contact">Contact</a></nav>
             <h2>Featured Global Certification Courses</h2>
             <ul>${flagship.map((c) => `<li><a href="/course/${escapeHtml(c.id)}">${escapeHtml(c.title)}</a> — ${escapeHtml(c.certificationVendor)}</li>`).join('')}</ul>
             <h2>Practice Mock Tests, Cheat Sheets &amp; Calculators</h2>
             <ul>${EXAM_PREP_RESOURCES.map((r) => `<li><a href="/exam-prep/${escapeHtml(r.slug)}">${escapeHtml(r.title)}</a></li>`).join('')}</ul>
             <h2>Latest Global &amp; Regional IT Certification Blogs</h2>
             <ul>${allBlogs.map((g) => `<li><a href="/blogs/${escapeHtml(g.slug)}">${escapeHtml(g.title)}</a></li>`).join('')}</ul>
-            <h2>Regional Training Hubs (GBP / EUR / AED / ZAR)</h2>
+            <h2>Regional Training Hubs (GBP / EUR / AED / SAR / ZAR / USD / SGD / INR)</h2>
             <ul><li><a href="/uk">United Kingdom &amp; London Training (GBP)</a></li>${ukLinks.map((p) => `<li><a href="/uk/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/eu">Europe (EU) Training (EUR)</a></li>${euLinks.map((p) => `<li><a href="/eu/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/de">Germany &amp; DACH Training (EUR)</a></li>${deLinks.map((p) => `<li><a href="/de/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/nl">Netherlands &amp; Benelux Training (EUR)</a></li>${nlLinks.map((p) => `<li><a href="/nl/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/ae">UAE &amp; Dubai Certification Training (AED)</a></li>${aeLinks.map((p) => `<li><a href="/ae/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/sa">Saudi Arabia &amp; GCC Training (SAR)</a></li>${saLinks.map((p) => `<li><a href="/sa/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
             <ul><li><a href="/za">South Africa Certification Training (ZAR)</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/ao">Angola &amp; Luanda Certification Training (USD)</a></li>${aoLinks.map((p) => `<li><a href="/ao/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/ng">Nigeria &amp; East Africa Training (USD)</a></li>${ngLinks.map((p) => `<li><a href="/ng/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/sg">Singapore &amp; APAC Training (SGD)</a></li>${sgLinks.map((p) => `<li><a href="/sg/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
+            <ul><li><a href="/in">India GCC &amp; Career Training (INR)</a></li>${inLinks.map((p) => `<li><a href="/in/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
           </main>`;
           const blogSummariesPayload = allBlogs.map(toBlogSummary);
           const homeSchemaObj = {

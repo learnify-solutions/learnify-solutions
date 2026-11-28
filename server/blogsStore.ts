@@ -1,7 +1,19 @@
 import { BlogPost, BlogSummary, BlogTopicTrack } from '../src/types';
 import { COMPARISON_BLOGS_PHASE2 } from './blogsStore2';
+import { PHASE3_SEO_BLOGS } from './blogsStore3';
 
-export type RegionCode = 'ae' | 'za' | 'uk' | 'de' | 'nl' | 'eu';
+export type RegionCode =
+  | 'ae'
+  | 'za'
+  | 'uk'
+  | 'de'
+  | 'nl'
+  | 'eu'
+  | 'ao'
+  | 'sa'
+  | 'ng'
+  | 'sg'
+  | 'in';
 
 const SITE_BASE_URL = 'https://www.learnify-solutions.com';
 
@@ -1941,6 +1953,14 @@ export function getMergedBlogs(customBlogs?: BlogPost[]): BlogPost[] {
   }
 
   for (const b of COMPARISON_BLOGS_PHASE2) {
+    const key = b.slug.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(normalizeBlogPost(b));
+    }
+  }
+
+  for (const b of PHASE3_SEO_BLOGS) {
     const key = b.slug.toLowerCase();
     if (!seen.has(key)) {
       seen.add(key);
