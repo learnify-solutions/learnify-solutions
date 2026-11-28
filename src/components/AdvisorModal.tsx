@@ -32,6 +32,14 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  React.useEffect(() => {
+    if (isOpen) {
+      setSelectedDomain(defaultDomain || 'General');
+      setIsSuccess(false);
+      setErrorMessage('');
+    }
+  }, [defaultDomain, isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,6 +209,19 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({
                   onChange={(e) => setSelectedDomain(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-md border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#ea6d24] focus:border-transparent"
                 >
+                  {selectedDomain &&
+                    ![
+                      'General',
+                      'Cloud Computing',
+                      'Cybersecurity',
+                      'Artificial Intelligence',
+                      'DevOps',
+                      'Microsoft Solutions',
+                      'Cisco Networking',
+                      'IT Infrastructure',
+                    ].includes(selectedDomain) && (
+                      <option value={selectedDomain}>{selectedDomain}</option>
+                    )}
                   <option value="General">All Domains / Customized Roadmap</option>
                   <option value="Cloud Computing">Cloud Computing (AWS / Azure / GCP)</option>
                   <option value="Cybersecurity">Cybersecurity (CompTIA / CISSP / SecOps)</option>

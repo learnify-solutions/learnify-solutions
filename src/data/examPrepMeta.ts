@@ -550,7 +550,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '45 Scenario Qs',
     passingScoreLabel: '82% Target (~825/1000)',
     relatedCourseId: 'course-comptia-network-plus',
-    relatedCourseLabel: 'Networking & Cisco CCNA / Network+ Bootcamp Track',
+    relatedCourseLabel: 'Cisco CCNA (200-301) 1-on-1 Lab Mentorship & Exam Prep',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-23',
     domainWeights: [
@@ -1255,7 +1255,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '14 Copy-Ready Commands',
     passingScoreLabel: 'Independent Lab Guide',
     relatedCourseId: 'course-comptia-network-plus',
-    relatedCourseLabel: 'Authorized CompTIA Network+ (N10-009) & Networking Labs',
+    relatedCourseLabel: 'Enterprise Routing, SD-WAN & Security 1-on-1 Lab Mentorship',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-28',
     openPreviewCount: 2,
@@ -1288,7 +1288,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '30 Scenario Qs',
     passingScoreLabel: '80% Target (~825/1000)',
     relatedCourseId: 'course-comptia-network-plus',
-    relatedCourseLabel: '1-on-1 Enterprise Networking Prep & Authorized Network+ Track',
+    relatedCourseLabel: 'Cisco CCNP ENCOR (350-401) 1-on-1 Lab Mentorship & Exam Prep',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-28',
     domainWeights: [
@@ -1328,7 +1328,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '30 Scenario Qs',
     passingScoreLabel: '80% Target (~825/1000)',
     relatedCourseId: 'course-comptia-network-plus',
-    relatedCourseLabel: '1-on-1 Routing / SD-WAN Lab Prep & Authorized Network+ Track',
+    relatedCourseLabel: 'Cisco ENARSI (300-410) & SD-WAN (300-415) 1-on-1 Mentorship',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-28',
     domainWeights: [
@@ -1363,7 +1363,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '30 Scenario Qs',
     passingScoreLabel: '78% Target (~825/1000)',
     relatedCourseId: 'course-comptia-security-plus',
-    relatedCourseLabel: '1-on-1 Security Lab Prep & Authorized Security+ Track',
+    relatedCourseLabel: 'Cisco SCOR, ISE & CyberOps 1-on-1 Lab Mentorship & Exam Prep',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-28',
     domainWeights: [
@@ -1398,7 +1398,7 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     questionCountLabel: '16 Deep Q&As',
     passingScoreLabel: 'Interview Readiness',
     relatedCourseId: 'course-comptia-network-plus',
-    relatedCourseLabel: '1-on-1 Interview Prep & Authorized Networking Track',
+    relatedCourseLabel: 'Cisco Network Engineer 1-on-1 Interview & Lab Coaching',
     updatedDate: 'November 2026',
     publishedIso: '2026-11-28',
     openPreviewCount: 3,

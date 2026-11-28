@@ -2734,7 +2734,7 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <nav><a href="/">Home</a> &gt; <a href="/exam-prep">Exam Prep</a> &gt; <span>${escapeHtml(item.shortTitle)}</span></nav>
             <h1>${escapeHtml(item.title)}</h1>
             <p>${escapeHtml(item.excerpt)}</p>
-            <p><strong>Exam Code:</strong> ${escapeHtml(item.examCode)} | <strong>Track:</strong> ${escapeHtml(item.topicTrack)} | <strong>Recommended Course:</strong> <a href="/course/${escapeHtml(item.relatedCourseId)}">${escapeHtml(item.relatedCourseLabel)}</a></p>
+            <p><strong>Exam Code:</strong> ${escapeHtml(item.examCode)} | <strong>Track:</strong> ${escapeHtml(item.topicTrack)} | <strong>${item.slug.includes('cisco') || item.slug.includes('routing-switching-sdwan') ? '1-on-1 Mentorship' : 'Recommended Course'}:</strong> <a href="${item.slug.includes('cisco') || item.slug.includes('routing-switching-sdwan') ? '/contact' : `/course/${escapeHtml(item.relatedCourseId)}`}">${escapeHtml(item.relatedCourseLabel)}</a></p>
             ${bodyHtml}
             ${relatedPrepTools.length > 0 ? `<h2>Related Practice Exams &amp; Readiness Tools</h2><ul>${relatedPrepTools.map((rp) => `<li><a href="/exam-prep/${escapeHtml(rp.slug)}">${escapeHtml(rp.title)}</a> — ${escapeHtml(rp.examCode)}</li>`).join('')}</ul>` : ''}
             ${relatedStudyBlogs.length > 0 ? `<h2>Related Certification Roadmaps &amp; Exam Guides</h2><ul>${relatedStudyBlogs.map((b) => `<li><a href="/blogs/${escapeHtml(b.slug)}">${escapeHtml(b.title)}</a></li>`).join('')}</ul>` : ''}

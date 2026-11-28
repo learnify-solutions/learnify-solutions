@@ -337,24 +337,44 @@ export const PracticeExamSimulator: React.FC<PracticeExamSimulatorProps> = ({
             <div className="bg-[#f8fafc] border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <p className="text-xs font-bold uppercase tracking-wider text-[#ea6d24]">
-                  Recommended Live Bootcamp
+                  {resource.slug.includes('cisco') ||
+                  resource.slug.includes('routing-switching-sdwan')
+                    ? '1-on-1 Exam Prep & Lab Mentorship'
+                    : 'Recommended Live Bootcamp'}
                 </p>
                 <p className="text-sm font-bold text-[#152e4d]">{resource.relatedCourseLabel}</p>
                 <p className="text-xs text-slate-600">
                   Close remaining weak domains with 1-on-1 certified trainers, hands-on lab sandboxes, and full exam prep.
                 </p>
               </div>
-              <a
-                href={`/course/${resource.relatedCourseId}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onNavigateLink(`/course/${resource.relatedCourseId}`);
-                }}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#152e4d] hover:bg-[#0f223a] text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
-              >
-                <span>View Official Course</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
+              {resource.slug.includes('cisco') ||
+              resource.slug.includes('routing-switching-sdwan') ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    onOpenAdvisorModal(
+                      'advisor',
+                      `${resource.examCode} — 1-on-1 Exam Prep & Lab Mentorship`
+                    )
+                  }
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#ea6d24] hover:bg-[#d55e1b] text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer shrink-0"
+                >
+                  <span>Request 1-on-1 Mentorship</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <a
+                  href={`/course/${resource.relatedCourseId}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigateLink(`/course/${resource.relatedCourseId}`);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#152e4d] hover:bg-[#0f223a] text-white text-xs sm:text-sm font-semibold transition-colors shrink-0"
+                >
+                  <span>View Official Course</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </div>
         </div>

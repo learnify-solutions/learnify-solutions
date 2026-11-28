@@ -694,22 +694,22 @@ export const ExamPrepDetailView: React.FC<ExamPrepDetailViewProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <a
-              href={`/course/${activeResource.relatedCourseId}`}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigateLink(`/course/${activeResource.relatedCourseId}`);
-              }}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-[#152e4d] hover:bg-orange-50 font-bold text-sm transition-colors"
-            >
-              <span>
-                {activeResource.slug.includes('cisco') ||
-                activeResource.slug.includes('routing-switching-sdwan')
-                  ? 'Explore Authorized Track'
-                  : 'View Course'}
-              </span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
+            {!(
+              activeResource.slug.includes('cisco') ||
+              activeResource.slug.includes('routing-switching-sdwan')
+            ) && (
+              <a
+                href={`/course/${activeResource.relatedCourseId}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateLink(`/course/${activeResource.relatedCourseId}`);
+                }}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-[#152e4d] hover:bg-orange-50 font-bold text-sm transition-colors"
+              >
+                <span>View Course</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            )}
             <button
               type="button"
               onClick={() => onOpenAdvisorModal('advisor', activeResource.title)}
