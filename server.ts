@@ -3347,10 +3347,56 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             <ul><li><a href="/za">South Africa Certification Training (ZAR)</a></li>${zaLinks.map((p) => `<li><a href="/za/${escapeHtml(p.slug)}">${escapeHtml(p.h1Title)}</a></li>`).join('')}</ul>
           </main>`;
           const blogSummariesPayload = allBlogs.map(toBlogSummary);
-          html = html
+          const homeSchemaObj = {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'EducationalOrganization',
+                '@id': `${SITE_BASE_URL}/#organization`,
+                name: 'Learnify Solutions',
+                url: SITE_BASE_URL,
+                logo: `${SITE_BASE_URL}/logo.jpeg`,
+                email: 'info@learnify-solutions.com',
+                telephone: '+1-209-935-0029',
+                description:
+                  'Authorized global IT certification training partner delivering live instructor-led bootcamps and 24/7 cloud sandbox labs for Microsoft Azure, Power BI, CompTIA, AWS, and Kubernetes.',
+                areaServed: [
+                  'United Kingdom',
+                  'Europe',
+                  'Germany',
+                  'Netherlands',
+                  'United Arab Emirates',
+                  'South Africa',
+                  'United States',
+                  'India',
+                ],
+                knowsAbout: [
+                  'Microsoft Azure Certification Training',
+                  'Microsoft Power BI PL-300',
+                  'CompTIA Security+ SY0-701',
+                  'AWS Solutions Architect SAA-C03',
+                  'Certified Kubernetes Administrator CKA',
+                  'Microsoft 365 Copilot Studio',
+                ],
+              },
+              {
+                '@type': 'WebSite',
+                '@id': `${SITE_BASE_URL}/#website`,
+                url: SITE_BASE_URL,
+                name: 'Learnify Solutions',
+                publisher: { '@id': `${SITE_BASE_URL}/#organization` },
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: `${SITE_BASE_URL}/courses?q={search_term_string}`,
+                  'query-input': 'required name=search_term_string',
+                },
+              },
+            ],
+          };
+          html = stripGlobalJsonLd(html)
             .replace(
               /<\/head>/,
-              `    <script>window.__INITIAL_BLOG_SUMMARIES__=${safeJsonForScript(blogSummariesPayload)};</script>\n  </head>`
+              `    <script type="application/ld+json">${safeJsonForScript(homeSchemaObj)}</script>\n    <script>window.__INITIAL_BLOG_SUMMARIES__=${safeJsonForScript(blogSummariesPayload)};</script>\n  </head>`
             )
             .replace(/<div id="root"><\/div>/, `<div id="root">${ssrFallbackHtml}</div>`);
         } else {
@@ -3370,35 +3416,37 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     });
   }
 
-  // Preload latest CMS & Blogs data on server boot
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('learnify_cms')
-        .select('*')
-        .or('id.eq.singleton,id.eq.main')
-        .limit(1)
-        .maybeSingle();
-
-      if (!error && data) {
-        const payload = data.data || data.section_data;
-        if (payload && typeof payload === 'object') {
-          currentCmsData = {
-            ...currentCmsData,
-            ...payload,
-          };
-          console.log('[Supabase] Initialized server CMS with live Supabase data.');
-        }
-      }
-      await syncBlogsFromSupabase();
-    } catch (err: any) {
-      console.warn('[Supabase] Startup CMS fetch notice:', err.message);
-    }
-  }
-
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Learnify Full-Stack Server running at http://localhost:${PORT}`);
   });
+
+  // Preload latest CMS & Blogs data in background without blocking port binding
+  if (supabase) {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('learnify_cms')
+          .select('*')
+          .or('id.eq.singleton,id.eq.main')
+          .limit(1)
+          .maybeSingle();
+
+        if (!error && data) {
+          const payload = data.data || data.section_data;
+          if (payload && typeof payload === 'object') {
+            currentCmsData = {
+              ...currentCmsData,
+              ...payload,
+            };
+            console.log('[Supabase] Initialized server CMS with live Supabase data.');
+          }
+        }
+        await syncBlogsFromSupabase();
+      } catch (err: any) {
+        console.warn('[Supabase] Startup CMS fetch notice:', err.message);
+      }
+    })();
+  }
 }
 
 startServer();

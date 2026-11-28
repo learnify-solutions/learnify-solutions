@@ -61,16 +61,24 @@ const FEATURED_RESOURCES = [
   },
   {
     slug: 'it-certification-exam-cost-salary-calculator',
-    eyebrow: 'Multi-Region ROI Tool',
-    title: '2026 Exam Fee & Certified Salary Calculator',
+    eyebrow: 'Multi-Region Pricing & Quote Tool',
+    title: '2026 Exam Pricing, Quote & Salary Calculator',
     description:
-      'Compare official voucher costs & pay uplifts in GBP, EUR, AED, ZAR, USD & INR across 8 certs.',
-    meta: '6 Currencies · Instant Estimate',
+      'Compare Power BI ($165), Azure, AWS & CKA costs & request instant quotes in USD, GBP, EUR, AED, ZAR & INR.',
+    meta: '6 Currencies · Instant Quote',
     kind: 'cost' as const,
   },
 ];
 
 const QUICK_CHEAT_SHEETS = [
+  {
+    slug: 'power-bi-pl-300-dax-formulas-cheat-sheet',
+    label: 'Power BI PL-300 DAX & $165 Pricing Sheet',
+  },
+  {
+    slug: 'azure-az-104-lab-setup-cli-cheat-sheet',
+    label: 'Azure AZ-104 Lab Specs & CLI Sheet',
+  },
   {
     slug: 'comptia-network-plus-port-numbers-cheat-sheet',
     label: 'Network+ & Security+ Ports',

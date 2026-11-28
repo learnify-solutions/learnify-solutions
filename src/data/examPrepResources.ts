@@ -502,7 +502,7 @@ export const CALCULATOR_COURSES: CalculatorCourseSpec[] = [
   {
     id: 'a-plus',
     name: 'CompTIA A+ Core 1 & Core 2 (2 Exams)',
-    examCode: '220-1101/1102',
+    examCode: '220-1201/1202',
     vendor: 'CompTIA',
     voucherUsd: 506,
     retakeBundleUsd: 720,

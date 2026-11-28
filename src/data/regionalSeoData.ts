@@ -189,11 +189,11 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
     geoRegionMeta: 'DE',
     phonePlaceholder: '+49...',
     hubPath: '/de',
-    hubTitle: 'CompTIA, Microsoft Azure & AWS Certification Training in Germany (DACH) | Learnify Solutions',
+    hubTitle: 'Microsoft Azure, CompTIA & Kubernetes Training Germany (EUR Quote) | Learnify',
     hubDescription:
-      'Live English-language CompTIA, Microsoft Azure (AZ-104, AI-102, DP-900), AWS & Kubernetes certification bootcamps for Germany, Switzerland & Austria (Berlin, Munich, Frankfurt, Hamburg, Zurich). CET timezones, EUR POs & BSI C5 context.',
+      'Live English CompTIA, Microsoft Azure (AZ-104, AI-102, Copilot KMU), AWS & Kubernetes bootcamps in Frankfurt, Munich, Berlin & Zurich. Browser cloud sandboxes included (no local VM needed / keine lokale VM), CET cohorts & EUR corporate POs.',
     hubKeywords:
-      'IT certification training Germany, CompTIA Security+ Germany, Microsoft Azure AZ-104 Frankfurt Munich, AWS training Berlin Germany, Kubernetes CKA DACH, Power BI PL-300 Germany, corporate IT training EUR, BSI C5 cloud compliance training',
+      'IT certification training Germany, CompTIA Security+ Germany, Microsoft Azure AZ-104 Frankfurt Munich, mit welcher machine kurs az 104, AWS training Berlin Germany, enterprise kubernetes cka course Germany, Power BI PL-300 Germany, corporate IT training EUR, BSI C5 cloud compliance training',
     cities: ['Frankfurt', 'Munich', 'Berlin', 'Hamburg', 'Stuttgart', 'Cologne', 'Düsseldorf', 'Zurich'],
     primaryCitiesLabel: 'Frankfurt, Munich, Berlin, Hamburg & Zurich',
     businessDistricts: 'Frankfurt Bankenviertel, Munich Tech Corridor, Berlin Mitte, Hamburg HafenCity, Stuttgart Automotive Belt & Zurich West',
@@ -242,11 +242,11 @@ export const REGION_CONFIGS: Record<RegionCode, RegionConfig> = {
       },
       {
         q: 'Which Microsoft & cloud tracks are most popular among DACH enterprises?',
-        a: 'German enterprises prioritize Microsoft Azure Administrator (AZ-104) for Frankfurt (Germany West Central) migrations, Azure AI Engineer (AI-102), Power BI (PL-300), CompTIA Security+, and Kubernetes (CKA).',
+        a: 'German enterprises prioritize Microsoft Azure Administrator (AZ-104) for Frankfurt (Germany West Central) migrations, Microsoft Copilot for KMU/enterprise teams (MS-4018), Azure AI Engineer (AI-102), Power BI (PL-300), CompTIA Security+, and Enterprise Kubernetes (CKA).',
       },
       {
-        q: 'Are 24/7 hands-on labs included without needing local company sandbox accounts?',
-        a: 'Yes. Every learner receives pre-provisioned browser-based cloud sandbox labs mapped directly to official exam objectives.',
+        q: 'Which machine/laptop specs do learners need—and are browser cloud labs included without local VMs?',
+        a: 'Any standard Windows, Mac, or Linux laptop with Chrome or Edge works—zero local VM or high-end PC is required (keine lokale VM erforderlich). Every learner receives pre-provisioned 24/7 browser cloud sandboxes included.',
       },
     ],
   },
@@ -1062,32 +1062,53 @@ export function buildRegionalCoursePage(
 
   if (regionCode === 'ae') {
     seoTitle = `${compactCourseName} Training Dubai & UAE (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} course in Dubai, Abu Dhabi & Sharjah: ${region.timezone} evening batches, 24/7 cloud labs, AED exam fee guide, corporate POs & 98.4% pass rate.`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} course in Dubai, Abu Dhabi & Sharjah: ${region.timezone} evening batches, browser cloud labs (no local VM needed), AED pricing, corporate PO quote & 98.4% pass rate.`;
     seoKeywords = `${meta.aeFocusKeyword}, ${meta.shortName} Dubai, ${meta.shortName} Abu Dhabi, Power BI certification pricing, ${course.examCode || ''} UAE course, ${course.certificationVendor} training UAE, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Dubai & UAE`;
   } else if (regionCode === 'za') {
     seoTitle = `${compactCourseName} Course South Africa (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban: ${region.timezone} evening batches, 24/7 cloud labs, ZAR corporate POs & free mock exam.`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} course in Johannesburg, Cape Town, Pretoria & Durban: ${region.timezone} evening batches, browser cloud labs, ZAR pricing & corporate PO quote.`;
     seoKeywords = `${meta.zaFocusKeyword}, ${meta.shortName} Johannesburg, ${meta.shortName} Cape Town, ${meta.shortName} Pretoria, ${course.examCode || ''} South Africa, ${course.certificationVendor} training South Africa, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in South Africa`;
   } else if (regionCode === 'uk') {
-    seoTitle = `${compactCourseName} Course UK & London (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} training in London, Manchester, Birmingham & Edinburgh: ${region.timezone} cohorts, 24/7 cloud sandbox labs, GBP PO invoicing & 98.4% pass rate.`;
-    seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, ${course.examCode || ''} UK certification, ${course.certificationVendor} training London Manchester, corporate IT training GBP, Learnify Solutions`;
+    if (meta.courseId === 'course-kubernetes-cka') {
+      seoTitle = `Enterprise Kubernetes CKA Course UK · Pricing & Corporate Quote | Learnify`;
+      seoDescription = `Live Enterprise Kubernetes CKA & CKS training in London, Manchester & UK: GMT/BST cohorts, 24/7 browser cluster sandboxes, GBP pricing & instant corporate team PO quote.`;
+    } else if (meta.courseId === 'course-ms-pl-300') {
+      seoTitle = `Power BI (PL-300) Course UK · 2026 Pricing & Corporate Quote | Learnify`;
+      seoDescription = `Live Power BI Data Analyst (PL-300) training in London & UK: GMT/BST cohorts, £113 exam fee guidance, 24/7 DAX labs, GBP pricing & instant corporate PO quote.`;
+    } else {
+      seoTitle = `${compactCourseName} Course UK & London (2026) | Learnify`;
+      seoDescription = `Live ${meta.shortName}${examCodeText} training in London, Manchester, Birmingham & Edinburgh: ${region.timezone} cohorts, browser cloud sandbox labs (no VM needed), GBP PO quote & 98.4% pass rate.`;
+    }
+    seoKeywords = `${meta.shortName} training UK, ${meta.shortName} course London, enterprise kubernetes cka course, power bi certification pricing, ${course.examCode || ''} UK certification, ${course.certificationVendor} training London Manchester, corporate IT training GBP, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in London & UK`;
   } else if (regionCode === 'de') {
-    seoTitle = `${compactCourseName} Course Germany (2026) | Learnify`;
-    seoDescription = `Live English ${meta.shortName}${examCodeText} training in Frankfurt, Munich, Berlin & Zurich: ${region.timezone} schedules, 24/7 cloud labs, EUR SEPA POs & BSI C5 cloud readiness.`;
-    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Schulung Frankfurt Munich Berlin, enterprise kubernetes cka course, microsoft azure administrator schulung, ${course.examCode || ''} DACH certification, Learnify Solutions`;
+    if (meta.courseId === 'course-azure-104') {
+      seoTitle = `Azure AZ-104 Course Germany · Cloud Labs (No VM Needed) | Learnify`;
+      seoDescription = `Live English Azure Administrator (AZ-104) training in Frankfurt, Munich, Berlin & Zurich: browser cloud sandbox included (no local VM required / keine lokale VM nötig), CET schedule & EUR SEPA PO quote.`;
+    } else if (meta.courseId === 'course-kubernetes-cka') {
+      seoTitle = `Enterprise Kubernetes CKA Course Germany · Pricing & Quote | Learnify`;
+      seoDescription = `Enterprise Kubernetes CKA & CKS training in Berlin, Munich, Frankfurt & Zurich: browser cluster labs (no local VM), CET cohorts, EUR pricing & SEPA corporate PO quote.`;
+    } else {
+      seoTitle = `${compactCourseName} Course Germany (2026) | Learnify`;
+      seoDescription = `Live English ${meta.shortName}${examCodeText} training in Frankfurt, Munich, Berlin & Zurich: browser cloud labs (no local VM needed), CET schedules, EUR SEPA PO quote & BSI C5 readiness.`;
+    }
+    seoKeywords = `${meta.shortName} training Germany, ${meta.shortName} Schulung Frankfurt Munich Berlin, enterprise kubernetes cka course, mit welcher machine kurs az 104, microsoft azure administrator schulung, ${course.examCode || ''} DACH certification, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Germany & DACH`;
   } else if (regionCode === 'nl') {
     seoTitle = `${compactCourseName} Course Netherlands (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} training in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels: ${region.timezone} batches, 24/7 cloud labs, EUR POs & 98.4% pass rate.`;
+    seoDescription = `Live ${meta.shortName}${examCodeText} training in Amsterdam, Rotterdam, Utrecht, Eindhoven & Brussels: ${region.timezone} batches, 24/7 cloud labs (no local VM), EUR pricing & corporate PO quote.`;
     seoKeywords = `${meta.shortName} training Netherlands, ${meta.shortName} Amsterdam Utrecht Eindhoven, ${course.examCode || ''} Benelux course, ${course.certificationVendor} training Netherlands EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Netherlands & Benelux`;
   } else {
-    seoTitle = `${compactCourseName} Training Europe EU (2026) | Learnify`;
-    seoDescription = `Live ${meta.shortName}${examCodeText} training across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw: ${region.timezone} cohorts, 24/7 cloud labs, EUR SEPA POs & 98.4% pass rate.`;
+    if (meta.courseId === 'course-kubernetes-cka') {
+      seoTitle = `Enterprise Kubernetes CKA Course Europe · Pricing & Quote | Learnify`;
+      seoDescription = `Enterprise Kubernetes CKA & CKS training across Dublin, Paris, Madrid, Stockholm & Europe: CET/WET cohorts, browser cluster labs, EUR pricing & corporate PO quote.`;
+    } else {
+      seoTitle = `${compactCourseName} Training Europe EU (2026) | Learnify`;
+      seoDescription = `Live ${meta.shortName}${examCodeText} training across Dublin, Paris, Madrid, Milan, Stockholm & Warsaw: ${region.timezone} cohorts, 24/7 browser cloud labs, EUR SEPA PO quote & 98.4% pass rate.`;
+    }
     seoKeywords = `${meta.shortName} training Europe, ${meta.shortName} Dublin Paris Madrid, enterprise kubernetes cka course, ${course.examCode || ''} EU certification, ${course.certificationVendor} training Europe EUR, Learnify Solutions`;
     h1Title = `${meta.shortName}${examCodeText} Certification Training in Europe`;
   }
@@ -1095,7 +1116,7 @@ export function buildRegionalCoursePage(
   const industryAngle = getRegionalCourseIndustryAngle(meta, course, regionCode);
   const roleDemand = getRegionalCourseRoleDemand(meta, regionCode);
 
-  const localizedOverview = `${course.summary} ${industryAngle} Delivered live in ${region.timezone} for professionals and enterprise IT teams across ${region.primaryCitiesLabel}.`;
+  const localizedOverview = `${course.summary} ${industryAngle} Delivered live in ${region.timezone} with 24/7 browser-based cloud sandboxes (no local VM or specialized PC needed) for professionals and enterprise IT teams across ${region.primaryCitiesLabel}.`;
 
   const localizedFaqs: Array<{ q: string; a: string }> = [
     {
@@ -1103,12 +1124,12 @@ export function buildRegionalCoursePage(
       a: `We run live instructor-led online bootcamps scheduled in ${region.timezone} for individual learners and teams across ${region.cities.join(', ')}. Private onsite or dedicated corporate cohorts are also available for organizations of 6+ participants.`,
     },
     {
-      q: `Are 24/7 hands-on virtual labs included for ${region.shortName} learners?`,
-      a: `Yes. Every participant receives browser-based 24/7 cloud sandbox access mapped directly to official ${course.certificationVendor} ${course.examCode || ''} exam objectives, requiring zero local server hardware.`,
+      q: `What laptop or machine specs are needed—and are 24/7 browser cloud labs included?`,
+      a: `Any standard Windows, macOS, or Linux laptop with Chrome or Edge works—zero local VMs or heavy PC hardware required${regionCode === 'de' ? ' (keine lokale VM erforderlich)' : ''}. Every participant receives 24/7 browser-based cloud sandbox access mapped directly to official ${course.certificationVendor} ${course.examCode || ''} exam objectives.`,
     },
     {
-      q: `Can our company in ${region.shortName} pay in ${region.currency} using a Purchase Order?`,
-      a: region.invoicingNote,
+      q: `How do individuals or companies request a ${region.currency} pricing & corporate Purchase Order quote?`,
+      a: `${region.invoicingNote} Click Request ${region.shortName} Batch & Fee to get instant transparent individual pricing or a formal multi-seat ${region.currency} corporate quote.`,
     },
     {
       q: `What career roles and industries in ${region.shortName} value ${meta.shortName}?`,

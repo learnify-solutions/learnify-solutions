@@ -98,3 +98,238 @@ export const TERRAFORM_IAC_CHEAT_SHEET: CheatSheetSection[] = [
     ],
   },
 ];
+
+export const POWER_BI_PL_300_DAX_CHEAT_SHEET: CheatSheetSection[] = [
+  {
+    id: 'pl300-dax-core-time-intelligence',
+    title: 'Essential Power BI (PL-300) DAX Context & Time Intelligence Formulas',
+    subtitle:
+      'Top evaluation-context and date-table DAX expressions tested heavily on Microsoft PL-300 simulations and live analytics interviews.',
+    headers: ['Analytics Requirement', 'Copy-Ready DAX Pattern', 'PL-300 Exam Rule'],
+    rows: [
+      {
+        cells: [
+          'Modify filter context cleanly',
+          'CALCULATE(SUM(Sales[Amount]), Sales[Region] = "EMEA")',
+          'Evaluates inner filter predicates before transitioning row context',
+        ],
+        copyText: 'CALCULATE(SUM(Sales[Amount]), Sales[Region] = "EMEA")',
+      },
+      {
+        cells: [
+          'Percent of grand total (ignore page slicers)',
+          'DIVIDE([Total Sales], CALCULATE([Total Sales], REMOVEFILTERS(Sales)))',
+          'Use DIVIDE() to avoid divide-by-zero errors; REMOVEFILTERS clears table filters',
+        ],
+        copyText: 'DIVIDE([Total Sales], CALCULATE([Total Sales], REMOVEFILTERS(Sales)))',
+      },
+      {
+        cells: [
+          'Prior-year comparison (YoY)',
+          'CALCULATE([Total Sales], SAMEPERIODLASTYEAR(\'Date\'[Date]))',
+          'Requires continuous marked Date table with unique daily dates',
+        ],
+        copyText: "CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date]))",
+      },
+      {
+        cells: [
+          'Year-to-date running revenue',
+          'TOTALYTD([Total Sales], \'Date\'[Date], "31-12")',
+          'Shortcut for CALCULATE([Total Sales], DATESYTD(\'Date\'[Date]))',
+        ],
+        copyText: "TOTALYTD([Total Sales], 'Date'[Date])",
+      },
+      {
+        cells: [
+          'Activate inactive ShipDate relationship',
+          'CALCULATE([Total Sales], USERELATIONSHIP(\'Date\'[Date], Sales[ShipDate]))',
+          'Solves role-playing dimension conflicts without duplicating Date tables',
+        ],
+        copyText: "CALCULATE([Total Sales], USERELATIONSHIP('Date'[Date], Sales[ShipDate]))",
+      },
+      {
+        cells: [
+          'Row-by-row iterator aggregation',
+          'SUMX(Sales, Sales[Qty] * Sales[NetPrice])',
+          'Prefer SUMX over calculated columns to keep VertiPaq RAM size small',
+        ],
+        copyText: 'SUMX(Sales, Sales[Qty] * Sales[NetPrice])',
+      },
+      {
+        cells: [
+          'Dynamic Row-Level Security (RLS)',
+          '[EmployeeEmail] = USERPRINCIPALNAME()',
+          'Maps logged-in Microsoft Entra ID / Power BI Service UPN dynamically',
+        ],
+        copyText: '[EmployeeEmail] = USERPRINCIPALNAME()',
+      },
+    ],
+  },
+  {
+    id: 'pl300-modeling-pricing-2026',
+    title: 'PL-300 Data Modeling Rules & 2026 Global Certification Pricing ($165)',
+    subtitle:
+      'Star schema modeling best practices plus official 2026 Power BI (PL-300) exam fees and corporate training quote benchmarks.',
+    headers: ['Topic / Billing Item', 'PL-300 Rule / 2026 Price', 'Optimization / Quote Note'],
+    rows: [
+      {
+        cells: [
+          'Star Schema Direction',
+          '1-to-Many (Single Direction) Dimension -> Fact',
+          'Avoid Many-to-Many or Bi-directional cross-filtering unless strictly modeled',
+        ],
+        copyText: 'Star Schema: 1-to-Many single-direction Dimension to Fact',
+      },
+      {
+        cells: [
+          'Power Query Folding Check',
+          'Right-click Step -> View Native Query',
+          'Keep filters/joins before custom Python or indexing steps so SQL server folds',
+        ],
+        copyText: 'Right-click Power Query applied step -> View Native Query',
+      },
+      {
+        cells: [
+          'Official PL-300 Exam Fee (US / Global)',
+          '$165 USD (Pearson VUE / OnVUE)',
+          'Applies to US & standard USD regions; voucher bundles save on retakes',
+        ],
+        copyText: 'Microsoft PL-300 Official Exam Fee: $165 USD',
+      },
+      {
+        cells: [
+          'UK, Europe & UAE PL-300 Exam Pricing',
+          '£113 GBP (UK) · €155 EUR (EU/DE) · AED 605 (UAE)',
+          'Regional VAT/GST applies at checkout; corporate POs accepted by Learnify',
+        ],
+        copyText: 'PL-300 Regional Pricing: £113 GBP | €155 EUR | AED 605 | ₹4,800 INR',
+      },
+      {
+        cells: [
+          'Live PL-300 Bootcamp & Corporate Quote',
+          '$849 Individual / Custom 5+ Seat Corporate PO Rate',
+          'Includes 24 hrs instructor-led DAX & Power Query labs + 24/7 sandbox + mock tests',
+        ],
+        copyText: 'Power BI PL-300 Corporate Training Quote: multi-seat POs in USD, GBP, EUR, AED, ZAR',
+      },
+    ],
+  },
+];
+
+export const AZURE_AZ_104_LAB_CLI_CHEAT_SHEET: CheatSheetSection[] = [
+  {
+    id: 'az104-machine-hardware-requirements',
+    title: 'Microsoft AZ-104 Machine & Laptop Requirements (No Local VM Needed)',
+    subtitle:
+      'Exact PC specs needed to run Azure Administrator (AZ-104) labs — answering both global learners and German queries ("mit welcher Maschine kann man den AZ-104 Kurs durchführen?").',
+    headers: ['Requirement Area', 'Minimum Hardware / Browser Spec', 'How Learnify Labs Run'],
+    rows: [
+      {
+        cells: [
+          'Operating System & Laptop (Global)',
+          'Any Windows 10/11, macOS, Ubuntu Linux, or Chromebook',
+          '100% browser-based via Azure Portal & Learnify 24/7 Cloud Sandbox',
+        ],
+        copyText: 'AZ-104 Laptop Spec: Any Windows 10/11, macOS, or Linux laptop with Chrome/Edge',
+      },
+      {
+        cells: [
+          'RAM, CPU & Local Virtual Machines',
+          '4–8 GB RAM, Dual-Core CPU, 10 Mbps Internet (ZERO local VMs)',
+          'No Hyper-V, VirtualBox, or local Windows Server ISOs required—compute runs in Azure',
+        ],
+        copyText: 'No local VM needed for AZ-104—all VMs, VNets & AKS run inside Azure Cloud Sandbox',
+      },
+      {
+        cells: [
+          'Deutsch / DACH Hinweis (Welche Maschine?)',
+          'Jeder Standard-Laptop (Windows/Mac) mit Chrome oder Edge',
+          'Keine lokale VM oder starke Hardware nötig — 24/7 Cloud Sandbox & Azure Cloud Shell inklusive',
+        ],
+        copyText: 'AZ-104 Deutschland Hinweis: Jeder Standard-Laptop reicht, keine lokale VM erforderlich',
+      },
+      {
+        cells: [
+          'Azure Terminal & CLI Environment',
+          'Built-in Azure Cloud Shell (Bash + PowerShell)',
+          'Pre-authenticated az CLI 2.x and Az PowerShell module right inside your browser',
+        ],
+        copyText: 'Azure Cloud Shell includes az CLI and Az PowerShell in-browser',
+      },
+    ],
+  },
+  {
+    id: 'az104-cli-powershell-commands',
+    title: 'High-Frequency Azure CLI (az) & PowerShell Commands for AZ-104',
+    subtitle:
+      'Copy-ready commands for Resource Groups, Virtual Networks, VMs, Storage Accounts, RBAC, and Entra ID tested in AZ-104.',
+    headers: ['Admin Task', 'Azure CLI / PowerShell Command', 'Exam / Lab Note'],
+    rows: [
+      {
+        cells: [
+          'Create Resource Group in Frankfurt / UK',
+          'az group create --name rg-prod --location germanywestcentral',
+          'Use uksouth, westeurope, or uaenorth depending on data residency',
+        ],
+        copyText: 'az group create --name rg-prod --location germanywestcentral',
+      },
+      {
+        cells: [
+          'Deploy VNet + Subnet cleanly',
+          'az network vnet create -g rg-prod -n vnet-core --address-prefix 10.10.0.0/16 --subnet-name snet-app --subnet-prefix 10.10.1.0/24',
+          'Azure reserves 5 IPs per subnet automatically',
+        ],
+        copyText: 'az network vnet create -g rg-prod -n vnet-core --address-prefix 10.10.0.0/16 --subnet-name snet-app --subnet-prefix 10.10.1.0/24',
+      },
+      {
+        cells: [
+          'Provision Ubuntu VM with SSH Keys',
+          'az vm create -g rg-prod -n vm-web01 --image Ubuntu2204 --size Standard_B2s --generate-ssh-keys',
+          'Verify NSG port 22 or Azure Bastion before connecting',
+        ],
+        copyText: 'az vm create -g rg-prod -n vm-web01 --image Ubuntu2204 --size Standard_B2s --generate-ssh-keys',
+      },
+      {
+        cells: [
+          'Assign RBAC Role at Resource Group Scope',
+          'az role assignment create --assignee user@domain.com --role "Virtual Machine Contributor" --scope /subscriptions/<SUB_ID>/resourceGroups/rg-prod',
+          'Never grant Owner unless user must manage RBAC permissions',
+        ],
+        copyText: 'az role assignment create --assignee user@domain.com --role "Virtual Machine Contributor" --scope /subscriptions/<SUB_ID>/resourceGroups/rg-prod',
+      },
+      {
+        cells: [
+          'Create ZRS/GRS Storage Account (TLS 1.2)',
+          'az storage account create -g rg-prod -n stproddata01 -l germanywestcentral --sku Standard_ZRS --min-tls-version TLS1_2',
+          'Name must be 3-24 lowercase letters/numbers, globally unique',
+        ],
+        copyText: 'az storage account create -g rg-prod -n stproddata01 -l germanywestcentral --sku Standard_ZRS --min-tls-version TLS1_2',
+      },
+      {
+        cells: [
+          'Deploy Bicep / ARM Template Incrementally',
+          'az deployment group create -g rg-prod --template-file main.bicep --mode Incremental',
+          'Avoid --mode Complete unless you intend to delete unlisted resources',
+        ],
+        copyText: 'az deployment group create -g rg-prod --template-file main.bicep --mode Incremental',
+      },
+      {
+        cells: [
+          'PowerShell: Create Resource Group + VNet',
+          'New-AzResourceGroup -Name "rg-prod" -Location "uksouth"',
+          'Exam questions switch freely between az CLI and Az PowerShell syntax',
+        ],
+        copyText: 'New-AzResourceGroup -Name "rg-prod" -Location "uksouth"',
+      },
+      {
+        cells: [
+          'PowerShell: Prevent Accidental Deletion (Lock)',
+          'New-AzResourceLock -LockLevel CanNotDelete -LockName "lock-prod" -ResourceGroupName "rg-prod"',
+          'CanNotDelete allows config updates/reads while blocking Delete calls',
+        ],
+        copyText: 'New-AzResourceLock -LockLevel CanNotDelete -LockName "lock-prod" -ResourceGroupName "rg-prod"',
+      },
+    ],
+  },
+];
+

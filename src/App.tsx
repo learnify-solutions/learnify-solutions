@@ -1160,6 +1160,52 @@ export default function App() {
             : 'IT training certification courses, corporate IT training, 1-on-1 IT training, CompTIA Security+ SY0-701, CompTIA A+ 220-1201 220-1101, CompTIA ITF+ FC0-U61, CompTIA Network+ N10-009, CompTIA Cloud+ CV0-004, CompTIA Linux+ Server+, Microsoft Azure AZ-104 AZ-900 AZ-305 AI-102, DP-900, DP-100, PL-900, PL-300, SC-900, Microsoft Copilot MS-4018 Copilot Studio, AWS Solutions Architect SAA-C03 CLF-C02 SCS-C02, Kubernetes CKA CKS, CEH v12, CISSP, IT training UK London, Europe NIS2 DORA, UAE Dubai AED, South Africa Gauteng ZAR, Learnify Solutions',
           canonicalUrl: 'https://www.learnify-solutions.com/',
           ogUrl: 'https://www.learnify-solutions.com/',
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'EducationalOrganization',
+                '@id': 'https://www.learnify-solutions.com/#organization',
+                'name': 'Learnify Solutions',
+                'url': 'https://www.learnify-solutions.com',
+                'logo': 'https://www.learnify-solutions.com/logo.jpeg',
+                'email': 'info@learnify-solutions.com',
+                'telephone': '+1-209-935-0029',
+                'description':
+                  'Authorized global IT certification training partner delivering live instructor-led bootcamps and 24/7 cloud sandbox labs for Microsoft Azure, Power BI, CompTIA, AWS, and Kubernetes.',
+                'areaServed': [
+                  'United Kingdom',
+                  'Europe',
+                  'Germany',
+                  'Netherlands',
+                  'United Arab Emirates',
+                  'South Africa',
+                  'United States',
+                  'India',
+                ],
+                'knowsAbout': [
+                  'Microsoft Azure Certification Training',
+                  'Microsoft Power BI PL-300',
+                  'CompTIA Security+ SY0-701',
+                  'AWS Solutions Architect SAA-C03',
+                  'Certified Kubernetes Administrator CKA',
+                  'Microsoft 365 Copilot Studio',
+                ],
+              },
+              {
+                '@type': 'WebSite',
+                '@id': 'https://www.learnify-solutions.com/#website',
+                'url': 'https://www.learnify-solutions.com',
+                'name': 'Learnify Solutions',
+                'publisher': { '@id': 'https://www.learnify-solutions.com/#organization' },
+                'potentialAction': {
+                  '@type': 'SearchAction',
+                  'target': 'https://www.learnify-solutions.com/courses?q={search_term_string}',
+                  'query-input': 'required name=search_term_string',
+                },
+              },
+            ],
+          },
         };
     }
   }, [activePage, selectedCourse, isCiscoAuthorized, regionalRegion, selectedRegionalCourse, selectedBlog, blogSummaries, selectedExamPrep?.slug, regionalSeoMod]);

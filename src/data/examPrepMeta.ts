@@ -431,31 +431,31 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
     slug: 'it-certification-exam-cost-salary-calculator',
     type: 'cost_calculator',
     topicTrack: 'Career & Exam ROI',
-    examCode: 'GBP · EUR · AED · ZAR · USD · INR',
-    title: 'IT Certification Exam Cost, Retake & Salary ROI Calculator 2026 (Global Hubs)',
-    shortTitle: 'IT Certification Cost & Salary Calculator',
+    examCode: 'USD · GBP · EUR · AED · ZAR · INR',
+    title: 'Power BI, Azure, AWS & IT Certification Pricing & Corporate Quote Calculator (2026)',
+    shortTitle: 'Certification Pricing & Quote Calculator',
     excerpt:
-      'Calculate official exam voucher pricing, retake protection buffers, training budgets, and certified salary benchmarks across UK (GBP), Europe (EUR), UAE (AED), South Africa (ZAR), USA (USD), and India (INR).',
-    seoTitle: 'IT Certification Exam Cost & Salary Calculator 2026 (UK, Europe, UAE, SA) | Learnify',
+      'Compare 2026 global exam pricing & request instant corporate training quotes for Power BI PL-300 ($165), Azure AZ-104 ($165), AWS Cloud Architect ($150), Kubernetes CKA ($395), and Security+ ($404) across USD, GBP, EUR, AED, ZAR, and INR.',
+    seoTitle: 'Power BI, Azure & Cloud Certification Pricing & Quote Calculator 2026 | Learnify',
     seoDescription:
-      'Interactive 2026 calculator comparing Microsoft Azure AZ-104, CompTIA Security+, AWS SAA-C03, Power BI PL-300, and Kubernetes CKA exam fees and salary ROI in GBP, EUR, AED, ZAR, USD, and INR.',
+      'Transparent 2026 pricing & instant corporate quote calculator for Power BI PL-300 ($165 / £113 / €155 / AED 605), Azure AZ-104, AWS Solutions Architect & Kubernetes CKA courses.',
     seoKeywords:
-      'IT certification cost calculator 2026, Azure AZ-104 exam cost UK Europe UAE, CompTIA Security+ fee South Africa ZAR, certified IT salary ROI',
+      'power bi certification pricing, power bi certification cost, power bi certification quote, cloud architect course quote, azure certification quote, kubernetes cka course pricing, it certification cost calculator 2026',
     durationLabel: 'Interactive Tool',
     questionCountLabel: '8 Certs × 6 Regions',
     passingScoreLabel: 'Live Multi-Currency',
-    relatedCourseId: 'course-comptia-security-plus',
-    relatedCourseLabel: 'Browse Regional & Corporate Programs',
+    relatedCourseId: 'course-ms-pl-300',
+    relatedCourseLabel: 'Microsoft Power BI (PL-300) & Cloud Architect Live Programs',
     updatedDate: 'November 2026',
-    publishedIso: '2026-11-22',
+    publishedIso: '2026-11-28',
     faqs: [
       {
-        q: 'Why do CompTIA and Microsoft exam voucher prices vary across UK, Europe, UAE, South Africa, and India?',
-        a: 'Vendors like CompTIA and Pearson VUE apply emerging-market regional pricing tiers in South Africa/India alongside local GBP/EUR/AED exchange adjustments and statutory VAT rules.',
+        q: 'How much does Microsoft Power BI (PL-300) certification cost in 2026?',
+        a: 'The official Microsoft PL-300 Power BI Data Analyst exam fee is $165 USD (approx. £113 GBP in UK, €155 EUR in Europe/Germany, AED 605 in UAE, or ₹4,800 INR). Instructor-led Power BI bootcamps start at $849 individual or discounted 5+ seat corporate PO quotes.',
       },
       {
-        q: 'Does Learnify offer multi-seat corporate bundles combining live training with exam vouchers?',
-        a: 'Yes—enterprises and individual learners across UK, Europe, UAE, South Africa, North America, and APAC can request bundled training + Pearson VUE voucher tax invoices.',
+        q: 'How do companies request a corporate quote for Azure, Cloud Architect, or Kubernetes CKA training?',
+        a: 'Click Request Voucher + Batch Bundle Quote inside the calculator to receive a formal multi-currency pro-forma quote in USD, GBP, EUR, AED, or ZAR with Purchase Order (PO) terms.',
       },
     ],
   },
@@ -1173,6 +1173,70 @@ export const EXAM_PREP_META: ExamPrepResource[] = [
       },
     ],
   },
+  {
+    slug: 'power-bi-pl-300-dax-formulas-cheat-sheet',
+    type: 'cheat_sheet',
+    topicTrack: 'Data & AI',
+    examCode: 'PL-300 · DAX · $165',
+    title: 'Power BI (PL-300) DAX Formulas, Star Schema & Exam Pricing Cheat Sheet (2026)',
+    shortTitle: 'Power BI PL-300 DAX & Cost Sheet',
+    excerpt:
+      'Copy-ready DAX Time Intelligence (CALCULATE, SAMEPERIODLASTYEAR, USERELATIONSHIP), Star Schema & RLS syntax—plus 2026 Power BI PL-300 certification pricing ($165 / £113 / €155 / AED 605).',
+    seoTitle: 'Power BI PL-300 DAX Formulas Cheat Sheet & 2026 Exam Cost ($165) | Learnify',
+    seoDescription:
+      'Copy-ready DAX formulas (CALCULATE, SAMEPERIODLASTYEAR, USERELATIONSHIP), Star Schema & Query Folding cheat sheet for Power BI PL-300—plus transparent 2026 certification pricing & quotes.',
+    seoKeywords:
+      'Power BI PL-300 DAX cheat sheet, Power BI certification pricing, Power BI certification cost, DAX CALCULATE SAMEPERIODLASTYEAR, PL-300 study sheet 2026',
+    durationLabel: 'Quick Reference',
+    questionCountLabel: '12 DAX & Pricing Rules',
+    passingScoreLabel: '1-Click Copy',
+    relatedCourseId: 'course-ms-pl-300',
+    relatedCourseLabel: 'Microsoft Power BI Data Analyst (PL-300) Live Course',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    faqs: [
+      {
+        q: 'Which DAX functions are tested most frequently on Microsoft Power BI (PL-300)?',
+        a: 'Expect scenario questions testing CALCULATE with REMOVEFILTERS/ALL, SAMEPERIODLASTYEAR against a marked Date table, USERELATIONSHIP for inactive dates, DIVIDE safe division, SUMX iterators, and dynamic RLS with USERPRINCIPALNAME().',
+      },
+      {
+        q: 'What is the official 2026 Power BI (PL-300) certification cost and corporate quote option?',
+        a: 'The Pearson VUE PL-300 exam fee is $165 USD (£113 GBP / €155 EUR / AED 605). Learnify provides live 24-hour PL-300 cohorts starting at $849 individual or multi-seat corporate PO quotes.',
+      },
+    ],
+  },
+  {
+    slug: 'azure-az-104-lab-setup-cli-cheat-sheet',
+    type: 'cheat_sheet',
+    topicTrack: 'Cloud & DevOps',
+    examCode: 'AZ-104 · CLI · Cloud Sandbox',
+    title: 'Azure AZ-104 Lab Hardware Specs (No VM Needed) & CLI Commands Cheat Sheet (2026)',
+    shortTitle: 'Azure AZ-104 Lab Specs & CLI Sheet',
+    excerpt:
+      'Which machine or laptop do you need for Microsoft Azure AZ-104? Zero local VM required—all labs run in browser-based 24/7 Cloud Sandboxes. Includes copy-ready az CLI & PowerShell commands.',
+    seoTitle: 'Azure AZ-104 Lab Setup, PC Requirements (No VM Needed) & CLI Cheat Sheet | Learnify',
+    seoDescription:
+      'Check exact PC/laptop specs for Microsoft Azure AZ-104 (any Windows/Mac with browser—no local VM needed / keine lokale VM nötig) plus top az CLI & PowerShell commands.',
+    seoKeywords:
+      'Azure AZ-104 lab requirements, mit welcher machine kurs az 104, AZ-104 laptop specs, Azure CLI az vm az network cheat sheet, AZ-104 sandbox Germany DACH',
+    durationLabel: 'Quick Reference',
+    questionCountLabel: '12 CLI & Lab Specs',
+    passingScoreLabel: '1-Click Copy',
+    relatedCourseId: 'course-azure-104',
+    relatedCourseLabel: 'Microsoft Azure Administrator (AZ-104) Live Course & Cloud Sandbox',
+    updatedDate: 'November 2026',
+    publishedIso: '2026-11-28',
+    faqs: [
+      {
+        q: 'Which machine or laptop specifications do I need for the Microsoft AZ-104 course?',
+        a: 'Any standard Windows 10/11, macOS, or Linux laptop with 4–8 GB RAM and Chrome or Edge works—zero local virtual machines or Hyper-V hardware are needed because every AZ-104 lab runs inside Learnify’s browser cloud sandbox.',
+      },
+      {
+        q: 'Mit welcher Maschine kann man den Microsoft AZ-104 Kurs durchführen (Deutschland / DACH)?',
+        a: 'Jeder normale Windows- oder Mac-Laptop (ab 4 GB RAM) mit aktuellem Browser reicht völlig aus. Alle Azure-VMs, VNets und Cloud-Shell-Übungen laufen komplett in unserer 24/7 Cloud Sandbox — keine lokale VM erforderlich.',
+      },
+    ],
+  },
 ];
 
 export function getExamPrepMetaBySlug(slug: string): ExamPrepResource | null {
@@ -1219,8 +1283,11 @@ export function getRelatedExamPrepResources(opts: {
     if (hay.includes('security') || hay.includes('cyber') || hay.includes('ceh') || hay.includes('pentest') || hay.includes('cissp')) {
       if (item.topicTrack === 'Cybersecurity') score += 25;
     }
+    if (hay.includes('power bi') || hay.includes('pl-300') || hay.includes('dax')) {
+      if (item.slug.includes('power-bi') || item.slug.includes('cost-salary')) score += 48;
+    }
     if (hay.includes('azure') || hay.includes('az-') || hay.includes('dp-') || hay.includes('ai-')) {
-      if (item.slug.includes('azure')) score += 30;
+      if (item.slug.includes('azure')) score += 36;
     }
     if (hay.includes('aws')) {
       if (item.slug.includes('aws')) score += 30;

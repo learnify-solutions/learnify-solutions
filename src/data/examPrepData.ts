@@ -45,6 +45,8 @@ import {
   IPV4_SUBNETTING_CIDR_CHEAT_SHEET,
   LINUX_NETWORKING_CHEAT_SHEET,
   TERRAFORM_IAC_CHEAT_SHEET,
+  POWER_BI_PL_300_DAX_CHEAT_SHEET,
+  AZURE_AZ_104_LAB_CLI_CHEAT_SHEET,
 } from './examPrepResources2';
 import {
   COMPTIA_ITF_PLUS_QUESTIONS,
@@ -166,6 +168,12 @@ const EXAM_PREP_PAYLOAD_BY_SLUG: Record<string, ExamPrepPayload> = {
   },
   'comptia-server-plus-sk0-005-practice-questions': {
     questions: COMPTIA_SERVER_PLUS_QUESTIONS,
+  },
+  'power-bi-pl-300-dax-formulas-cheat-sheet': {
+    cheatSheetSections: POWER_BI_PL_300_DAX_CHEAT_SHEET,
+  },
+  'azure-az-104-lab-setup-cli-cheat-sheet': {
+    cheatSheetSections: AZURE_AZ_104_LAB_CLI_CHEAT_SHEET,
   },
 };
 

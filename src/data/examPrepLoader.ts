@@ -138,6 +138,14 @@ export async function loadExamPrepResourceClient(slug: string): Promise<ExamPrep
       const m = await import('./examPrepQuestionsExt8');
       return { ...meta, questions: m.COMPTIA_SERVER_PLUS_QUESTIONS };
     }
+    case 'power-bi-pl-300-dax-formulas-cheat-sheet': {
+      const m = await import('./examPrepResources2');
+      return { ...meta, cheatSheetSections: m.POWER_BI_PL_300_DAX_CHEAT_SHEET };
+    }
+    case 'azure-az-104-lab-setup-cli-cheat-sheet': {
+      const m = await import('./examPrepResources2');
+      return { ...meta, cheatSheetSections: m.AZURE_AZ_104_LAB_CLI_CHEAT_SHEET };
+    }
     default:
       return meta;
   }
