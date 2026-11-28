@@ -90,19 +90,115 @@ let leadsStore: LeadSubmission[] = [
 
 let coursesStore: Course[] = JSON.parse(JSON.stringify(sampleCourses));
 let customBlogsStore: BlogPost[] = [];
-const DB_SYNC_TTL_MS = 60_000;
+const DB_SYNC_TTL_MS = 120_000;
+let lastCmsSyncAt = 0;
 let lastBlogsSyncAt = 0;
 let lastCoursesSyncAt = 0;
+let cmsSyncInFlight: Promise<void> | null = null;
+let blogsSyncInFlight: Promise<void> | null = null;
+let coursesSyncInFlight: Promise<void> | null = null;
 const sitemapXmlCache = new Map<string, { xml: string; expiresAt: number }>();
+const ssrHtmlCache = new Map<string, { html: string; expiresAt: number }>();
 
 function invalidateBlogAndSitemapCaches() {
   lastBlogsSyncAt = 0;
   sitemapXmlCache.clear();
+  ssrHtmlCache.clear();
+}
+
+function invalidateCmsAndCourseCaches() {
+  lastCmsSyncAt = 0;
+  lastCoursesSyncAt = 0;
+  sitemapXmlCache.clear();
+  ssrHtmlCache.clear();
 }
 
 function getAllBlogsList(): BlogPost[] {
   const legacyCmsBlogs = Array.isArray(currentCmsData.blogs) ? currentCmsData.blogs : [];
   return getMergedBlogs([...customBlogsStore, ...legacyCmsBlogs]);
+}
+
+async function runCmsSupabaseSync(): Promise<void> {
+  if (!supabase) return;
+  if (cmsSyncInFlight) return cmsSyncInFlight;
+  cmsSyncInFlight = (async () => {
+    try {
+      const { data, error } = await supabase
+        .from('learnify_cms')
+        .select('*')
+        .or('id.eq.singleton,id.eq.main')
+        .limit(1)
+        .maybeSingle();
+
+      if (!error) {
+        lastCmsSyncAt = Date.now();
+      }
+      if (!error && data) {
+        const payload = data.data || data.section_data;
+        if (payload && typeof payload === 'object') {
+          currentCmsData = {
+            ...currentCmsData,
+            ...payload,
+          };
+          ssrHtmlCache.clear();
+        }
+      }
+    } catch (err: any) {
+      console.warn('[Supabase] Server CMS fetch notice:', err?.message || err);
+    } finally {
+      cmsSyncInFlight = null;
+    }
+  })();
+  return cmsSyncInFlight;
+}
+
+async function syncCmsFromSupabase(force = false): Promise<void> {
+  if (!supabase) return;
+  const now = Date.now();
+  if (!force && lastCmsSyncAt > 0 && now - lastCmsSyncAt < DB_SYNC_TTL_MS) {
+    return;
+  }
+  if (!force && lastCmsSyncAt > 0) {
+    // Stale-while-revalidate: serve RAM immediately (<2ms) & refresh quietly in background
+    void runCmsSupabaseSync();
+    return;
+  }
+  await runCmsSupabaseSync();
+}
+
+async function runBlogsSupabaseSync(): Promise<void> {
+  if (!supabase) return;
+  if (blogsSyncInFlight) return blogsSyncInFlight;
+  blogsSyncInFlight = (async () => {
+    try {
+      const { data, error } = await supabase
+        .from('learnify_blogs')
+        .select('slug, data, region, topic_track, published_at, updated_at')
+        .order('updated_at', { ascending: false });
+
+      if (!error) {
+        lastBlogsSyncAt = Date.now();
+      }
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const parsed: BlogPost[] = [];
+        for (const row of data) {
+          if (row?.data && typeof row.data === 'object' && row.data.slug) {
+            parsed.push(normalizeBlogPost(row.data as BlogPost));
+          }
+        }
+        if (parsed.length > 0) {
+          customBlogsStore = parsed;
+          ssrHtmlCache.clear();
+          sitemapXmlCache.clear();
+        }
+      }
+    } catch (err: any) {
+      console.warn('[Supabase] Blogs fetch notice (table may not exist yet):', err?.message || err);
+    } finally {
+      blogsSyncInFlight = null;
+    }
+  })();
+  return blogsSyncInFlight;
 }
 
 async function syncBlogsFromSupabase(force = false): Promise<void> {
@@ -111,29 +207,11 @@ async function syncBlogsFromSupabase(force = false): Promise<void> {
   if (!force && lastBlogsSyncAt > 0 && now - lastBlogsSyncAt < DB_SYNC_TTL_MS) {
     return;
   }
-  try {
-    const { data, error } = await supabase
-      .from('learnify_blogs')
-      .select('slug, data, region, topic_track, published_at, updated_at')
-      .order('updated_at', { ascending: false });
-
-    if (!error) {
-      lastBlogsSyncAt = Date.now();
-    }
-    if (!error && Array.isArray(data) && data.length > 0) {
-      const parsed: BlogPost[] = [];
-      for (const row of data) {
-        if (row?.data && typeof row.data === 'object' && row.data.slug) {
-          parsed.push(normalizeBlogPost(row.data as BlogPost));
-        }
-      }
-      if (parsed.length > 0) {
-        customBlogsStore = parsed;
-      }
-    }
-  } catch (err: any) {
-    console.warn('[Supabase] Blogs fetch notice (table may not exist yet):', err?.message || err);
+  if (!force && lastBlogsSyncAt > 0) {
+    void runBlogsSupabaseSync();
+    return;
   }
+  await runBlogsSupabaseSync();
 }
 
 // Enhanced Multi-Channel Email Engine:
@@ -1341,31 +1419,11 @@ ${regionalSitemaps}
     }
   });
 
-  // 2. GET CMS data (with active Supabase synchronization)
+  // 2. GET CMS data (with active Supabase 2-min SWR cache)
   app.get('/api/cms', async (req, res) => {
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('learnify_cms')
-          .select('*')
-          .or('id.eq.singleton,id.eq.main')
-          .limit(1)
-          .maybeSingle();
+    await syncCmsFromSupabase();
 
-        if (!error && data) {
-          const payload = data.data || data.section_data;
-          if (payload && typeof payload === 'object') {
-            currentCmsData = {
-              ...currentCmsData,
-              ...payload,
-            };
-          }
-        }
-      } catch (err: any) {
-        console.warn('[Supabase] Server CMS fetch notice:', err.message);
-      }
-    }
-
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     res.json({
       success: true,
       data: currentCmsData,
@@ -1387,6 +1445,8 @@ ${regionalSitemaps}
         ...currentCmsData,
         ...incomingData,
       };
+      invalidateCmsAndCourseCaches();
+      lastCmsSyncAt = Date.now();
 
       // Persist to Supabase if connected
       if (supabase) {
@@ -1446,6 +1506,7 @@ ${regionalSitemaps}
       list = list.slice(0, limitRaw);
     }
 
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     res.json({
       success: true,
       total,
@@ -1460,6 +1521,7 @@ ${regionalSitemaps}
     if (!matched) {
       return res.status(404).json({ success: false, error: 'Blog article not found' });
     }
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     res.json({
       success: true,
       post: normalizeBlogPost(matched),
@@ -1593,6 +1655,8 @@ ${regionalSitemaps}
   // 4. Reset CMS to default
   app.post('/api/cms/reset', authenticateAdminToken, (req, res) => {
     currentCmsData = JSON.parse(JSON.stringify(initialCmsData));
+    invalidateCmsAndCourseCaches();
+    lastCmsSyncAt = Date.now();
     res.json({
       success: true,
       message: 'CMS content reset to default schema',
@@ -1620,7 +1684,108 @@ ${regionalSitemaps}
     res.status(404).json({ success: false, error: 'Documentation file not found' });
   });
 
-  // 5. Courses list & filtering (Live Supabase synchronization)
+  const syncCoursesFromSupabase = async (force = false): Promise<void> => {
+    if (!supabase) return;
+    const nowCourses = Date.now();
+    if (!force && lastCoursesSyncAt > 0 && nowCourses - lastCoursesSyncAt < DB_SYNC_TTL_MS) {
+      return;
+    }
+    const runSync = async () => {
+      if (coursesSyncInFlight) return coursesSyncInFlight;
+      coursesSyncInFlight = (async () => {
+        try {
+          const { data, error } = await supabase.from('learnify_courses').select('*');
+          if (!error) {
+            lastCoursesSyncAt = Date.now();
+          }
+          if (!error && data && data.length > 0) {
+            const sampleMap = new Map(sampleCourses.map((sc) => [sc.id, sc]));
+
+            coursesStore = sampleCourses.map((sample) => {
+              const dbCourse = data.find((c: any) => c.id === sample.id);
+              if (!dbCourse) return sample;
+
+              const rawImg = typeof dbCourse.image_url === 'string' ? dbCourse.image_url : (typeof dbCourse.imageUrl === 'string' ? dbCourse.imageUrl : '');
+              const normalizedImg = rawImg ? rawImg.replace('/src/assets/images/', '/images/') : sample.imageUrl;
+
+              return {
+                ...sample,
+                rating: Number(dbCourse.rating || sample.rating),
+                enrolled: Number(dbCourse.enrolled || sample.enrolled),
+                imageUrl: normalizedImg,
+                overview: sample.overview || dbCourse.overview || sample.summary,
+                learningObjectives: (sample.learningObjectives && sample.learningObjectives.length > 0)
+                  ? sample.learningObjectives
+                  : (Array.isArray(dbCourse.learning_objectives) ? dbCourse.learning_objectives : []),
+                prerequisites: (sample.prerequisites && sample.prerequisites.length > 0)
+                  ? sample.prerequisites
+                  : (Array.isArray(dbCourse.prerequisites) ? dbCourse.prerequisites : []),
+                curriculum: (sample.curriculum && sample.curriculum.length > 0)
+                  ? sample.curriculum
+                  : (Array.isArray(dbCourse.modules) ? dbCourse.modules : []),
+                outline: sample.outline && sample.outline.length > 0 ? sample.outline : (dbCourse.outline || []),
+              };
+            });
+
+            for (const dbCourse of data) {
+              if (!sampleMap.has(dbCourse.id)) {
+                coursesStore.push({
+                  id: String(dbCourse.id),
+                  title: String(dbCourse.title || 'Untitled Course'),
+                  domain: String(dbCourse.domain || 'Cloud Computing'),
+                  certificationVendor: dbCourse.certification_vendor || '',
+                  skillLevel: dbCourse.skill_level || 'Intermediate',
+                  format: dbCourse.format || 'Live Online',
+                  fastTrack: Boolean(dbCourse.fast_track),
+                  duration: dbCourse.duration || '4 Weeks',
+                  rating: Number(dbCourse.rating || 4.8),
+                  enrolled: Number(dbCourse.enrolled || 100),
+                  imageUrl: dbCourse.image_url || '/images/azure_cloud_infra_1787771504293.webp',
+                  imageAlt: dbCourse.title || 'Course thumbnail',
+                  summary: dbCourse.summary || '',
+                  overview: dbCourse.overview || dbCourse.summary || '',
+                  learningObjectives: Array.isArray(dbCourse.learning_objectives) ? dbCourse.learning_objectives : [],
+                  prerequisites: Array.isArray(dbCourse.prerequisites) ? dbCourse.prerequisites : [],
+                  curriculum: Array.isArray(dbCourse.modules) ? dbCourse.modules : [],
+                  outline: Array.isArray(dbCourse.outline) ? dbCourse.outline : [],
+                });
+              }
+            }
+            ssrHtmlCache.clear();
+          } else if (!error && data && data.length === 0) {
+            const seedItems = sampleCourses.map((c) => ({
+              id: c.id,
+              title: c.title,
+              domain: c.domain,
+              level: c.skillLevel || 'Intermediate',
+              duration: c.duration || '4 Weeks',
+              rating: c.rating || 4.8,
+              enrolled: c.enrolled || 100,
+              summary: c.summary || '',
+            }));
+            try {
+              await supabase.from('learnify_courses').insert(seedItems);
+            } catch (seedErr) {
+              console.warn('[Supabase] Initial seed notice:', seedErr);
+            }
+          }
+        } catch (err: any) {
+          console.warn('[Supabase] Live course fetch notice:', err?.message || err);
+        } finally {
+          coursesSyncInFlight = null;
+        }
+      })();
+      return coursesSyncInFlight;
+    };
+
+    if (!force && lastCoursesSyncAt > 0) {
+      void runSync();
+      return;
+    }
+    await runSync();
+  };
+
+  // 5. Courses list & filtering (Live Supabase SWR synchronization)
   app.get('/api/courses', async (req, res) => {
     const domain = req.query.domain as string;
     const vendor = req.query.vendor as string;
@@ -1628,91 +1793,7 @@ ${regionalSitemaps}
     const format = req.query.format as string;
     const search = req.query.search as string;
 
-    // Refresh from Supabase if connected (respecting 60s TTL cache)
-    const nowCourses = Date.now();
-    if (supabase && (lastCoursesSyncAt === 0 || nowCourses - lastCoursesSyncAt >= DB_SYNC_TTL_MS)) {
-      try {
-        const { data, error } = await supabase.from('learnify_courses').select('*');
-        if (!error) {
-          lastCoursesSyncAt = Date.now();
-        }
-        if (!error && data && data.length > 0) {
-          const sampleMap = new Map(sampleCourses.map((sc) => [sc.id, sc]));
-
-          coursesStore = sampleCourses.map((sample) => {
-            const dbCourse = data.find((c: any) => c.id === sample.id);
-            if (!dbCourse) return sample;
-
-            const rawImg = typeof dbCourse.image_url === 'string' ? dbCourse.image_url : (typeof dbCourse.imageUrl === 'string' ? dbCourse.imageUrl : '');
-            const normalizedImg = rawImg ? rawImg.replace('/src/assets/images/', '/images/') : sample.imageUrl;
-
-            return {
-              ...sample,
-              rating: Number(dbCourse.rating || sample.rating),
-              enrolled: Number(dbCourse.enrolled || sample.enrolled),
-              imageUrl: normalizedImg,
-              // Always preserve full official curriculum, outline, overview, and learning objectives
-              overview: sample.overview || dbCourse.overview || sample.summary,
-              learningObjectives: (sample.learningObjectives && sample.learningObjectives.length > 0)
-                ? sample.learningObjectives
-                : (Array.isArray(dbCourse.learning_objectives) ? dbCourse.learning_objectives : []),
-              prerequisites: (sample.prerequisites && sample.prerequisites.length > 0)
-                ? sample.prerequisites
-                : (Array.isArray(dbCourse.prerequisites) ? dbCourse.prerequisites : []),
-              curriculum: (sample.curriculum && sample.curriculum.length > 0)
-                ? sample.curriculum
-                : (Array.isArray(dbCourse.modules) ? dbCourse.modules : []),
-              outline: sample.outline && sample.outline.length > 0 ? sample.outline : (dbCourse.outline || []),
-            };
-          });
-
-          // Append any custom courses created in Supabase that are not in sampleCourses
-          for (const dbCourse of data) {
-            if (!sampleMap.has(dbCourse.id)) {
-              coursesStore.push({
-                id: String(dbCourse.id),
-                title: String(dbCourse.title || 'Untitled Course'),
-                domain: String(dbCourse.domain || 'Cloud Computing'),
-                certificationVendor: dbCourse.certification_vendor || '',
-                skillLevel: dbCourse.skill_level || 'Intermediate',
-                format: dbCourse.format || 'Live Online',
-                fastTrack: Boolean(dbCourse.fast_track),
-                duration: dbCourse.duration || '4 Weeks',
-                rating: Number(dbCourse.rating || 4.8),
-                enrolled: Number(dbCourse.enrolled || 100),
-                imageUrl: dbCourse.image_url || '/images/azure_cloud_infra_1787771504293.webp',
-                imageAlt: dbCourse.title || 'Course thumbnail',
-                summary: dbCourse.summary || '',
-                overview: dbCourse.overview || dbCourse.summary || '',
-                learningObjectives: Array.isArray(dbCourse.learning_objectives) ? dbCourse.learning_objectives : [],
-                prerequisites: Array.isArray(dbCourse.prerequisites) ? dbCourse.prerequisites : [],
-                curriculum: Array.isArray(dbCourse.modules) ? dbCourse.modules : [],
-                outline: Array.isArray(dbCourse.outline) ? dbCourse.outline : [],
-              });
-            }
-          }
-        } else if (!error && data && data.length === 0) {
-          // Auto-seed initial catalog into Supabase
-          const seedItems = sampleCourses.map((c) => ({
-            id: c.id,
-            title: c.title,
-            domain: c.domain,
-            level: c.skillLevel || 'Intermediate',
-            duration: c.duration || '4 Weeks',
-            rating: c.rating || 4.8,
-            enrolled: c.enrolled || 100,
-            summary: c.summary || '',
-          }));
-          try {
-            await supabase.from('learnify_courses').insert(seedItems);
-          } catch (seedErr) {
-            console.warn('[Supabase] Initial seed notice:', seedErr);
-          }
-        }
-      } catch (err: any) {
-        console.warn('[Supabase] Live course fetch notice:', err.message);
-      }
-    }
+    await syncCoursesFromSupabase();
 
     let filtered = [...coursesStore];
 
@@ -1751,6 +1832,7 @@ ${regionalSitemaps}
       );
     }
 
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
     res.json({
       success: true,
       count: filtered.length,
@@ -1789,9 +1871,12 @@ ${regionalSitemaps}
         if (error) console.warn('Supabase insert course notice:', error.message);
       }
       coursesStore.unshift(courseData);
+      ssrHtmlCache.clear();
+      sitemapXmlCache.clear();
       res.status(201).json({ success: true, message: 'Course created successfully', course: courseData });
     } catch (err: any) {
       coursesStore.unshift(courseData);
+      ssrHtmlCache.clear();
       res.status(201).json({ success: true, message: 'Course created in memory store', course: courseData });
     }
   });
@@ -1827,10 +1912,13 @@ ${regionalSitemaps}
       }
       const index = coursesStore.findIndex(c => c.id === id);
       if (index !== -1) coursesStore[index] = { ...coursesStore[index], ...courseData };
+      ssrHtmlCache.clear();
+      sitemapXmlCache.clear();
       res.json({ success: true, message: 'Course updated successfully', course: courseData });
     } catch (err: any) {
       const index = coursesStore.findIndex(c => c.id === id);
       if (index !== -1) coursesStore[index] = { ...coursesStore[index], ...courseData };
+      ssrHtmlCache.clear();
       res.json({ success: true, message: 'Course updated in memory store', course: courseData });
     }
   });
@@ -1843,9 +1931,12 @@ ${regionalSitemaps}
         if (error) console.warn('Supabase delete course notice:', error.message);
       }
       coursesStore = coursesStore.filter(c => c.id !== id);
+      ssrHtmlCache.clear();
+      sitemapXmlCache.clear();
       res.json({ success: true, message: 'Course deleted successfully' });
     } catch (err: any) {
       coursesStore = coursesStore.filter(c => c.id !== id);
+      ssrHtmlCache.clear();
       res.json({ success: true, message: 'Course deleted from memory store' });
     }
   });
@@ -2223,6 +2314,17 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       distPath,
     ];
 
+    const resolvedImagePathCache = new Map<string, string | null>();
+    const imageMimeTypes: Record<string, string> = {
+      '.webp': 'image/webp',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.svg': 'image/svg+xml',
+      '.gif': 'image/gif',
+      '.ico': 'image/x-icon',
+    };
+
     // Handle image and static media requests explicitly to prevent them from falling through to index.html
     app.use((req, res, next) => {
       const reqPath = req.path;
@@ -2238,33 +2340,34 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
 
       // Extract filename from URL
       const fileName = path.basename(reqPath);
+      let resolvedPath = resolvedImagePathCache.get(fileName);
 
-      for (const dir of assetDirs) {
-        const candidate = path.join(dir, fileName);
-        if (fs.existsSync(candidate)) {
-          try {
-            if (fs.statSync(candidate).isFile()) {
-              const ext = path.extname(candidate).toLowerCase();
-              const mimeTypes: Record<string, string> = {
-                '.webp': 'image/webp',
-                '.jpg': 'image/jpeg',
-                '.jpeg': 'image/jpeg',
-                '.png': 'image/png',
-                '.svg': 'image/svg+xml',
-                '.gif': 'image/gif',
-                '.ico': 'image/x-icon',
-              };
-              res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
-              res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
-              return res.sendFile(candidate);
+      if (resolvedPath === undefined) {
+        resolvedPath = null;
+        for (const dir of assetDirs) {
+          const candidate = path.join(dir, fileName);
+          if (fs.existsSync(candidate)) {
+            try {
+              if (fs.statSync(candidate).isFile()) {
+                resolvedPath = candidate;
+                break;
+              }
+            } catch {
+              // continue search
             }
-          } catch {
-            // continue search
           }
         }
+        resolvedImagePathCache.set(fileName, resolvedPath);
       }
 
-      // Fallback: Check if hero.webp or logo.jpeg exists in public/
+      if (resolvedPath) {
+        const ext = path.extname(resolvedPath).toLowerCase();
+        res.setHeader('Content-Type', imageMimeTypes[ext] || 'application/octet-stream');
+        res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+        return res.sendFile(resolvedPath);
+      }
+
+      // Fallback: Check if hero.webp exists in public/
       const heroFallback = path.join(process.cwd(), 'public/hero.webp');
       if (fs.existsSync(heroFallback)) {
         res.setHeader('Content-Type', 'image/webp');
@@ -2399,6 +2502,17 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
       }
 
       try {
+        const ssrCacheKey = (cleanPath || '/').toLowerCase();
+        const isAdminPath = ssrCacheKey === '/admin' || ssrCacheKey.startsWith('/admin/') || ssrCacheKey.startsWith('/admin-secure-portal');
+        if (!isAdminPath) {
+          const cachedSsr = ssrHtmlCache.get(ssrCacheKey);
+          if (cachedSsr && cachedSsr.expiresAt > Date.now()) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+            return res.send(cachedSsr.html);
+          }
+        }
+
         let html = cachedIndexHtml || fs.readFileSync(indexPath, 'utf-8');
         const regionalMatch = resolveRegionalRoute(cleanPath);
         const allBlogs = getAllBlogsList();
@@ -3407,6 +3521,18 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
             .replace(/<div id="root"><\/div>/, `<div id="root"><main style="max-width:900px;margin:0 auto;padding:32px 16px;font-family:sans-serif;color:#152e4d;"><h1>Page Not Found</h1><p>Explore our <a href="/courses">IT Certification Courses</a>, <a href="/ae">UAE Training Hub</a>, or <a href="/za">South Africa Training Hub</a>.</p></main></div>`);
         }
 
+        if (res.statusCode === 200) {
+          const ssrCacheKey = (cleanPath || '/').toLowerCase();
+          const isAdminPath = ssrCacheKey === '/admin' || ssrCacheKey.startsWith('/admin/') || ssrCacheKey.startsWith('/admin-secure-portal');
+          if (!isAdminPath) {
+            if (ssrHtmlCache.size >= 500) {
+              const oldestKey = ssrHtmlCache.keys().next().value;
+              if (oldestKey) ssrHtmlCache.delete(oldestKey);
+            }
+            ssrHtmlCache.set(ssrCacheKey, { html, expiresAt: Date.now() + DB_SYNC_TTL_MS });
+          }
+        }
+
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
         res.send(html);
@@ -3420,30 +3546,18 @@ CREATE POLICY "Allow public insert leads" ON public.learnify_leads FOR INSERT WI
     console.log(`Learnify Full-Stack Server running at http://localhost:${PORT}`);
   });
 
-  // Preload latest CMS & Blogs data in background without blocking port binding
+  // Preload latest CMS, Courses & Blogs data in background without blocking port binding
   if (supabase) {
     (async () => {
       try {
-        const { data, error } = await supabase
-          .from('learnify_cms')
-          .select('*')
-          .or('id.eq.singleton,id.eq.main')
-          .limit(1)
-          .maybeSingle();
-
-        if (!error && data) {
-          const payload = data.data || data.section_data;
-          if (payload && typeof payload === 'object') {
-            currentCmsData = {
-              ...currentCmsData,
-              ...payload,
-            };
-            console.log('[Supabase] Initialized server CMS with live Supabase data.');
-          }
-        }
-        await syncBlogsFromSupabase();
+        await Promise.all([
+          syncCmsFromSupabase(true),
+          syncBlogsFromSupabase(true),
+          syncCoursesFromSupabase(true),
+        ]);
+        console.log('[Supabase] Startup RAM caches warmed (CMS + Blogs + Courses).');
       } catch (err: any) {
-        console.warn('[Supabase] Startup CMS fetch notice:', err.message);
+        console.warn('[Supabase] Startup preload notice:', err?.message || err);
       }
     })();
   }

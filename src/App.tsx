@@ -1505,18 +1505,18 @@ export default function App() {
         }
       }).catch(() => {});
 
-      // 1b. Lightweight Blog Metadata Index (~2KB, full articles load on-demand)
+      // 1b. Lightweight Blog Metadata Index (~2KB, skip network round-trip when SSR already hydrated summaries)
       if (getHydratedBlogSummaries().length === 0) {
         setIsLoadingBlogs(true);
+        fetchBlogSummaries()
+          .then((summariesRes) => {
+            if (Array.isArray(summariesRes) && summariesRes.length > 0) {
+              setBlogSummaries(summariesRes);
+            }
+          })
+          .catch(() => {})
+          .finally(() => setIsLoadingBlogs(false));
       }
-      fetchBlogSummaries()
-        .then((summariesRes) => {
-          if (Array.isArray(summariesRes) && summariesRes.length > 0) {
-            setBlogSummaries(summariesRes);
-          }
-        })
-        .catch(() => {})
-        .finally(() => setIsLoadingBlogs(false));
 
       // 2. Only fetch admin leads and Supabase status if administrator is authenticated
       const isAdminAuth = typeof window !== 'undefined' && localStorage.getItem('learnify_admin_authenticated') === 'true';
